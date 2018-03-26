@@ -21,7 +21,7 @@ This repository is being developed.
 
 Requirements
 ------------
-Drahak/Restful requires PHP version 5.3.0 or higher. The only production dependency is [Nette framework 2.0.x](http://www.nette.org). The Restful also works well with my Drahak\OAuth2 provider (see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2))
+Drahak/Restful requires PHP version 5.6.0 or higher. The only production dependency is [Nette framework 2.4.x](http://www.nette.org). The Restful also works well with my Drahak\OAuth2 provider (see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2))
 
 Installation & setup
 --------------------
