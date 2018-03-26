@@ -4,9 +4,11 @@ namespace Drahak\Restful\Application\Responses;
 
 use Nette\Application\IResponse;
 use Nette\Http;
-use Nette\Object;
+use Nette;
 
-class ErrorResponse extends Object implements IResponse {
+class ErrorResponse implements IResponse {
+
+	use Nette\SmartObject;
 
 	private $response;
 

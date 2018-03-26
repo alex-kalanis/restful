@@ -2,25 +2,23 @@
 namespace Drahak\Restful\Application;
 
 use Drahak\Restful\Application\Responses\BaseResponse;
-use Drahak\Restful\Application\Responses\NullResponse;
 use Drahak\Restful\InvalidArgumentException;
 use Drahak\Restful\InvalidStateException;
 use Drahak\Restful\IResource;
 use Drahak\Restful\Mapping\MapperContext;
-use Drahak\Restful\Utils\RequestFilter;
 use Nette\Utils\Strings;
 use Nette\Http\IResponse;
 use Nette\Http\IRequest;
-use Nette\Http\Url;
-use Nette\Object;
+use Nette;
 
 /**
  * REST ResponseFactory
  * @package Drahak\Restful
  * @author Drahomír Hanák
  */
-class ResponseFactory extends Object implements IResponseFactory
+class ResponseFactory implements IResponseFactory
 {
+	use Nette\SmartObject;
 
 	/** @var IResponse */
 	private $response;

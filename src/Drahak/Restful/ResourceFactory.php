@@ -2,17 +2,17 @@
 namespace Drahak\Restful;
 
 use Drahak\Restful\Converters\ResourceConverter;
-use Drahak\Restful\Utils\Strings;
 use Nette\Http\IRequest;
-use Nette\Object;
+use Nette;
 
 /**
  * ResourceFactory
  * @package Drahak\Restful
  * @author Drahomír Hanák
  */
-class ResourceFactory extends Object implements IResourceFactory
+class ResourceFactory implements IResourceFactory
 {
+	use Nette\SmartObject;
 
 	/** @var IRequest */
 	private $request;

@@ -1,8 +1,7 @@
 <?php
 namespace Drahak\Restful\Utils;
 
-use Nette\Object;
-use Nette\ArrayList;
+use Nette;
 use Nette\Utils\Paginator;
 use Drahak\Restful\InvalidStateException;
 use Nette\Http\IRequest;
@@ -17,8 +16,9 @@ use Nette\Http\IRequest;
  * @property-read string $searchQuery
  * @property-read Paginator $paginator
  */
-class RequestFilter extends Object
+class RequestFilter
 {
+	use Nette\SmartObject;
 
 	/** Fields key in URL query */
 	const FIELDS_KEY = 'fields';
