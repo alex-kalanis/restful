@@ -1,5 +1,5 @@
 {
-	"name": "drahak/restful",
+	"name": "jaroslavrehorka/restful",
 	"type": "library",
 	"description": "Nette REST API bundle",
 	"keywords": ["nette", "rest", "api", "drahak"],
@@ -15,7 +15,7 @@
 		"vendor-dir": "libs"
 	},
 	"require": {
-		"php": ">= 5.3.0",
+		"php": ">= 5.6.0",
 		"nette/application": "~2.0|~3.0",
 		"nette/bootstrap": "~2.0|~3.0",
 		"nette/caching": "~2.0|~3.0",
