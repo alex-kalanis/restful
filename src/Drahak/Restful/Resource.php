@@ -19,7 +19,12 @@ use Nette\MemberAccessException;
  */
 class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResource
 {
-	use Nette\SmartObject;
+	use Nette\SmartObject {
+		Nette\SmartObject::__get as SO__get;
+		Nette\SmartObject::__set as SO__set;
+		Nette\SmartObject::__isset as SO__isset;
+		Nette\SmartObject::__unset as SO__unset;
+	}
 
 	/** @var array */
 	private $data = array();
@@ -120,4 +125,70 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 	{
 		return new ArrayIterator($this->getData());
 	}
+
+	/******************** Magic methods ********************/
+
+	/**
+	 * Magic getter from $this->data
+	 * @param string $name
+	 *
+	 * @throws \Exception|\Nette\MemberAccessException
+	 * @return mixed
+	 */
+	public function &__get($name)
+	{
+		try {
+			return $this->SO__get($name);
+		} catch (MemberAccessException $e) {
+			if (isset($this->data[$name])) {
+				return $this->data[$name];
+			}
+			throw $e;
+		}
+
+	}
+
+	/**
+	 * Magic setter to $this->data
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function __set($name, $value)
+	{
+		try {
+			$this->SO__set($name, $value);
+		} catch (MemberAccessException $e) {
+			$this->data[$name] = $value;
+		}
+	}
+
+	/**
+	 * Magic isset to $this->data
+	 * @param string $name
+	 * @return bool
+	 */
+	public function __isset($name)
+	{
+		return !$this->SO__isset($name) ? isset($this->data[$name]) : TRUE;
+	}
+
+	/**
+	 * Magic unset from $this->data
+	 * @param string $name
+	 * @throws \Exception|\Nette\MemberAccessException
+	 */
+	public function __unset($name)
+	{
+		try {
+			$this->SO__unset($name);
+		} catch (MemberAccessException $e) {
+			if (isset($this->data[$name])) {
+				unset($this->data[$name]);
+				return;
+			}
+			throw $e;
+		}
+	}
+
+
 }
