@@ -49,6 +49,7 @@ class RouteListFactory implements IRouteListFactory
 		$loader = new RobotLoader();
 		$loader->addDirectory($presentersRoot);
 		$loader->setCacheStorage($cacheStorage);
+		$loader->register();
 		$loader->autoRebuild = $autoRebuild;
 		$loader->tryLoad('Drahak\Restful\Application\IResourcePresenter');
 
