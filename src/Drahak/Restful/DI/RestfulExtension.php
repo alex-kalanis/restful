@@ -259,7 +259,7 @@ class RestfulExtension extends CompilerExtension
 
 		$container->addDefinition($this->prefix('routeListFactory'))
 			->setClass('Drahak\Restful\Application\RouteListFactory')
-			->setArguments(array($config['routes']['presentersRoot'], $config['routes']['autoRebuild']))
+			->setArguments(array($config['routes']['presentersRoot'], $config['routes']['autoRebuild'], $config['cacheDir']))
 			->addSetup('$service->setModule(?)', array($config['routes']['module']))
 			->addSetup('$service->setPrefix(?)', array($config['routes']['prefix']));
 
