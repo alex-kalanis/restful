@@ -1,5 +1,5 @@
 {
-	"name": "jaroslavrehorka/restful",
+	"name": "Vlczech/restful",
 	"type": "library",
 	"description": "Nette REST API bundle",
 	"keywords": ["nette", "rest", "api", "drahak"],
@@ -9,6 +9,9 @@
 		{
 			"name": "Drahomír Hanák",
 			"homepage": "http://www.drahak.eu"
+		},
+		{
+			"name": "Tomáš Vlczech Volf"
 		}
 	],
 	"config": {
