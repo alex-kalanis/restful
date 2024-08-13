@@ -1,5 +1,5 @@
 {
-	"name": "Vlczech/restful",
+	"name": "alex-kalanis/restful",
 	"type": "library",
 	"description": "Nette REST API bundle",
 	"keywords": ["nette", "rest", "api", "drahak"],
@@ -12,33 +12,44 @@
 		},
 		{
 			"name": "Tomáš Vlczech Volf"
+		},
+		{
+			"name": "Petr Kalanis Plšek",
+			"homepage": "http://www.kalanys.com"
+		}
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://gitlab.picabo.cz/plsek/oauth2"
 		}
 	],
 	"config": {
-		"vendor-dir": "libs"
+		"vendor-dir": "vendor"
 	},
 	"require": {
-		"php": ">= 5.6.0",
-		"nette/application": "~2.4|~3.0",
-		"nette/bootstrap": "~2.4|~3.0",
-		"nette/caching": "~2.4|~3.0",
-		"nette/deprecated": "~2.4|~3.0",
-		"nette/di": "~2.4|~3.0",
-		"nette/http": "~2.4|~3.0",
-		"nette/reflection": "~2.4|~3.0",
-		"nette/robot-loader": "~2.4|~3.0",
-		"nette/security": "~2.4|~3.0",
-		"nette/utils": "~2.4|~3.0"
+		"php": ">= 8.1.0",
+		"nette/application": "~3.2",
+		"nette/bootstrap": "~3.2",
+		"nette/caching": "~3.3",
+		"nette/deprecated": "~3.0",
+		"nette/di": "~3.2",
+		"nette/http": "~3.3",
+		"nette/robot-loader": "~4.0",
+		"nette/security": "~3.2",
+		"nette/utils": "~4.0"
 	},
 	"require-dev": {
 		"drahak/oauth2": "dev-master",
-		"nette/tester": "~1.3",
-		"janmarek/mockista": "1.0.0",
-		"jakub-onderka/php-parallel-lint": "~0.8"
+		"nette/tester": "~2.5",
+		"janmarek/mockista": "1.1.0",
+		"php-parallel-lint/php-parallel-lint": "~1.4",
+		"rector/rector": "^1.2",
+		"mockery/mockery": "^1.6"
 	},
 	"autoload": {
-		"psr-0": {
-			"Drahak\\Restful": "src/"
+		"psr-4": {
+			"Drahak\\Restful\\": "src/Drahak/Restful/"
 		},
 		"classmap": [
 			"src/Drahak/Restful/exceptions.php",

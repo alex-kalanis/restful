@@ -1,0 +1,9 @@
+parameters:
+	level: 9
+	paths:
+		- 'php-src'
+	excludePaths:
+		- 'php-tests/_autoload.php'
+		- 'php-tests/_bootstrap.php'
+	bootstrapFiles:
+		- 'php-tests/_autoload.php'

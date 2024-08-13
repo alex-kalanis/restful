@@ -1,8 +1,6 @@
 Nette REST API
 ==============
 
-[![Build Status](https://travis-ci.org/drahak/Restful.svg?branch=master)](https://travis-ci.org/drahak/Restful)
-
 This repository is being developed.
 
 ### Content
@@ -21,7 +19,7 @@ This repository is being developed.
 
 Requirements
 ------------
-Drahak/Restful requires PHP version 5.6.0 or higher. The only production dependency is [Nette framework 2.4.x](http://www.nette.org), check that robot-loader is of version at least 3.0 (if not, please use [jaroslavrehorka/Restful](https://github.com/jaroslavrehorka/Restful/)). The Restful also works well with my Drahak\OAuth2 provider (see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2))
+Drahak/Restful requires PHP version 8.1.0 or higher. The only production dependency is [Nette framework 2.4.x](http://www.nette.org), check that robot-loader is of version at least 3.0 (if not, please use [jaroslavrehorka/Restful](https://github.com/jaroslavrehorka/Restful/)). The Restful also works well with my Drahak\OAuth2 provider (see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2))
 
 Installation & setup
 --------------------
