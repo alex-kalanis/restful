@@ -14,6 +14,5 @@ interface IResourceFactory
      * Create new API resource
      * @return IResource
      */
-    public function create(array $data = []);
-
+    public function create(array $data = []): IResource;
 }

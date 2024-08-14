@@ -3,8 +3,8 @@
 namespace Drahak\Restful\Application\Responses;
 
 use Nette;
-use Nette\Application\IResponse;
 use Nette\Http;
+use stdClass;
 
 /**
  * NullResponse
@@ -15,12 +15,20 @@ class NullResponse implements IResponse
 {
     use Nette\SmartObject;
 
+    public function getContentType(): string
+    {
+        return '';
+    }
+
+    public function getData(): iterable|stdClass|string
+    {
+        return '';
+    }
+
     /**
      * Do nothing
      */
-    public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse)
+    public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse): void
     {
     }
-
-
 }

@@ -2,7 +2,7 @@
 
 namespace Drahak\Restful\Application;
 
-use Drahak\Restful\InvalidArgumentException;
+use Drahak\Restful\Exceptions\InvalidArgumentException;
 use Reflector;
 
 /**
@@ -20,6 +20,5 @@ interface IAnnotationParser
      *
      * @throws InvalidArgumentException
      */
-    public function parse($reflection);
-
+    public function parse(Reflector $reflection);
 }

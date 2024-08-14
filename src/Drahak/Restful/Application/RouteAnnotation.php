@@ -2,10 +2,12 @@
 
 namespace Drahak\Restful\Application;
 
-use Drahak\Restful\InvalidArgumentException;
+use Drahak\Restful\Exceptions\InvalidArgumentException;
 use Nette;
+use Nette\Application\UI\MethodReflection;
 use Nette\Http\IRequest;
-use Nette\Reflection\Method;
+use ReflectionMethod;
+use Reflector;
 
 /**
  * RouteAnnotation
@@ -19,26 +21,32 @@ class RouteAnnotation implements IAnnotationParser
     use Nette\SmartObject;
 
     /** @var array */
-    private $methods = [IRequest::GET => IResourceRouter::GET, IRequest::POST => IResourceRouter::POST, IRequest::PUT => IResourceRouter::PUT, IRequest::DELETE => IResourceRouter::DELETE, IRequest::HEAD => IResourceRouter::HEAD, 'PATCH' => IResourceRouter::PATCH];
+    private array $methods = [
+        IRequest::Get => IResourceRouter::GET,
+        IRequest::Post => IResourceRouter::POST,
+        IRequest::Put => IResourceRouter::PUT,
+        IRequest::Delete => IResourceRouter::DELETE,
+        IRequest::Head => IResourceRouter::HEAD,
+        'PATCH' => IResourceRouter::PATCH
+    ];
 
     /**
      * Get parsed
-     * @return array
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
 
     /**
-     * @param Method $reflection
+     * @param ReflectionMethod $reflection
      *
      * @throws InvalidArgumentException
      */
-    public function parse($reflection): array
+    public function parse(Reflector $reflection): array
     {
-        if (!$reflection instanceof Method) {
-            throw new InvalidArgumentException('RouteAnnotation can be parsed only on method');
+        if (!$reflection instanceof MethodReflection) {
+            throw new InvalidArgumentException('RouteAnnotation can be parsed only on method from Nette\Application\UI\MethodReflection');
         }
 
         $result = [];
@@ -49,5 +57,4 @@ class RouteAnnotation implements IAnnotationParser
         }
         return $result;
     }
-
 }

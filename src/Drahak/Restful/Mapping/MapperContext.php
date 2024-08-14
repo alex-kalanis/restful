@@ -2,7 +2,7 @@
 
 namespace Drahak\Restful\Mapping;
 
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Nette;
 use Nette\Utils\Strings;
 
@@ -15,14 +15,13 @@ class MapperContext
 {
     use Nette\SmartObject;
 
-    /** @var array */
-    protected $services = [];
+    /** @var array<string, IMapper> */
+    protected array $services = [];
 
     /**
      * Add mapper
-     * @param string $contentType
      */
-    public function addMapper($contentType, IMapper $mapper)
+    public function addMapper(string $contentType, IMapper $mapper): void
     {
         $this->services[$contentType] = $mapper;
     }
@@ -34,7 +33,7 @@ class MapperContext
      *
      * @throws InvalidStateException
      */
-    public function getMapper($contentType)
+    public function getMapper(string $contentType): IMapper
     {
         $contentType = explode(';', $contentType);
         $contentType = Strings::trim($contentType[0]);
@@ -44,5 +43,4 @@ class MapperContext
         }
         return $this->services[$contentType];
     }
-
 }

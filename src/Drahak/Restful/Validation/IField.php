@@ -15,18 +15,18 @@ interface IField
      * @param string $expression or identifier
      * @return IField
      */
-    public function addRule($expression);
+    public function addRule(string $expression): IField;
 
     /**
      * Validate field
-     * @return mixed
+     * @param mixed $value
+     * @return Error[]
      */
-    public function validate(mixed $value);
+    public function validate(mixed $value): array;
 
     /**
      * Get field name
      * @return string
      */
-    public function getName();
-
+    public function getName(): string;
 }

@@ -17,9 +17,8 @@ class CamelCaseConverter implements IConverter
 
     /**
      * Converts resource data keys to camelCase
-     * @return array
      */
-    public function convert(array $resource)
+    public function convert(array $resource): array
     {
         $this->convertToCamel($resource);
         return $resource;
@@ -29,7 +28,7 @@ class CamelCaseConverter implements IConverter
      * Convert array keys to camel case
      * @param array|Traversable $array
      */
-    private function convertToCamel(&$array)
+    private function convertToCamel(&$array): void
     {
         if ($array instanceof Traversable) {
             $array = iterator_to_array($array);
@@ -47,5 +46,4 @@ class CamelCaseConverter implements IConverter
             unset($value);
         }
     }
-
 }

@@ -6,15 +6,15 @@ use Drahak\OAuth2\Application\IOAuthPresenter;
 use Drahak\OAuth2\Grant\GrantContext;
 use Drahak\OAuth2\Grant\GrantType;
 use Drahak\OAuth2\Grant\IGrant;
-use Drahak\OAuth2\InvalidGrantException;
-use Drahak\OAuth2\InvalidStateException;
-use Drahak\OAuth2\OAuthException;
+use Drahak\OAuth2\Exceptions\InvalidGrantException;
+use Drahak\OAuth2\Exceptions\InvalidStateException;
+use Drahak\OAuth2\Exceptions\OAuthException;
 use Drahak\OAuth2\Storage\AuthorizationCodes\AuthorizationCodeFacade;
 use Drahak\OAuth2\Storage\Clients\IClient;
 use Drahak\OAuth2\Storage\Clients\IClientStorage;
-use Drahak\OAuth2\Storage\TokenException;
-use Drahak\OAuth2\UnauthorizedClientException;
-use Drahak\OAuth2\UnsupportedResponseTypeException;
+use Drahak\OAuth2\Storage\Exceptions\TokenException;
+use Drahak\OAuth2\Exceptions\UnauthorizedClientException;
+use Drahak\OAuth2\Exceptions\UnsupportedResponseTypeException;
 use Nette\Http\Url;
 use Traversable;
 
@@ -22,8 +22,6 @@ use Traversable;
  * OAuth2Presenter
  * @package Drahak\Restful\Application
  * @author Drahomír Hanák
- *
- * @property-read IGrant $grantType
  */
 class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
 {
@@ -41,7 +39,8 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * Inject OAuth2 presenter dependencies
      */
     public final function injectOauth2(
-        GrantContext   $grantContext, AuthorizationCodeFacade $authorizationCode,
+        GrantContext   $grantContext,
+        AuthorizationCodeFacade $authorizationCode,
         IClientStorage $clientStorage)
     {
         $this->grantContext = $grantContext;
@@ -59,7 +58,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * @throws UnauthorizedClientException
      * @throws UnsupportedResponseTypeException
      */
-    public function issueAuthorizationCode($responseType, $redirectUrl, $scope = NULL)
+    public function issueAuthorizationCode(string $responseType, string $redirectUrl, ?string $scope = NULL): void
     {
         try {
             if ($responseType !== 'code') {
@@ -86,7 +85,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * @param string|null $redirectUrl
      * @param int $code
      */
-    public function oauthResponse($data, $redirectUrl = NULL, $code = 200)
+    public function oauthResponse(iterable $data, ?string $redirectUrl = NULL, int $code = 200): void
     {
         if ($data instanceof Traversable) {
             $data = iterator_to_array($data);
@@ -115,7 +114,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * Provide OAuth2 error response (redirect or at least JSON)
      * @param OAuthException $exception
      */
-    public function oauthError(OAuthException $exception)
+    public function oauthError(OAuthException $exception): void
     {
         $error = ['error' => $exception->getKey(), 'error_description' => $exception->getMessage()];
         $this->oauthResponse($error, $this->getParameter('redirect_uri'), $exception->getCode());
@@ -126,7 +125,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * @param string|null $grantType
      * @param string|null $redirectUrl
      */
-    public function issueAccessToken($grantType = NULL, $redirectUrl = NULL)
+    public function issueAccessToken(?string $grantType = NULL, ?string $redirectUrl = NULL): void
     {
         try {
             if ($grantType !== NULL) {
@@ -164,7 +163,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     /**
      * On presenter startup
      */
-    protected function startup()
+    protected function startup(): void
     {
         parent::startup();
         $this->client = $this->clientStorage->getClient(
@@ -172,6 +171,4 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
             $this->getParameter(GrantType::CLIENT_SECRET_KEY)
         );
     }
-
-
 }

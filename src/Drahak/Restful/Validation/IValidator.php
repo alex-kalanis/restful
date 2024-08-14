@@ -2,6 +2,8 @@
 
 namespace Drahak\Restful\Validation;
 
+use Drahak\Restful\Validation\Exceptions\ValidationException;
+
 /**
  * Validator interface
  * @package Drahak\Restful\Validation
@@ -36,10 +38,11 @@ interface IValidator
 
     /**
      * Validate value with rule
-     * @return void
-     *
+     * @param mixed $value
+     * @param Rule $rule
      * @throws ValidationException
+     * @return void
      */
-    public function validate(mixed $value, Rule $rule);
+    public function validate(mixed $value, Rule $rule): void;
 
 }

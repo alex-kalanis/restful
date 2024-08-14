@@ -18,11 +18,10 @@ class ObjectConverter implements IConverter
 
     /**
      * Converts stdClass and traversable objects in resource to array
-     * @return array
      */
-    public function convert(array $resource)
+    public function convert(array $resource): array
     {
-        return $this->parseObjects($resource);
+        return (array) $this->parseObjects($resource);
     }
 
     /**
@@ -33,9 +32,9 @@ class ObjectConverter implements IConverter
     protected function parseObjects($data)
     {
         if ($data instanceof Traversable) {
-            $data = iterator_to_array($data, TRUE);
+            $data = iterator_to_array($data);
         } else if ($data instanceof stdClass) {
-            $data = (array)$data;
+            $data = (array) $data;
         }
 
         foreach ($data as $key => $value) {

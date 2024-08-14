@@ -8,11 +8,8 @@ namespace Drahak\Restful\Converters;
  */
 interface IConverter
 {
-
     /**
      * Converts data from resource to output
-     * @return array
      */
-    public function convert(array $resource);
-
+    public function convert(array $resource): array;
 }

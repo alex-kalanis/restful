@@ -22,8 +22,7 @@ interface IResource
 
     /**
      * Get element value or array data
-     * @return array|Traversable
+     * @return iterable
      */
-    public function getData();
-
+    public function getData(): iterable;
 }

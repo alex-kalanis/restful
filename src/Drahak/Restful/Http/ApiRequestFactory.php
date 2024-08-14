@@ -16,7 +16,9 @@ class ApiRequestFactory
     public const OVERRIDE_HEADER = 'X-HTTP-Method-Override';
     public const OVERRIDE_PARAM = '__method';
 
-    public function __construct(private readonly RequestFactory $factory)
+    public function __construct(
+        private readonly RequestFactory $factory,
+    )
     {
     }
 
@@ -24,24 +26,22 @@ class ApiRequestFactory
      * Create API HTTP request
      * @return IRequest
      */
-    public function createHttpRequest()
+    public function createHttpRequest(): IRequest
     {
-        $request = $this->factory->createHttpRequest();
-        $url = $request->getUrl();
-        $url->setQuery($request->getQuery());
+        $request = $this->factory->fromGlobals();
+        $url = $request->getUrl()->withQuery($request->getQuery());
 
         return new Request(
-            $url, NULL, $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
+            $url, $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
             $this->getPreferredMethod($request), $request->getRemoteAddress(), null,
             fn(): ?string => $request->getRawBody()
         );
     }
 
     /**
-     * Get prederred method
-     * @return string
+     * Get preferred method
      */
-    protected function getPreferredMethod(IRequest $request)
+    protected function getPreferredMethod(IRequest $request): string
     {
         $method = $request->getMethod();
         $isPost = $method === IRequest::POST;
@@ -55,5 +55,4 @@ class ApiRequestFactory
         }
         return $request->getMethod();
     }
-
 }

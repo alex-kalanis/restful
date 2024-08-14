@@ -10,20 +10,19 @@ use Drahak\Restful\Converters\ResourceConverter;
  */
 class ConvertedResource extends Resource
 {
-
-    public function __construct(private readonly ResourceConverter $resourceConverter, array $data = [])
+    public function __construct(
+        private readonly ResourceConverter $resourceConverter,
+        array $data = [],
+    )
     {
         parent::__construct($data);
     }
 
     /**
      * Get parsed resource
-     * @return array
      */
-    public function getData()
+    public function getData(): array
     {
-        $data = parent::getData();
-        return $this->resourceConverter->convert($data);
+        return $this->resourceConverter->convert(parent::getData());
     }
-
 }

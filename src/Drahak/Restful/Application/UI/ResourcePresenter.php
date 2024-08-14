@@ -2,24 +2,21 @@
 
 namespace Drahak\Restful\Application\UI;
 
-use Drahak\Restful\Application\BadRequestException;
+use Drahak\Restful\Application\Exceptions\BadRequestException;
 use Drahak\Restful\Application\IResourcePresenter;
 use Drahak\Restful\Application\IResponseFactory;
 use Drahak\Restful\Application\Responses\ErrorResponse;
 use Drahak\Restful\Http\IInput;
 use Drahak\Restful\Http\InputFactory;
-use Drahak\Restful\Http\Request;
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Drahak\Restful\IResource;
 use Drahak\Restful\IResourceFactory;
 use Drahak\Restful\Resource\Link;
 use Drahak\Restful\Security\AuthenticationContext;
-use Drahak\Restful\Security\SecurityException;
+use Drahak\Restful\Security\Exceptions\SecurityException;
 use Drahak\Restful\Utils\RequestFilter;
 use Drahak\Restful\Validation\IDataProvider;
-use Exception;
 use Nette\Application;
-use Nette\Application\IResponse;
 use Nette\Application\UI;
 use Throwable;
 
@@ -60,8 +57,12 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
      * @param IInput $input
      */
     public final function injectDrahakRestful(
-        IResponseFactory      $responseFactory, IResourceFactory $resourceFactory,
-        AuthenticationContext $authentication, InputFactory $inputFactory, RequestFilter $requestFilter)
+        IResponseFactory      $responseFactory,
+        IResourceFactory $resourceFactory,
+        AuthenticationContext $authentication,
+        InputFactory $inputFactory,
+        RequestFilter $requestFilter
+    )
     {
         $this->responseFactory = $responseFactory;
         $this->resourceFactory = $resourceFactory;
@@ -72,9 +73,8 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Check security and other presenter requirements
-     * @param $element
      */
-    public function checkRequirements($element)
+    public function checkRequirements(\ReflectionClass|\ReflectionMethod $element): void
     {
         try {
             parent::checkRequirements($element);
@@ -92,15 +92,10 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Create resource link representation object
-     * @param string $destination
-     * @param array $args
-     * @param string $rel
-     * @return Link
      */
-    public function link($destination, $args = [], $rel = Link::SELF)
+    public function link(string $destination, $args = [], $rel = Link::SELF): string
     {
-        $href = parent::link($destination, $args);
-        return new Link($href, $rel);
+        return new Link(parent::link($destination, $args), $rel);
     }
 
     /**
@@ -108,7 +103,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
      *
      * @throws BadRequestException
      */
-    protected function startup()
+    protected function startup(): void
     {
         parent::startup();
         $this->autoCanonicalize = FALSE;
@@ -118,7 +113,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             $this->resource = $this->resourceFactory->create();
 
             // calls $this->validate<Action>()
-            $validationProcessed = $this->tryCall(static::formatValidateMethod($this->action), $this->params);
+            $validationProcessed = $this->tryCall(static::formatValidateMethod($this->getAction()), $this->params);
 
             // Check if input is validate
             if (!$this->getInput()->isValid() && $validationProcessed === TRUE) {
@@ -139,16 +134,15 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
     /**
      * Validate action method
      */
-    public static function formatValidateMethod($action)
+    public static function formatValidateMethod(string $action): string
     {
         return self::VALIDATE_ACTION_PREFIX . $action;
     }
 
     /**
      * Get input
-     * @return IInput
      */
-    public function getInput()
+    public function getInput(): IInput
     {
         if (!$this->input) {
             try {
@@ -162,11 +156,9 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Send error resource to output
-     * @param Exception|Throwable $e
      */
-    protected function sendErrorResource($e, $contentType = NULL)
+    protected function sendErrorResource(Throwable $e, ?string $contentType = NULL): void
     {
-        /** @var Request $request */
         $request = $this->getHttpRequest();
 
         $this->resource = $this->createErrorResource($e);
@@ -178,9 +170,12 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
         }
 
         try {
-            $response = $this->responseFactory->create($this->resource, $contentType);
-            $response = new ErrorResponse($response, ($e->getCode() > 99 && $e->getCode() < 600 ? $e->getCode() : 400));
-            $this->sendResponse($response);
+            $this->sendResponse(
+                new ErrorResponse(
+                    $this->responseFactory->create($this->resource),
+                    ($e->getCode() > 99 && $e->getCode() < 600 ? $e->getCode() : 400)
+                )
+            );
         } catch (InvalidStateException $e) {
             $this->sendErrorResource(BadRequestException::unsupportedMediaType($e->getMessage(), $e), $contentType);
         }
@@ -188,22 +183,22 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Create error response from exception
-     * @param Exception|Throwable $e
+     * @param Throwable $e
      * @return IResource
      */
-    protected function createErrorResource($e)
+    protected function createErrorResource(Throwable $e): IResource
     {
-        if ($e instanceof Exception || $e instanceof Throwable) {
-            $resource = $this->resourceFactory->create(['code' => $e->getCode(), 'status' => 'error', 'message' => $e->getMessage()]);
-        } else {
-            $resource = $this->resourceFactory->create(['code' => 500, 'status' => 'error', 'message' => (string)$e]);
-        }
+        $params = [
+            'code' => $e->getCode(),
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ];
 
         if (isset($e->errors) && $e->errors) {
-            $resource->errors = $e->errors;
+            $params['errors'] = $e->errors;
         }
 
-        return $resource;
+        return $this->resourceFactory->create($params);
     }
 
     /**
@@ -220,15 +215,13 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Get REST API response
-     * @param string $contentType
-     * @return IResponse
-     *
+     * @param string|null $contentType
      * @throws InvalidStateException
      */
-    public function sendResource($contentType = NULL)
+    public function sendResource(?string $contentType = NULL): void
     {
         if (!($this->resource instanceof IResource)) {
-            $this->resource = $this->resourceFactory->create($this->resource);
+            $this->resource = $this->resourceFactory->create((array) $this->resource);
         }
 
         try {
@@ -238,5 +231,4 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             $this->sendErrorResource(BadRequestException::unsupportedMediaType($e->getMessage(), $e), $contentType);
         }
     }
-
 }

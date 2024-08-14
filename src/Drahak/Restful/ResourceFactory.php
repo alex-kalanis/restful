@@ -3,6 +3,7 @@
 namespace Drahak\Restful;
 
 use Drahak\Restful\Converters\ResourceConverter;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Nette;
 use Nette\Http\IRequest;
 
@@ -21,12 +22,12 @@ class ResourceFactory implements IResourceFactory
 
     /**
      * Create new API resource
+     * @param array $data
      * @return IResource
-     * @throws  InvalidStateException If Accept header is unknown
+     * @throws InvalidStateException If Accept header is unknown
      */
-    public function create(array $data = [])
+    public function create(array $data = []): IResource
     {
         return new ConvertedResource($this->resourceConverter, $data);
     }
-
 }

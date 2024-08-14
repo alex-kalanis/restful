@@ -2,15 +2,13 @@
 
 namespace Drahak\Restful\Http;
 
-use Drahak\Restful\Application\BadRequestException;
-use Drahak\Restful\InvalidStateException;
-use Drahak\Restful\Mapping\IMapper;
+use Drahak\Restful\Application\Exceptions\BadRequestException;
+use Drahak\Restful\Exceptions\InvalidStateException;
+use Drahak\Restful\Mapping\Exceptions\MappingException;
 use Drahak\Restful\Mapping\MapperContext;
-use Drahak\Restful\Mapping\MappingException;
 use Drahak\Restful\Validation\IValidationScopeFactory;
 use Nette;
 use Nette\Http\IRequest;
-use Traversable;
 
 /**
  * InputFactory
@@ -21,22 +19,19 @@ class InputFactory
 {
     use Nette\SmartObject;
 
-    /** @var IRequest */
-    protected $httpRequest;
-
-    /** @var IMapper */
-    private $mapper;
-
-    public function __construct(IRequest $httpRequest, private MapperContext $mapperContext, private IValidationScopeFactory $validationScopeFactory)
+    public function __construct(
+        protected readonly IRequest $httpRequest,
+        private readonly MapperContext $mapperContext,
+        private readonly IValidationScopeFactory $validationScopeFactory,
+    )
     {
-        $this->httpRequest = $httpRequest;
     }
 
     /**
      * Create input
      * @return Input
      */
-    public function create()
+    public function create(): Input
     {
         $input = new Input($this->validationScopeFactory);
         $input->setData($this->parseData());
@@ -50,8 +45,8 @@ class InputFactory
      */
     protected function parseData(): array
     {
-        $postQuery = (array)$this->httpRequest->getPost();
-        $urlQuery = (array)$this->httpRequest->getQuery();
+        $postQuery = (array) $this->httpRequest->getPost();
+        $urlQuery = (array) $this->httpRequest->getQuery();
         $requestBody = $this->parseRequestBody();
 
         return array_merge($urlQuery, $postQuery, $requestBody);    // $requestBody must be the last one!!!
@@ -59,21 +54,18 @@ class InputFactory
 
     /**
      * Parse request body if any
-     * @return array|Traversable
-     *
+     * @return array
      * @throws BadRequestException
      */
-    protected function parseRequestBody()
+    protected function parseRequestBody(): array
     {
         $requestBody = [];
-        $input = class_exists(\Nette\Framework::class) && Nette\Framework::VERSION_ID <= 20200 ? // Nette 2.2.0 and/or newer
-            file_get_contents('php://input') :
-            $this->httpRequest->getRawBody();
+        $input = $this->httpRequest->getRawBody();
 
         if ($input) {
             try {
-                $this->mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
-                $requestBody = $this->mapper->parse($input);
+                $mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
+                $requestBody = (array) $mapper->parse($input);
             } catch (InvalidStateException $e) {
                 throw BadRequestException::unsupportedMediaType(
                     'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),

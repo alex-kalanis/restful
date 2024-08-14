@@ -12,26 +12,35 @@ use Nette\Utils\Strings;
  * ResourceRoute
  * @package Drahak\Restful\Routes
  * @author Drahomír Hanák
- *
- * @property array $actionDictionary
  */
 class ResourceRoute extends Route implements IResourceRouter
 {
 
-    /** @var array */
-    protected $actionDictionary;
+    /** @var array<int|string, string> */
+    protected array $actionDictionary = [];
 
     /** @var array */
-    private $methodDictionary = [Http\IRequest::GET => self::GET, Http\IRequest::POST => self::POST, Http\IRequest::PUT => self::PUT, Http\IRequest::HEAD => self::HEAD, Http\IRequest::DELETE => self::DELETE, 'PATCH' => self::PATCH, 'OPTIONS' => self::OPTIONS];
+    private array $methodDictionary = [
+        Http\IRequest::Get => self::GET,
+        Http\IRequest::Post => self::POST,
+        Http\IRequest::Put => self::PUT,
+        Http\IRequest::Head => self::HEAD,
+        Http\IRequest::Delete => self::DELETE,
+        'PATCH' => self::PATCH,
+        'OPTIONS' => self::OPTIONS
+    ];
 
     /**
      * @param string $mask
      * @param array|string $metadata
      * @param int $flags
      */
-    public function __construct($mask, $metadata = [], $flags = IResourceRouter::GET)
+    public function __construct(
+        string $mask,
+        array|string $metadata = [],
+        int $flags = IResourceRouter::GET
+    )
     {
-        $this->actionDictionary = [];
         if (isset($metadata['action']) && is_array($metadata['action'])) {
             $this->actionDictionary = $metadata['action'];
             $metadata['action'] = 'default';
@@ -48,24 +57,22 @@ class ResourceRoute extends Route implements IResourceRouter
             }
         }
 
-        parent::__construct($mask, $metadata, $flags);
+        parent::__construct($mask, $metadata);
     }
 
     /**
      * Get action dictionary
-     * @return array|NULL
      */
-    public function getActionDictionary()
+    public function getActionDictionary(): array
     {
         return $this->actionDictionary;
     }
 
     /**
      * Set action dictionary
-     * @param array|NULL
      * @return $this
      */
-    public function setActionDictionary($actionDictionary): static
+    public function setActionDictionary(array $actionDictionary): static
     {
         $this->actionDictionary = $actionDictionary;
         return $this;
@@ -77,7 +84,7 @@ class ResourceRoute extends Route implements IResourceRouter
     public function match(Http\IRequest $httpRequest): ?array
     {
         $appRequest = parent::match($httpRequest);
-        if (!$appRequest) {
+        if (is_null($appRequest)) {
             return NULL;
         }
 
@@ -89,10 +96,8 @@ class ResourceRoute extends Route implements IResourceRouter
 
         // If there is action dictionary, set method
         if ($this->actionDictionary) {
-            $parameters = $appRequest->getParameters();
-            $parameters['action'] = $this->actionDictionary[$methodFlag];
-            $parameters['action'] = self::formatActionName($this->actionDictionary[$methodFlag], $parameters);
-            $appRequest->setParameters($parameters);
+            $appRequest['action'] = $this->actionDictionary[$methodFlag];
+            $appRequest['action'] = self::formatActionName($this->actionDictionary[$methodFlag], $appRequest);
         }
 
         return $appRequest;
@@ -100,9 +105,8 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * Get request method flag
-     * @return string|null
      */
-    public function getMethod(Http\IRequest $httpRequest)
+    public function getMethod(Http\IRequest $httpRequest): ?string
     {
         $method = $httpRequest->getMethod();
         if (!isset($this->methodDictionary[$method])) {
@@ -113,27 +117,24 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * Is this route mapped to given method
-     * @param int $method
      */
-    public function isMethod($method): bool
+    public function isMethod(int $method): bool
     {
         $common = [self::CRUD, self::RESTFUL];
-        $isActionDefined = $this->actionDictionary && !in_array($method, $common) ?
-            isset($this->actionDictionary[$method]) :
-            TRUE;
-        return ($this->getFlags() & $method) == $method && $isActionDefined;
+        $isActionDefined = $this->actionDictionary && !in_array($method, $common)
+            ? isset($this->actionDictionary[$method])
+            : TRUE;
+        return ($this->getMask() & $method) == $method && $isActionDefined;
     }
 
     /**
      * Format action name
-     * @param string $action
      */
-    protected static function formatActionName($action, array $parameters): string
+    protected static function formatActionName(string $action, array $parameters): string
     {
-        return Strings::replace($action, "@\<([0-9a-zA-Z_-]+)\>@i", function ($m) use ($parameters) {
+        return Strings::replace($action, "@<([0-9a-zA-Z_-]+)>@i", function ($m) use ($parameters) {
             $key = strtolower((string) $m[1]);
             return $parameters[$key] ?? '';
         });
     }
-
 }

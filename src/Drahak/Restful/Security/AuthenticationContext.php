@@ -15,8 +15,7 @@ class AuthenticationContext
 {
     use Nette\SmartObject;
 
-    /** @var AuthenticationProcess */
-    private $process;
+    private AuthenticationProcess $process;
 
     /**
      * Set authentication process to use
@@ -29,14 +28,13 @@ class AuthenticationContext
 
     /**
      * Authenticate request with authentication process strategy
+     * @param IInput $input
+     * @throws Exceptions\AuthenticationException
+     * @throws Exceptions\RequestTimeoutException
      * @return bool
-     *
-     * @throws AuthenticationException
-     * @throws RequestTimeoutException
      */
-    public function authenticate(IInput $input)
+    public function authenticate(IInput $input): bool
     {
         return $this->process->authenticate($input);
     }
-
 }

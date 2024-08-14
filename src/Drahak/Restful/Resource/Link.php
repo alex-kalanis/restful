@@ -9,9 +9,6 @@ use Nette;
  * Link representation in resource
  * @package Drahak\Restful\Resource
  * @author Drahomír Hanák
- *
- * @property-read string $href
- * @property-read string $rel
  */
 class Link implements IResource, \Stringable
 {
@@ -26,11 +23,10 @@ class Link implements IResource, \Stringable
     /** Link pointing on last page */
     public const LAST = 'last';
 
-    /**
-     * @param string $href
-     * @param string $rel
-     */
-    public function __construct(private $href, private $rel = self::SELF)
+    public function __construct(
+        private readonly string $href,
+        private readonly string $rel = self::SELF,
+    )
     {
     }
 
@@ -38,7 +34,7 @@ class Link implements IResource, \Stringable
      * Get link URL
      * @return string
      */
-    public function getHref()
+    public function getHref(): string
     {
         return $this->href;
     }
@@ -47,7 +43,7 @@ class Link implements IResource, \Stringable
      * Create link with new href
      * @param string $href
      */
-    public function setHref($href): self
+    public function setHref(string $href): self
     {
         return new Link($href, $this->rel);
     }
@@ -56,7 +52,7 @@ class Link implements IResource, \Stringable
      * Get link rel
      * @return string
      */
-    public function getRel()
+    public function getRel(): string
     {
         return $this->rel;
     }
@@ -65,7 +61,7 @@ class Link implements IResource, \Stringable
      * Create link with new rel
      * @param string $rel
      */
-    public function setRel($rel): self
+    public function setRel(string $rel): self
     {
         return new Link($this->href, $rel);
     }
@@ -82,12 +78,12 @@ class Link implements IResource, \Stringable
 
     /**
      * Get element value or array data
-     * @return mixed
      */
-    public function getData()
+    public function getData(): array
     {
-        return ['href' => $this->href, 'rel' => $this->rel];
+        return [
+            'href' => $this->href,
+            'rel' => $this->rel,
+        ];
     }
-
-
 }

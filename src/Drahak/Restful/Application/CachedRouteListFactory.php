@@ -5,7 +5,7 @@ namespace Drahak\Restful\Application;
 use Drahak\Restful\Application\Routes\ResourceRouteList;
 use Nette;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 use Nette\Utils\Finder;
 
 /**
@@ -20,22 +20,21 @@ final class CachedRouteListFactory implements IRouteListFactory
     /** Cache name */
     public const CACHE_NAME = 'resourceRouteList';
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
-    /**
-     * @param string $presentersRoot
-     */
-    public function __construct(private $presentersRoot, private IRouteListFactory $routeListFactory, IStorage $storage)
+    public function __construct(
+        private readonly string $presentersRoot,
+        private readonly IRouteListFactory $routeListFactory,
+        Storage $storage
+    )
     {
         $this->cache = new Cache($storage, self::class);
     }
 
     /**
      * Create cached route list
-     * @return ResourceRouteList
      */
-    private function createCached($module = NULL)
+    private function createCached(?string $module = NULL): ResourceRouteList
     {
         $files = [];
         $presenterFiles = Finder::findFiles('*Presenter.php')->from($this->presentersRoot);
@@ -52,10 +51,8 @@ final class CachedRouteListFactory implements IRouteListFactory
 
     /**
      * Create resources route list
-     * @param string|null $module
-     * @return ResourceRouteList
      */
-    public function create($module = NULL)
+    public function create(?string $module = NULL): ResourceRouteList
     {
         $routeList = $this->cache->load(self::CACHE_NAME);
         if ($routeList !== NULL) {
@@ -63,5 +60,4 @@ final class CachedRouteListFactory implements IRouteListFactory
         }
         return $this->createCached($module);
     }
-
 }

@@ -8,32 +8,20 @@ use Nette;
  * Validation Rule caret
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
- *
- * @property string $field name
- * @property string $message
- * @property int $code
- * @property string $expression
- * @property array $argument
  */
 class Rule
 {
     use Nette\SmartObject;
 
-    /** @var string */
-    protected $field;
-
-    /** @var string */
-    protected $message;
-
-    /** @var int */
-    protected $code;
-
-    /** @var string */
-    protected $expression;
-
-    /** @var array */
-    protected $argument;
-
+    public function __construct(
+        protected string $field = '',
+        protected string $message = '',
+        protected int $code = 0,
+        protected string $expression = '',
+        protected array $argument = [],
+    )
+    {
+    }
 
     /******************** Getters & setters ********************/
 
@@ -41,16 +29,15 @@ class Rule
      * Get rule error code
      * @return int
      */
-    public function getCode()
+    public function getCode(): int
     {
         return $this->code;
     }
 
     /**
      * Set rule error code
-     * @param int $code
      */
-    public function setCode($code): static
+    public function setCode(int $code): self
     {
         $this->code = $code;
         return $this;
@@ -58,18 +45,16 @@ class Rule
 
     /**
      * Get field name
-     * @return string
      */
-    public function getField()
+    public function getField(): string
     {
         return $this->field;
     }
 
     /**
      * Set field name
-     * @param string $field
      */
-    public function setField($field): static
+    public function setField(string $field): self
     {
         $this->field = $field;
         return $this;
@@ -77,18 +62,16 @@ class Rule
 
     /**
      * Get rule error message
-     * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
     /**
      * Set rule error message
-     * @param string $message
      */
-    public function setMessage($message): static
+    public function setMessage(string $message): self
     {
         $this->message = $message;
         return $this;
@@ -96,18 +79,16 @@ class Rule
 
     /**
      * Get rule expression
-     * @return string
      */
-    public function getExpression()
+    public function getExpression(): string
     {
         return $this->expression;
     }
 
     /**
      * Set rule expression
-     * @param string $expression
      */
-    public function setExpression($expression): static
+    public function setExpression(string $expression): self
     {
         $this->expression = $expression;
         return $this;
@@ -117,7 +98,7 @@ class Rule
      * Get rule arguments
      * @return array
      */
-    public function getArgument()
+    public function getArgument(): array
     {
         return $this->argument;
     }
@@ -126,10 +107,9 @@ class Rule
      * Set rule argument(s)
      * @param array $argument
      */
-    public function setArgument($argument): static
+    public function setArgument(array $argument): self
     {
-        $this->argument = (array)$argument;
+        $this->argument = $argument;
         return $this;
     }
-
 }

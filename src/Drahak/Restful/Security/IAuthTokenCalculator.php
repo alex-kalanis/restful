@@ -17,12 +17,13 @@ interface IAuthTokenCalculator
      * @param string $key
      * @return IAuthTokenCalculator
      */
-    public function setPrivateKey($key);
+    public function setPrivateKey(#[\SensitiveParameter] string $key): self;
 
     /**
      * Calculate fingerprint hash
+     * @param IInput $input
      * @return string
      */
-    public function calculate(IInput $input);
-
+    public function calculate(IInput $input): string;
 }
+

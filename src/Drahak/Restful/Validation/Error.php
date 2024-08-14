@@ -11,29 +11,23 @@ use Traversable;
  * Validation error caret
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
- *
- * @property-read string $field
- * @property-read string $message
- * @property-read int $code
  */
 class Error implements IteratorAggregate
 {
     use Nette\SmartObject;
 
-    /**
-     * @param string $field
-     * @param string $message
-     * @param int $code
-     */
-    public function __construct(private $field, private $message, private $code)
+    public function __construct(
+        private readonly string $field,
+        private readonly string $message,
+        private readonly int $code,
+    )
     {
     }
 
     /**
      * Get error code
-     * @return int
      */
-    public function getCode()
+    public function getCode(): int
     {
         return $this->code;
     }
@@ -42,27 +36,24 @@ class Error implements IteratorAggregate
 
     /**
      * Get error field name
-     * @return string
      */
-    public function getField()
+    public function getField(): string
     {
         return $this->field;
     }
 
     /**
      * Get validation error message
-     * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
     /**
      * Iterate through error data to convert it
-     * @return Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->toArray());
     }
@@ -71,11 +62,13 @@ class Error implements IteratorAggregate
 
     /**
      * Converts error caret to an array
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
-        return ['field' => $this->field, 'message' => $this->message, 'code' => $this->code];
+        return [
+            'field' => $this->field,
+            'message' => $this->message,
+            'code' => $this->code,
+        ];
     }
-
 }

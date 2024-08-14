@@ -3,24 +3,24 @@
 namespace Drahak\Restful\Validation;
 
 use Nette;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use Nette\Utils\Validators;
 
 /**
  * ValidationScope
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
- *
- * @property-read IValidator $validator
  */
 class ValidationScope implements IValidationScope
 {
     use Nette\SmartObject;
 
     /** @var Field[] */
-    private $fields = [];
+    private array $fields = [];
 
-    public function __construct(private IValidator $validator)
+    public function __construct(
+        private readonly IValidator $validator
+    )
     {
     }
 
@@ -31,7 +31,7 @@ class ValidationScope implements IValidationScope
      * @param string $name
      * @return IField
      */
-    public function field($name)
+    public function field(string $name): IField
     {
         if (!isset($this->fields[$name])) {
             $this->fields[$name] = $this->createField($name);
@@ -44,16 +44,15 @@ class ValidationScope implements IValidationScope
      * @param string $name
      * @return Field
      */
-    protected function createField($name)
+    protected function createField(string $name): IField
     {
         return new Field($name, $this->getValidator());
     }
 
     /**
      * Get validator
-     * @return mixed
      */
-    public function getValidator()
+    public function getValidator(): IValidator
     {
         return $this->validator;
     }
@@ -65,7 +64,6 @@ class ValidationScope implements IValidationScope
     public function validate(array $data): array
     {
         $errors = [];
-        /** @var IField $field */
         foreach ($this->fields as $field) {
             $fieldErrors = $this->validateDeeply($field, $data, $field->getName());
             $errors = array_merge($errors, $fieldErrors);
@@ -76,14 +74,12 @@ class ValidationScope implements IValidationScope
     /****************** Getters & setters ******************/
     /**
      * Recursively validate data using dot notation
-     * @param array $data
-     * @param string $path
      */
-    protected function validateDeeply(IField $field, $data, $path): array
+    protected function validateDeeply(IField $field, array $data, string $path): array
     {
         $errors = [];
 
-        if (Validators::isList($data) && count($data)) {
+        if (Arrays::isList($data) && count($data)) {
             foreach ($data as $item) {
                 $newErrors = $this->validateDeeply($field, $item, $path);
                 $errors = array_merge($errors, $newErrors);

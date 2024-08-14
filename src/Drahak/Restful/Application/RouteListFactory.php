@@ -2,52 +2,48 @@
 
 namespace Drahak\Restful\Application;
 
-use Drahak\Restful\Application\Routes\ResourceRoute;
-use Drahak\Restful\Application\Routes\ResourceRouteList;
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Drahak\Restful\Utils\Strings;
 use Nette;
 use Nette\Loaders\RobotLoader;
-use Nette\Reflection\ClassType;
-use Nette\Reflection\Method;
+use Nette\Application\UI;
+use ReflectionMethod;
 
 /**
  * RouteListFactory
  * @package Drahak\Restful\Application\Routes
  * @author Drahomír Hanák
- *
- * @property-write string $module
- * @property-write string $prefix
  */
 class RouteListFactory implements IRouteListFactory
 {
     use Nette\SmartObject;
 
-    /** @var RobotLoader */
-    private $loader;
+    private RobotLoader $loader;
 
-    /** @var string */
-    private $module;
+    private string $module = '';
 
-    /** @var string */
-    private $prefix;
+    private string $prefix = '';
 
-    /** @var string */
-    private $cacheDirectory;
+    private string $cacheDirectory = '';
 
     /**
      * @param string $presentersRoot from where to find presenters
      * @param bool $autoRebuild enable automatic rebuild of robot loader
      * @param string $cacheDirectory directory where to cache
      */
-    public function __construct($presentersRoot, $autoRebuild, $cacheDirectory, private RouteAnnotation $routeAnnotation)
+    public function __construct(
+        string $presentersRoot,
+        bool $autoRebuild,
+        string $cacheDirectory,
+        private readonly RouteAnnotation $routeAnnotation,
+    )
     {
         $loader = new RobotLoader();
         $loader->addDirectory($presentersRoot);
         $loader->setTempDirectory($cacheDirectory);
         $loader->register();
         $loader->setAutoRefresh($autoRebuild);
-        $loader->tryLoad(\Drahak\Restful\Application\IResourcePresenter::class);
+        $loader->tryLoad(IResourcePresenter::class);
 
         $this->loader = $loader;
         $this->cacheDirectory = $cacheDirectory;
@@ -56,9 +52,9 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Set default module of created routes
      * @param string $module
-     * @return ResourceRoute
+     * @return $this
      */
-    public function setModule($module): static
+    public function setModule(string $module): self
     {
         $this->module = $module;
         return $this;
@@ -67,22 +63,22 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Set default routes URL mask prefix
      * @param string $prefix
-     * @return RouteListFactory
+     * @return $this
      */
-    public function setPrefix($prefix)
+    public function setPrefix(string $prefix): self
     {
         $this->prefix = $prefix;
-        return $prefix;
+        return $this;
     }
 
     /**
      * Create route list
      * @param string|null $module
-     * @return ResourceRouteList
+     * @return Routes\ResourceRouteList
      */
-    public final function create($module = NULL)
+    public final function create(?string $module = NULL): Routes\ResourceRouteList
     {
-        $routeList = new ResourceRouteList($module ?: $this->module);
+        $routeList = new Routes\ResourceRouteList($module ?: $this->module);
         foreach ($this->loader->getIndexedClasses() as $class => $file) {
             try {
                 self::getClassReflection($class);
@@ -101,35 +97,29 @@ class RouteListFactory implements IRouteListFactory
 
     /**
      * Get class reflection
-     * @param string $className
-     * @return ClassType
-     *
-     * @throws InvalidStateException
      */
-    private static function getClassReflection($className)
+    private static function getClassReflection(string $className): UI\ComponentReflection
     {
-        $class = class_exists('Nette\Reflection\ClassType') ? 'Nette\Reflection\ClassType' : 'ReflectionClass';
-        return new $class($className);
+        return new UI\ComponentReflection($className);
     }
 
     /**
      * Get class methods
      * @param string $className
-     * @return Method[]
-     *
      * @throws InvalidStateException
+     * @return ReflectionMethod[]
      */
-    protected function getClassMethods($className)
+    protected function getClassMethods(string $className): array
     {
         return self::getClassReflection($className)->getMethods();
     }
 
     /**
      * Parse route annotations on given object methods
-     * @param Method[] $methods
+     * @param ReflectionMethod[] $methods
      * @return array $data[URL mask][request method] = action name e.g. $data['api/v1/articles']['GET'] = 'read'
      */
-    protected function parseClassRoutes($methods): array
+    protected function parseClassRoutes(array $methods): array
     {
         $routeData = [];
         foreach ($methods as $method) {
@@ -154,18 +144,17 @@ class RouteListFactory implements IRouteListFactory
 
     /**
      * Add class routes to route list
+     * @param Routes\ResourceRouteList $routeList
+     * @param array<string, string> $routeData
      * @param string $className
-     * @return ResourceRouteList
-     *
-     * @throws InvalidStateException
+     * @return Routes\ResourceRouteList
      */
-    protected function addRoutes(ResourceRouteList $routeList, array $routeData, $className)
+    protected function addRoutes(Routes\ResourceRouteList $routeList, array $routeData, string $className): Routes\ResourceRouteList
     {
         $presenter = str_replace('Presenter', '', self::getClassReflection($className)->getShortName());
         foreach ($routeData as $mask => $dictionary) {
-            $routeList[] = new ResourceRoute($mask, ['presenter' => $presenter, 'action' => $dictionary], IResourceRouter::RESTFUL);
+            $routeList[] = new Routes\ResourceRoute($mask, ['presenter' => $presenter, 'action' => $dictionary], IResourceRouter::RESTFUL);
         }
         return $routeList;
     }
-
 }

@@ -3,7 +3,6 @@
 namespace Drahak\Restful\Application;
 
 use Drahak\Restful\IResource;
-use Nette\Application\IResponse;
 
 /**
  * IResponseFactory
@@ -15,8 +14,6 @@ interface IResponseFactory
 
     /**
      * Create new API response
-     * @return IResponse
      */
-    public function create(IResource $resource);
-
+    public function create(IResource $resource): Responses\IResponse;
 }

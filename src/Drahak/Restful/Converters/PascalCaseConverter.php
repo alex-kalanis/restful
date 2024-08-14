@@ -17,9 +17,8 @@ class PascalCaseConverter implements IConverter
 
     /**
      * Converts resource data keys to PascalCase
-     * @return array
      */
-    public function convert(array $resource)
+    public function convert(array $resource): array
     {
         $this->convertToPascal($resource);
         return $resource;

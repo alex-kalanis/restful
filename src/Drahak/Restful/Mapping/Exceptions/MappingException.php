@@ -1,8 +1,8 @@
 <?php
 
-namespace Drahak\Restful\Mapping;
+namespace Drahak\Restful\Mapping\Exceptions;
 
-use Drahak\Restful\LogicException;
+use Drahak\Restful\Exceptions\LogicException;
 
 /**
  * MappingException is thrown when an error in mapping appears

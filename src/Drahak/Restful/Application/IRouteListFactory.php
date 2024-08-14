@@ -17,6 +17,5 @@ interface IRouteListFactory
      * @param string|null $module
      * @return ResourceRouteList
      */
-    public function create($module = NULL);
-
+    public function create(?string $module = NULL): ResourceRouteList;
 }

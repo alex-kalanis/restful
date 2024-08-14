@@ -3,7 +3,7 @@
 namespace Drahak\Restful\Security\Authentication;
 
 use Drahak\Restful\Http\IInput;
-use Drahak\Restful\Security\AuthenticationException;
+use Drahak\Restful\Security\Exceptions\AuthenticationException;
 use Drahak\Restful\Security\IAuthTokenCalculator;
 use Nette;
 use Nette\Http\IRequest;
@@ -19,18 +19,13 @@ class HashAuthenticator implements IRequestAuthenticator
 
     /** Auth token request header name */
     public const AUTH_HEADER = 'X-HTTP-AUTH-TOKEN';
-    /** @var IRequest */
-    protected $request;
-    /** @var IAuthTokenCalculator */
-    protected $calculator;
 
-    /**
-     * @param string $privateKey
-     */
-    public function __construct(private $privateKey, IRequest $request, IAuthTokenCalculator $calculator)
+    public function __construct(
+        #[\SensitiveParameter] private readonly string $privateKey,
+        protected IRequest $request,
+        protected IAuthTokenCalculator $calculator,
+    )
     {
-        $this->request = $request;
-        $this->calculator = $calculator;
     }
 
     /**
@@ -53,7 +48,7 @@ class HashAuthenticator implements IRequestAuthenticator
 
     /**
      * Get request hash
-     * @return string
+     * @return string|null
      */
     protected function getRequestedHash(): ?string
     {
@@ -64,7 +59,7 @@ class HashAuthenticator implements IRequestAuthenticator
      * Get expected hash
      * @return string
      */
-    protected function getExpectedHash(IInput $input)
+    protected function getExpectedHash(IInput $input): string
     {
         return $this->calculator->calculate($input);
     }

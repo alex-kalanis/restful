@@ -3,7 +3,7 @@
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\Http\IInput;
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Drahak\Restful\Mapping\IMapper;
 use Drahak\Restful\Mapping\MapperContext;
 use Nette;
@@ -13,8 +13,6 @@ use Nette\Http\IRequest;
  * Default auth token calculator implementation
  * @package Drahak\Restful\Security
  * @author Drahomír Hanák
- *
- * @property-write string $privateKey
  */
 class HashCalculator implements IAuthTokenCalculator
 {
@@ -23,16 +21,14 @@ class HashCalculator implements IAuthTokenCalculator
     /** Fingerprint hash algorithm */
     public const HASH = 'sha256';
 
-    /** @var string */
-    private $privateKey;
+    private string $privateKey = '';
 
-    /** @var IMapper */
-    private $mapper;
+    private IMapper $mapper;
 
-    /**
-     * @param MapperContext $mapper
-     */
-    public function __construct(MapperContext $mapperContext, IRequest $httpRequest)
+    public function __construct(
+        MapperContext $mapperContext,
+        IRequest $httpRequest,
+    )
     {
         $this->mapper = $mapperContext->getMapper($httpRequest->getHeader('content-type'));
     }
@@ -48,12 +44,12 @@ class HashCalculator implements IAuthTokenCalculator
 
     /**
      * Set hash calculator security private key
-     * @param string $privateKey
+     * @param string $key
      * @return IAuthTokenCalculator
      */
-    public function setPrivateKey($privateKey): static
+    public function setPrivateKey(#[\SensitiveParameter] string $key): static
     {
-        $this->privateKey = $privateKey;
+        $this->privateKey = $key;
         return $this;
     }
 
@@ -64,12 +60,12 @@ class HashCalculator implements IAuthTokenCalculator
      */
     public function calculate(IInput $input): string
     {
-        if (!$this->privateKey) {
+        if (empty($this->privateKey)) {
             throw new InvalidStateException('Private key is not set');
         }
 
         $dataString = $this->mapper->stringify($input->getData());
-        return hash_hmac(self::HASH, (string) $dataString, $this->privateKey);
+        return hash_hmac(self::HASH, $dataString, $this->privateKey);
     }
 
 }

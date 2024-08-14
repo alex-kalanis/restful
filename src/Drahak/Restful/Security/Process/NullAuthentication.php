@@ -26,6 +26,4 @@ class NullAuthentication extends AuthenticationProcess
     {
         return TRUE;
     }
-
-
 }

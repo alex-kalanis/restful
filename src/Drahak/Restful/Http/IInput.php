@@ -14,6 +14,5 @@ interface IInput
      * Get parsed input data
      * @return array
      */
-    public function getData();
-
+    public function getData(): array;
 }

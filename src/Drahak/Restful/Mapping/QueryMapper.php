@@ -2,6 +2,7 @@
 
 namespace Drahak\Restful\Mapping;
 
+use Drahak\Restful\Mapping\Exceptions\MappingException;
 use Nette;
 use Traversable;
 
@@ -16,30 +17,28 @@ class QueryMapper implements IMapper
 
     /**
      * Convert array or Traversable input to string output response
-     * @param array $data
+     * @param iterable|string $data
      * @param bool $prettyPrint
      */
-    public function stringify($data, $prettyPrint = TRUE): string
+    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
     {
         if ($data instanceof Traversable) {
             $data = iterator_to_array($data, TRUE);
         }
-        return http_build_query($data, '', '&');
+        return http_build_query((array) $data, '', '&');
     }
 
     /**
      * Convert client request data to array or traversable
-     * @param string $data
-     * @return array
+     * @param mixed $data
+     * @return iterable|string
      *
      * @throws MappingException
      */
-    public function parse($data)
+    public function parse(mixed $data): iterable|string
     {
         $result = [];
-        parse_str($data, $result);
+        parse_str(strval($data), $result);
         return $result;
     }
-
-
 }

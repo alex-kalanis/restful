@@ -14,8 +14,8 @@ interface IRequestAuthenticator
 
     /**
      * Authenticate request
+     * @param IInput $input
      * @return bool
      */
-    public function authenticate(IInput $input);
-
+    public function authenticate(IInput $input): bool;
 }

@@ -4,7 +4,8 @@ namespace Drahak\Restful\Mapping;
 
 use DOMDocument;
 use DOMNode;
-use Drahak\Restful\InvalidArgumentException;
+use Drahak\Restful\Exceptions\InvalidArgumentException;
+use Drahak\Restful\Mapping\Exceptions\MappingException;
 use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\Json;
@@ -22,61 +23,49 @@ class XmlMapper implements IMapper
 {
     use Nette\SmartObject;
 
-    /** @internal */
-    public const ITEM_ELEMENT = 'item';
+    protected const ITEM_ELEMENT = 'item';
 
-    /** @var DOMDocument */
-    private $xml;
+    private DOMDocument $xml;
 
-    /**
-     * @param string|null $rootElement
-     *
-     * @throws InvalidArgumentException
-     */
-    public function __construct(private $rootElement = 'root')
+    public function __construct(
+        private string $rootElement = 'root'
+    )
     {
     }
 
     /**
      * Get XML root element
-     * @return null|string
+     * @return string
      */
-    public function getRootElement()
+    public function getRootElement(): string
     {
         return $this->rootElement;
     }
 
     /**
      * Set XML root element
-     * @param string|null $rootElement
-     *
-     * @throws InvalidArgumentException
      */
-    public function setRootElement($rootElement): static
+    public function setRootElement(string $rootElement): self
     {
-        if (!is_string($rootElement) && $rootElement !== NULL) {
-            throw new InvalidArgumentException('Root element must be of type string or null if disabled');
-        }
         $this->rootElement = $rootElement;
         return $this;
     }
 
     /**
      * Parse traversable or array resource data to XML
-     * @param array|Traversable $data
+     * @param iterable|string $data
      * @param bool $prettyPrint
-     * @return mixed|string
-     *
      * @throws InvalidArgumentException
+     * @return string
      */
-    public function stringify($data, $prettyPrint = TRUE): string|false
+    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
     {
-        if (!is_array($data) && !($data instanceof Traversable)) {
-            throw new InvalidArgumentException('Data must be of type array or Traversable');
+        if (!is_string($data) && !is_array($data) && !($data instanceof Traversable)) {
+            throw new InvalidArgumentException('Data must be of type string, array or Traversable');
         }
 
         if ($data instanceof Traversable) {
-            $data = iterator_to_array($data, TRUE);
+            $data = iterator_to_array($data);
         }
 
         $this->xml = new DOMDocument('1.0', 'UTF-8');
@@ -89,10 +78,11 @@ class XmlMapper implements IMapper
     }
 
     /**
-     * @param array|mixed $data
-     * @param string|NULL $previousKey
+     * @param array|string $data
+     * @param DOMNode $xml
+     * @param string $previousKey
      */
-    private function toXml($data, DOMNode $xml, $previousKey = NULL)
+    private function toXml(array|string $data, DOMNode $xml, string $previousKey): void
     {
         if (is_iterable($data)) {
             foreach ($data as $key => $value) {
@@ -100,7 +90,7 @@ class XmlMapper implements IMapper
                 if (is_int($key)) {
                     $node = $this->xml->createElement($previousKey);
                     $xml->appendChild($node);
-                } else if (!Arrays::isList($value)) {
+                } elseif (!Arrays::isList($value)) {
                     $node = $this->xml->createElement($key);
                     $xml->appendChild($node);
                 }
@@ -114,11 +104,11 @@ class XmlMapper implements IMapper
     /**
      * Parse XML to array
      * @param string $data
-     * @return array
+     * @return iterable|string
      *
      * @throws  MappingException If XML data is not valid
      */
-    public function parse($data)
+    public function parse(mixed $data): iterable|string
     {
         return $this->fromXml($data);
     }
@@ -129,7 +119,7 @@ class XmlMapper implements IMapper
      *
      * @throws  MappingException If XML data is not valid
      */
-    private function fromXml($data)
+    private function fromXml(mixed $data): array
     {
         try {
             $useErrors = libxml_use_internal_errors(true);
@@ -141,7 +131,7 @@ class XmlMapper implements IMapper
             libxml_clear_errors();
             libxml_use_internal_errors($useErrors);
 
-            $data = Json::decode(Json::encode((array)$xml), Json::FORCE_ARRAY);
+            $data = Json::decode(Json::encode((array)$xml), true);
             return $data ? $this->normalize($data) : [];
         } catch (JsonException $e) {
             throw new MappingException('Error in parsing response: ' . $e->getMessage());
@@ -153,10 +143,14 @@ class XmlMapper implements IMapper
      * @param array|* $value
      * @return array
      */
-    private function normalize($value)
+    private function normalize(array $value): array
     {
-        if (isset($value['@attributes'])) unset($value['@attributes']);
-        if (count($value) === 0) return '';
+        if (isset($value['@attributes'])) {
+            unset($value['@attributes']);
+        }
+        if (count($value) === 0) {
+            return [];
+        }
 
         foreach ($value as $key => $node) {
             if (!is_array($node)) continue;

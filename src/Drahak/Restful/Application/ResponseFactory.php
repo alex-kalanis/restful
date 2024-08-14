@@ -2,15 +2,13 @@
 
 namespace Drahak\Restful\Application;
 
-use Drahak\Restful\Application\Responses\BaseResponse;
-use Drahak\Restful\InvalidArgumentException;
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidArgumentException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Drahak\Restful\IResource;
 use Drahak\Restful\Mapping\MapperContext;
 use Nette;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
-use Nette\Utils\Strings;
 
 /**
  * REST ResponseFactory
@@ -21,22 +19,29 @@ class ResponseFactory implements IResponseFactory
 {
     use Nette\SmartObject;
 
-    /** @var ICacheValidator */
-    private $cacheValidator;
-
     /** @var string JSONP request key */
-    private $jsonp;
+    private string $jsonp = '';
 
     /** @var string pretty print key */
-    private $prettyPrintKey = 'prettyPrint';
+    private string $prettyPrintKey = 'prettyPrint';
 
-    /** @var boolean */
-    private $prettyPrint = TRUE;
+    private bool $prettyPrint = TRUE;
 
     /** @var array */
-    private $responses = [IResource::JSON => \Drahak\Restful\Application\Responses\TextResponse::class, IResource::JSONP => \Drahak\Restful\Application\Responses\JsonpResponse::class, IResource::QUERY => \Drahak\Restful\Application\Responses\TextResponse::class, IResource::XML => \Drahak\Restful\Application\Responses\TextResponse::class, IResource::FILE => \Drahak\Restful\Application\Responses\FileResponse::class, IResource::NULL => \Drahak\Restful\Application\Responses\NullResponse::class];
+    private array $responses = [
+        IResource::JSON => Responses\TextResponse::class,
+        IResource::JSONP => Responses\JsonpResponse::class,
+        IResource::QUERY => Responses\TextResponse::class,
+        IResource::XML => Responses\TextResponse::class,
+        IResource::FILE => Responses\FileResponse::class,
+        IResource::NULL => Responses\NullResponse::class
+    ];
 
-    public function __construct(private IResponse $response, private IRequest $request, private MapperContext $mapperContext)
+    public function __construct(
+        private IResponse $response,
+        private readonly IRequest $request,
+        private readonly MapperContext $mapperContext
+    )
     {
     }
 
@@ -44,16 +49,15 @@ class ResponseFactory implements IResponseFactory
      * Get JSONP key
      * @return [type] [description]
      */
-    public function getJsonp()
+    public function getJsonp(): string
     {
         return $this->jsonp;
     }
 
     /**
      * Set JSONP key
-     * @param string $jsonp
      */
-    public function setJsonp($jsonp): static
+    public function setJsonp(string $jsonp): self
     {
         $this->jsonp = $jsonp;
         return $this;
@@ -61,9 +65,8 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Set pretty print key
-     * @param string $prettyPrintKey
      */
-    public function setPrettyPrintKey($prettyPrintKey): static
+    public function setPrettyPrintKey(string $prettyPrintKey): self
     {
         $this->prettyPrintKey = $prettyPrintKey;
         return $this;
@@ -77,7 +80,7 @@ class ResponseFactory implements IResponseFactory
      *
      * @throws InvalidArgumentException
      */
-    public function registerResponse($mimeType, $responseClass): static
+    public function registerResponse(string $mimeType, string $responseClass): static
     {
         if (!class_exists($responseClass)) {
             throw new InvalidArgumentException('Response class does not exist.');
@@ -89,9 +92,8 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Unregister API response from factory
-     * @param string $mimeType
      */
-    public function unregisterResponse($mimeType)
+    public function unregisterResponse(string $mimeType): void
     {
         unset($this->responses[$mimeType]);
     }
@@ -99,7 +101,7 @@ class ResponseFactory implements IResponseFactory
     /**
      * Set HTTP response
      */
-    public function setHttpResponse(IResponse $response): static
+    public function setHttpResponse(IResponse $response): self
     {
         $this->response = $response;
         return $this;
@@ -107,11 +109,12 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Create new api response
+     * @param IResource $resource
      * @param string|null $contentType
-     * @return IResponse
+     * @return Responses\IResponse
      * @throws InvalidStateException
      */
-    public function create(IResource $resource, $contentType = NULL)
+    public function create(IResource $resource, ?string $contentType = NULL): Responses\IResponse
     {
         if ($contentType === NULL) {
             $contentType = $this->jsonp === FALSE || !$this->request->getQuery($this->jsonp) ?
@@ -127,14 +130,14 @@ class ResponseFactory implements IResponseFactory
             throw new InvalidStateException('API response class does not exist.');
         }
 
-        if (!$resource->hasData()) {
+        if (empty($resource->getData())) {
             $this->response->setCode(204); // No content
             return new $this->responses[IResource::NULL];
         }
 
         $responseClass = $this->responses[$contentType];
         $response = new $responseClass($resource->getData(), $this->mapperContext->getMapper($contentType), $contentType);
-        if ($response instanceof BaseResponse) {
+        if ($response instanceof Responses\BaseResponse) {
             $response->setPrettyPrint($this->isPrettyPrint());
         }
         return $response;
@@ -142,12 +145,11 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Get preferred request content type
-     * @param string $contentType may be separed with comma
-     * @return string
-     *
+     * @param string $contentType may be separated with comma
      * @throws  InvalidStateException If Accept header is unknown
+     * @return string
      */
-    protected function getPreferredContentType($contentType)
+    protected function getPreferredContentType(string $contentType): string
     {
         $accept = explode(',', $contentType);
         $acceptableTypes = array_keys($this->responses);
@@ -170,10 +172,9 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Is pretty print enabled
-     * @param IRequest $request
      * @return boolean
      */
-    protected function isPrettyPrint()
+    protected function isPrettyPrint(): bool
     {
         $prettyPrintKey = $this->request->getQuery($this->prettyPrintKey);
         if ($prettyPrintKey === 'false') {
@@ -187,9 +188,8 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Set pretty print
-     * @param string $prettyPrint
      */
-    public function setPrettyPrint($prettyPrint): static
+    public function setPrettyPrint(string $prettyPrint): self
     {
         $this->prettyPrint = $prettyPrint;
         return $this;
@@ -197,9 +197,8 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Is given content type acceptable for response
-     * @param string $contentType
      */
-    public function isAcceptable($contentType): bool
+    public function isAcceptable(string $contentType): bool
     {
         try {
             $this->getPreferredContentType($contentType);
@@ -208,5 +207,4 @@ class ResponseFactory implements IResponseFactory
             return FALSE;
         }
     }
-
 }

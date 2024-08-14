@@ -17,9 +17,8 @@ class SnakeCaseConverter implements IConverter
 
     /**
      * Converts resource data keys to snake_case
-     * @return array
      */
-    public function convert(array $resource)
+    public function convert(array $resource): array
     {
         $this->convertToSnake($resource);
         return $resource;

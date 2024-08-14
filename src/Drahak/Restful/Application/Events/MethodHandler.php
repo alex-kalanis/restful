@@ -2,9 +2,8 @@
 
 namespace Drahak\Restful\Application\Events;
 
-use Drahak\Restful\Application\BadRequestException;
+use Drahak\Restful\Application\Exceptions\BadRequestException;
 use Drahak\Restful\Application\MethodOptions;
-use Drahak\Restful\Http\Request;
 use Exception;
 use Nette;
 use Nette\Application\Application;
@@ -22,7 +21,11 @@ class MethodHandler
 {
     use Nette\SmartObject;
 
-    public function __construct(private IRequest $request, private IResponse $response, private MethodOptions $methods)
+    public function __construct(
+        private readonly IRequest $request,
+        private readonly IResponse $response,
+        private readonly MethodOptions $methods,
+    )
     {
     }
 
@@ -31,7 +34,7 @@ class MethodHandler
      *
      * @throws BadRequestException
      */
-    public function run(Application $application)
+    public function run(Application $application): void
     {
         $router = $application->getRouter();
         $appRequest = $router->match($this->request);
@@ -45,7 +48,7 @@ class MethodHandler
      *
      * @throws BadRequestException If method is not supported but another one can be used
      */
-    protected function checkAllowedMethods()
+    protected function checkAllowedMethods(): void
     {
         $availableMethods = $this->methods->getOptions($this->request->getUrl());
         if (!$availableMethods || in_array($this->request->method, $availableMethods)) {
@@ -54,19 +57,17 @@ class MethodHandler
 
         $allow = implode(', ', $availableMethods);
         $this->response->setHeader('Allow', $allow);
-        throw BadRequestException::methodNotSupported(
-            'Method not supported. Available methods: ' . $allow);
+        throw BadRequestException::methodNotSupported('Method not supported. Available methods: ' . $allow);
     }
 
     /**
      * On application error
      * @param Exception|Throwable $e
      */
-    public function error(Application $application, $e)
+    public function error(Application $application, $e): void
     {
         if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
             $this->checkAllowedMethods();
         }
     }
-
 }

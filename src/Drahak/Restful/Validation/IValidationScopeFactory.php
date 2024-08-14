@@ -14,6 +14,5 @@ interface IValidationScopeFactory
      * Validation schema factory
      * @return IValidationScope
      */
-    public function create();
-
+    public function create(): IValidationScope;
 }

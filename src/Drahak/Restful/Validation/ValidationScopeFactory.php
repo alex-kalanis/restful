@@ -13,7 +13,9 @@ class ValidationScopeFactory implements IValidationScopeFactory
 {
     use Nette\SmartObject;
 
-    public function __construct(private IValidator $validator)
+    public function __construct(
+        private readonly IValidator $validator
+    )
     {
     }
 
@@ -21,10 +23,8 @@ class ValidationScopeFactory implements IValidationScopeFactory
      * Validation schema factory
      * @return IValidationScope
      */
-    public function create()
+    public function create(): IValidationScope
     {
         return new ValidationScope($this->validator);
     }
-
-
 }

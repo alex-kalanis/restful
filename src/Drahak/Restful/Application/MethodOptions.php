@@ -3,7 +3,7 @@
 namespace Drahak\Restful\Application;
 
 use Nette;
-use Nette\Application\IRouter;
+use Nette\Routing\Router;
 use Nette\Http\IRequest;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
@@ -18,10 +18,20 @@ class MethodOptions
 {
     use Nette\SmartObject;
 
-    /** @var array */
-    private $methods = [IResourceRouter::GET => IRequest::GET, IResourceRouter::POST => IRequest::POST, IResourceRouter::PUT => IRequest::PUT, IResourceRouter::DELETE => IRequest::DELETE, IResourceRouter::HEAD => IRequest::HEAD, IResourceRouter::PATCH => 'PATCH', IResourceRouter::OPTIONS => 'OPTIONS'];
+    /** @var array<int, string> */
+    private array $methods = [
+        IResourceRouter::GET => IRequest::Get,
+        IResourceRouter::POST => IRequest::Post,
+        IResourceRouter::PUT => IRequest::Put,
+        IResourceRouter::DELETE => IRequest::Delete,
+        IResourceRouter::HEAD => IRequest::Head,
+        IResourceRouter::PATCH => 'PATCH',
+        IResourceRouter::OPTIONS => 'OPTIONS',
+    ];
 
-    public function __construct(private IRouter $router)
+    public function __construct(
+        private readonly Router $router,
+    )
     {
     }
 
@@ -38,7 +48,7 @@ class MethodOptions
      * Recursively checks available methods
      * @return string[]
      */
-    private function checkAvailableMethods(IRouter $router, UrlScript $url): array
+    private function checkAvailableMethods(Router $router, UrlScript $url): array
     {
         $methods = [];
         foreach ($router as $route) {
@@ -69,41 +79,36 @@ class MethodOptions
 
     /**
      * Get route method flag
-     * @return int|NULL
      */
-    protected function getMethodFlag(IResourceRouter $route)
+    protected function getMethodFlag(IResourceRouter $route): ?int
     {
-        $methodFlag = NULL;
         foreach ($this->methods as $flag => $requestMethod) {
             if ($route->isMethod($flag)) {
                 return $flag;
             }
         }
-        return $methodFlag;
+        return null;
     }
 
     /**
      * Create route acceptable HTTP request
-     * @param int $methodFlag
-     * @return Request
      */
-    protected function createAcceptableRequest(UrlScript $url, $methodFlag)
+    protected function createAcceptableRequest(UrlScript $url, int $methodFlag): Request
     {
         return new Request(
             $url,
-            NULL, NULL, NULL, NULL, NULL,
+            [], [], [], [],
             $this->methods[$methodFlag]
         );
     }
 
     /**
      * Remove override param from query URL parameters
-     * @return string
+     * @return string[]
      */
-    private function removeOverrideParam(array $query)
+    private function removeOverrideParam(array $query): array
     {
         unset($query['X-HTTP-Method-Override']);
         return $query;
     }
-
 }

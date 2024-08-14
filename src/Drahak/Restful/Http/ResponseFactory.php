@@ -2,7 +2,7 @@
 
 namespace Drahak\Restful\Http;
 
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Drahak\Restful\Resource\Link;
 use Drahak\Restful\Utils\RequestFilter;
 use Nette;
@@ -20,12 +20,22 @@ class ResponseFactory
 {
     use Nette\SmartObject;
 
-    /** @var array Default response code for each request method */
-    protected $defaultCodes = [IRequest::GET => 200, IRequest::POST => 201, IRequest::PUT => 200, IRequest::HEAD => 200, IRequest::DELETE => 200, 'PATCH' => 200];
-    /** @var IResponse */
-    private $response;
+    /** @var array<string, int> Default response code for each request method */
+    protected array $defaultCodes = [
+        IRequest::Get => 200,
+        IRequest::Post => 201,
+        IRequest::Put => 200,
+        IRequest::Head => 200,
+        IRequest::Delete => 200,
+        'PATCH' => 200,
+    ];
 
-    public function __construct(private IRequest $request, private RequestFilter $requestFilter)
+    private ?IResponse $response;
+
+    public function __construct(
+        private readonly IRequest $request,
+        private readonly RequestFilter $requestFilter,
+    )
     {
     }
 
@@ -43,7 +53,7 @@ class ResponseFactory
      * @param int|NULL $code
      * @return IResponse
      */
-    public function createHttpResponse($code = NULL)
+    public function createHttpResponse(?int $code = NULL): IResponse
     {
         $response = $this->response ?: new Response();
         $response->setCode($this->getCode($code));
@@ -60,20 +70,21 @@ class ResponseFactory
     /**
      * Get default status code
      * @param int|null $code
+     * @return int
      */
-    protected function getCode($code = NULL): int
+    protected function getCode(?int $code = NULL): int
     {
         if ($code === NULL) {
-            $code = $code = $this->defaultCodes[$this->request->getMethod()] ?? 200;
+            $code = $this->defaultCodes[$this->request->getMethod()] ?? 200;
         }
-        return (int)$code;
+        return (int) $code;
     }
 
     /**
      * Get paginator next/last link header
      * @return string
      */
-    protected function getPaginatorLink()
+    protected function getPaginatorLink(): string
     {
         $paginator = $this->requestFilter->getPaginator();
 
@@ -86,41 +97,36 @@ class ResponseFactory
 
     /**
      * Get next page URL
-     * @return Link
      */
-    private function getNextPageUrl(Paginator $paginator)
+    private function getNextPageUrl(Paginator $paginator): Link
     {
         $url = clone $this->request->getUrl();
         parse_str($url->getQuery(), $query);
         $paginator->setPage($paginator->getPage() + 1);
         $query['offset'] = $paginator->getOffset();
         $query['limit'] = $paginator->getItemsPerPage();
-        $url->appendQuery($query);
-        return new Link($url, Link::NEXT);
+        return new Link($url->withQuery(http_build_query($query)), Link::NEXT);
     }
 
     /**
      * Get last page URL
-     * @return Link
      */
-    private function getLastPageUrl(Paginator $paginator)
+    private function getLastPageUrl(Paginator $paginator): Link
     {
         $url = clone $this->request->getUrl();
         parse_str($url->getQuery(), $query);
         $query['offset'] = $paginator->getLastPage() * $paginator->getItemsPerPage() - $paginator->getItemsPerPage();
         $query['limit'] = $paginator->getItemsPerPage();
-        $url->appendQuery($query);
-        return new Link($url, Link::LAST);
+        return new Link($url->withQuery(http_build_query($query)), Link::LAST);
     }
 
     /**
      * Get paginator items total count
      * @return int|NULL
      */
-    protected function getPaginatorTotalCount()
+    protected function getPaginatorTotalCount(): ?int
     {
         $paginator = $this->requestFilter->getPaginator();
         return $paginator->getItemCount() ?: NULL;
     }
-
 }

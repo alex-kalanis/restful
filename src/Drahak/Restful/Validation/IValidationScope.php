@@ -15,12 +15,12 @@ interface IValidationScope
      * @param string $name
      * @return IField
      */
-    public function field($name);
+    public function field(string $name): IField;
 
     /**
      * Validate all field in collection
-     * @return Error
+     * @return Error[]
      */
-    public function validate(array $data);
+    public function validate(array $data): array;
 
 }

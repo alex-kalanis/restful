@@ -2,7 +2,7 @@
 
 namespace Drahak\Restful\Utils;
 
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Nette;
 use Nette\Http\IRequest;
 use Nette\Utils\Paginator;
@@ -11,11 +11,6 @@ use Nette\Utils\Paginator;
  * RequestFilter
  * @package Drahak\Restful\Utils
  * @author Drahomír Hanák
- *
- * @property-read array $fieldList
- * @property-read array $sortList
- * @property-read string $searchQuery
- * @property-read Paginator $paginator
  */
 class RequestFilter
 {
@@ -34,15 +29,14 @@ class RequestFilter
     public const SORT_ASC = 'ASC';
 
     /** @var array */
-    private $fieldList;
-
+    private array $fieldList = [];
     /** @var array */
-    private $sortList;
+    private array $sortList = [];
+    private ?Paginator $paginator = null;
 
-    /** @var Paginator */
-    private $paginator;
-
-    public function __construct(private IRequest $request)
+    public function __construct(
+        private readonly IRequest $request,
+    )
     {
     }
 
@@ -50,9 +44,9 @@ class RequestFilter
      * Get fields list
      * @return array
      */
-    public function getFieldList()
+    public function getFieldList(): array
     {
-        if (!$this->fieldList) {
+        if (empty($this->fieldList)) {
             $this->fieldList = $this->createFieldList();
         }
         return $this->fieldList;
@@ -62,7 +56,7 @@ class RequestFilter
      * Create field list
      * @return array
      */
-    protected function createFieldList()
+    protected function createFieldList(): array
     {
         $fields = $this->request->getQuery(self::FIELDS_KEY);
         return is_string($fields) ? array_filter(explode(',', $fields)) : $fields;
@@ -72,7 +66,7 @@ class RequestFilter
      * Create sort list
      * @return array
      */
-    public function getSortList()
+    public function getSortList(): array
     {
         if (!$this->sortList) {
             $this->sortList = $this->createSortList();
@@ -100,22 +94,21 @@ class RequestFilter
      * Get search query
      * @return string|NULL
      */
-    public function getSearchQuery()
+    public function getSearchQuery(): mixed
     {
         return $this->request->getQuery('q');
     }
 
     /**
      * Get paginator
-     * @param string|NULL $offset default value
-     * @param string|NULL $limit default value
-     * @return Paginator
-     *
+     * @param int|NULL $offset default value
+     * @param int|NULL $limit default value
      * @throws InvalidStateException
+     * @return Paginator
      */
-    public function getPaginator($offset = NULL, $limit = NULL)
+    public function getPaginator(?int $offset = NULL, ?int $limit = NULL): Paginator
     {
-        if (!$this->paginator) {
+        if (empty($this->paginator)) {
             $this->paginator = $this->createPaginator($offset, $limit);
         }
         return $this->paginator;
@@ -125,30 +118,35 @@ class RequestFilter
      * Create paginator
      * @param int|null $offset
      * @param int|null $limit
-     * @return Paginator
-     *
      * @throws InvalidStateException
+     * @return Paginator
      */
-    protected function createPaginator($offset = NULL, $limit = NULL)
+    protected function createPaginator(?int $offset = NULL, ?int $limit = NULL): Paginator
     {
-        $offset = $this->request->getQuery('offset', $offset);
-        $limit = $this->request->getQuery('limit', $limit);
+        $off = $this->request->getQuery('offset');
+        if (empty($off)) {
+            $off = $offset;
+        }
+        $lim = $this->request->getQuery('limit');
+        if (empty($lim)) {
+            $lim = $limit;
+        }
 
-        if ($offset === NULL || $limit === NULL) {
+        if (is_null($off) || is_null($lim)) {
             throw new InvalidStateException(
                 'To create paginator add offset and limit query parameter to request URL'
             );
         }
 
-        if ($limit == 0) {
+        if ($lim == 0) {
             throw new InvalidStateException(
                 'Pagination limit cannot be zero'
             );
         }
 
         $paginator = new Paginator();
-        $paginator->setItemsPerPage($limit);
-        $paginator->setPage(floor($offset / $limit) + 1);
+        $paginator->setItemsPerPage($lim);
+        $paginator->setPage(floor($off / $lim) + 1);
         return $paginator;
     }
 

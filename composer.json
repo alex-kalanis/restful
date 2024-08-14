@@ -29,6 +29,10 @@
 	},
 	"require": {
 		"php": ">= 8.1.0",
+		"ext-dom": "*",
+		"ext-libxml": "*",
+		"ext-fileinfo": "*",
+		"ext-simplexml": "*",
 		"nette/application": "~3.2",
 		"nette/bootstrap": "~3.2",
 		"nette/caching": "~3.3",
@@ -52,11 +56,6 @@
 			"Drahak\\Restful\\": "src/Drahak/Restful/"
 		},
 		"classmap": [
-			"src/Drahak/Restful/exceptions.php",
-			"src/Drahak/Restful/Application/exceptions.php",
-			"src/Drahak/Restful/Mapping/exceptions.php",
-			"src/Drahak/Restful/Security/exceptions.php",
-			"src/Drahak/Restful/Validation/exceptions.php"
 		]
 	}
 }

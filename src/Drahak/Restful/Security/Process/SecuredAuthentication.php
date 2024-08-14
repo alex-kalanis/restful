@@ -14,7 +14,10 @@ use Drahak\Restful\Security\Authentication\TimeoutAuthenticator;
 class SecuredAuthentication extends AuthenticationProcess
 {
 
-    public function __construct(private readonly HashAuthenticator $hashAuth, private readonly TimeoutAuthenticator $timeAuth)
+    public function __construct(
+        private readonly HashAuthenticator $hashAuth,
+        private readonly TimeoutAuthenticator $timeAuth,
+    )
     {
     }
 
@@ -33,6 +36,4 @@ class SecuredAuthentication extends AuthenticationProcess
     {
         return $this->timeAuth->authenticate($input);
     }
-
-
 }

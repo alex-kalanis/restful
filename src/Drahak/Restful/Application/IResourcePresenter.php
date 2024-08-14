@@ -14,8 +14,6 @@ interface IResourcePresenter extends IPresenter
 
     /**
      * Set API resource
-     * @return void
      */
-    public function sendResource();
-
+    public function sendResource(): void;
 }

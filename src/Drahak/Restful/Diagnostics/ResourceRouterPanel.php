@@ -4,15 +4,11 @@ namespace Drahak\Restful\Diagnostics;
 
 use Drahak\Restful\Application\IResourceRouter;
 use Nette;
-use Nette\Application\IRouter;
-use Nette\Templating\Helpers;
+use Nette\Routing\Router;
+use Nette\Utils\FileSystem;
 use Nette\Utils\Html;
 use Tracy\IBarPanel;
 use Traversable;
-
-if (!interface_exists(\Tracy\IBarPanel::class)) {
-    class_alias('Nette\Diagnostics\IBarPanel', \Tracy\IBarPanel::class);
-}
 
 /**
  * ResourceRouterPanel to see REST API resource routes
@@ -23,11 +19,11 @@ class ResourceRouterPanel implements IBarPanel
 {
     use Nette\SmartObject;
 
-    /**
-     * @param string $secretKey
-     * @param string $requestTimeKey
-     */
-    public function __construct(private $secretKey, private $requestTimeKey, private IRouter $router)
+    public function __construct(
+        #[\SensitiveParameter] private readonly string $secretKey,
+        private readonly string $requestTimeKey,
+        private readonly Router $router
+    )
     {
     }
 
@@ -35,10 +31,10 @@ class ResourceRouterPanel implements IBarPanel
      * Renders HTML code for custom tab.
      * @return string
      */
-    public function getTab()
+    public function getTab(): string
     {
         $icon = Html::el('img')
-            ->src(Helpers::dataStream(file_get_contents(__DIR__ . '/icon.png')))
+            ->src(FileSystem::read(__DIR__ . '/icon.png'))
             ->height('16px');
         return '<span class="REST API resource routes">' . $icon . 'API resources</span>';
     }
@@ -47,12 +43,20 @@ class ResourceRouterPanel implements IBarPanel
      * Renders HTML code for custom panel.
      * @return string
      */
-    public function getPanel()
+    public function getPanel(): string
     {
         ob_start();
         $esc = ['Nette\Templating\Helpers', 'escapeHtml'];
         $routes = $this->getResourceRoutes($this->router);
-        $methods = [IResourceRouter::GET => 'GET', IResourceRouter::POST => 'POST', IResourceRouter::PUT => 'PUT', IResourceRouter::DELETE => 'DELETE', IResourceRouter::HEAD => 'HEAD', IResourceRouter::PATCH => 'PATCH', IResourceRouter::OPTIONS => 'OPTIONS'];
+        $methods = [
+            IResourceRouter::GET => 'GET',
+            IResourceRouter::POST => 'POST',
+            IResourceRouter::PUT => 'PUT',
+            IResourceRouter::DELETE => 'DELETE',
+            IResourceRouter::HEAD => 'HEAD',
+            IResourceRouter::PATCH => 'PATCH',
+            IResourceRouter::OPTIONS => 'OPTIONS',
+        ];
         $privateKey = $this->secretKey;
         $requestTimeKey = $this->requestTimeKey;
 
@@ -61,11 +65,7 @@ class ResourceRouterPanel implements IBarPanel
 
     }
 
-    /**
-     * @param $routeList
-     * @return array
-     */
-    private function getResourceRoutes($routeList)
+    private function getResourceRoutes(iterable|Router $routeList): array
     {
         static $resourceRoutes = [];
         foreach ($routeList as $route) {
@@ -76,5 +76,4 @@ class ResourceRouterPanel implements IBarPanel
         }
         return $resourceRoutes;
     }
-
 }

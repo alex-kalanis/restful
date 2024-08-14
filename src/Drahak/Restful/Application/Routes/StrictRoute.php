@@ -2,9 +2,9 @@
 
 namespace Drahak\Restful\Application\Routes;
 
+use Drahak\Restful\Exceptions\InvalidArgumentException;
 use Nette;
 use Nette\Application;
-use Nette\Application\Routers\Route;
 use Nette\Http;
 use Nette\Routing\Router;
 use Nette\Utils\Strings;
@@ -17,28 +17,37 @@ use Nette\Utils\Strings;
  */
 class StrictRoute implements Router
 {
+    private const
+        PresenterKey = 'presenter',
+        ModuleKey = 'module';
+
     use Nette\SmartObject;
 
     /** method dictionary */
-    protected $methods = [Http\IRequest::GET => 'read', Http\IRequest::POST => 'create', Http\IRequest::PUT => 'update', Http\IRequest::DELETE => 'delete', Http\IRequest::HEAD => 'head', 'PATCH' => 'patch', 'OPTIONS' => 'options'];
+    protected array $methods = [
+        Http\IRequest::Get => 'read',
+        Http\IRequest::Post => 'create',
+        Http\IRequest::Put => 'update',
+        Http\IRequest::Delete => 'delete',
+        Http\IRequest::Head => 'head',
+        'PATCH' => 'patch',
+        'OPTIONS' => 'options'
+    ];
 
-    /**
-     * @param string $prefix
-     * @param stirng $module
-     */
-    public function __construct(protected $prefix = '', protected $module = NULL)
+    public function __construct(
+        protected string $prefix = '',
+        protected ?string $module = NULL,
+    )
     {
     }
 
     /**
      * Match request
-     * @param IRequest $request
-     * @return Request
      */
-    public function match(Http\IRequest $request): ?array
+    public function match(Http\IRequest $httpRequest): ?array
     {
-        $path = $request->url->getPathInfo();
-        if (!\str_contains((string) $path, $this->prefix)) {
+        $path = $httpRequest->url->getPathInfo();
+        if (!\str_contains($path, $this->prefix)) {
             return NULL;
         }
 
@@ -46,16 +55,16 @@ class StrictRoute implements Router
         $pathParts = explode('/', $path);
         $pathArguments = array_slice($pathParts, 1);
 
-        $action = $this->getActionName($request->getMethod(), $pathArguments);
+        $action = $this->getActionName($httpRequest->getMethod(), $pathArguments);
         $params = $this->getPathParameters($pathArguments);
-        $params[Route::MODULE_KEY] = $this->module;
-        $params[Route::PRESENTER_KEY] = $pathParts[0];
+        $params[self::ModuleKey] = $this->module;
+        $params[self::PresenterKey] = $pathParts[0];
         $params['action'] = $action;
 
-        $presenter = ($this->module ? $this->module . ':' : '') . $params[Route::PRESENTER_KEY];
+        $presenter = ($this->module ? $this->module . ':' : '') . $params[self::PresenterKey];
 
-        $appRequest = new Application\Request($presenter, $request->getMethod(), $params, $request->getPost(), $request->getFiles());
-        return $appRequest;
+        $appRequest = new Application\Request($presenter, $httpRequest->getMethod(), $params, $httpRequest->getPost(), $httpRequest->getFiles());
+        return $appRequest->toArray();
     }
 
     /**
@@ -64,17 +73,17 @@ class StrictRoute implements Router
      * @param array $arguments
      * @return string
      */
-    private function getActionName($method, $arguments)
+    private function getActionName(string $method, array $arguments): string
     {
         if (!isset($this->methods[$method])) {
             throw new InvalidArgumentException(
-                'Reuqest method must be one of ' . join(', ', array_keys($this->methods)) . ', ' . $method . ' given'
+                'Request method must be one of ' . join(', ', array_keys($this->methods)) . ', ' . $method . ' given'
             );
         }
 
         $name = $this->methods[$method];
         for ($i = 0, $count = count($arguments); $i < $count; $i += 2) {
-            $name += Strings::firstUpper($arguments[$i]);
+            $name .= Strings::firstUpper($arguments[$i]);
         }
         return $name;
     }
@@ -84,7 +93,7 @@ class StrictRoute implements Router
      * @param array $arguments
      * @return array
      */
-    private function getPathParameters($arguments)
+    private function getPathParameters(array $arguments): array
     {
         $parameters = [];
         for ($i = 1, $count = count($arguments); $i < $count; $i += 2) {
@@ -93,9 +102,8 @@ class StrictRoute implements Router
         return ['params' => $parameters];
     }
 
-    public function constructUrl(array $request, Http\UrlScript $refUrl): ?string
+    public function constructUrl(array $params, Nette\Http\UrlScript $refUrl): ?string
     {
         return NULL;
     }
-
 }

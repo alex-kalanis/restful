@@ -3,51 +3,45 @@
 namespace Drahak\Restful\Resource;
 
 use Nette;
-use Nette\Templating\Helpers;
-use Nette\Utils\MimeTypeDetector;
 
 /**
  * Media resource representation object
  * @package Drahak\Restful\Resource
  * @author Drahomír Hanák
- *
- * @property-read string $content
- * @property-read string $contentType
  */
 class Media implements \Stringable
 {
     use Nette\SmartObject;
 
-    /** @var string|NULL */
-    private $contentType;
+    private ?string $contentType;
 
     /**
      * @param string $content
      * @param string|NULL $contentType
      */
-    public function __construct(private $content, $contentType = NULL)
+    public function __construct(
+        private readonly string $content,
+        ?string $contentType = NULL
+    )
     {
-        $this->contentType = $contentType ?: MimeTypeDetector::fromString($this->content);
+        $this->contentType = $contentType ?: mime_content_type('data://,' . urlencode($this->content));
     }
 
     /**
      * Create media from file
-     * @param string $filePath
-     * @param string|NULL $mimeType
      */
-    public static function fromFile($filePath, $mimeType = NULL): self
+    public static function fromFile(string $filePath, ?string $mimeType = NULL): self
     {
-        if (!$mimeType) {
-            $mimeType = MimeTypeDetector::fromFile($filePath);
+        if (empty($mimeType)) {
+            $mimeType = mime_content_type($filePath);
         }
         return new Media(file_get_contents($filePath), $mimeType);
     }
 
     /**
      * Get media mime type
-     * @return NULL|string
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return $this->contentType;
     }
@@ -64,11 +58,9 @@ class Media implements \Stringable
 
     /**
      * Get file
-     * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }
-
 }

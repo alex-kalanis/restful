@@ -23,11 +23,9 @@ class SecuredResourcePresenter extends ResourcePresenter
     /**
      * On presenter startup
      */
-    protected function startup()
+    protected function startup(): void
     {
         parent::startup();
         $this->authentication->setAuthProcess($this->basicAuthentication);
     }
-
-
 }

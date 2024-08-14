@@ -3,7 +3,7 @@
 namespace Drahak\Restful\Application\Routes;
 
 use Drahak\Restful\Application\IResourceRouter;
-use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Exceptions\InvalidStateException;
 use Nette\Application\Routers\RouteList;
 
 /**
@@ -17,16 +17,15 @@ class ResourceRouteList extends RouteList
     /**
      * Set offset
      * @param mixed $index
-     * @param IResourceRouter $route
+     * @param IResourceRouter $router
      *
      * @throws InvalidStateException
      */
-    public function offsetSet($index, $route): void
+    public function offsetSet($index, $router): void
     {
-        if (!$route instanceof IResourceRouter && !$route instanceof ResourceRouteList) {
-            throw new InvalidStateException('ResourceRouteList expects IResourceRoute, ' . $route::class . ' given.');
+        if (!$router instanceof IResourceRouter && !$router instanceof ResourceRouteList) {
+            throw new InvalidStateException('ResourceRouteList expects IResourceRoute, ' . $router::class . ' given.');
         }
-        parent::offsetSet($index, $route);
+        parent::offsetSet($index, $router);
     }
-
 }

@@ -15,8 +15,9 @@ class Strings extends Nette\Utils\Strings
     /**
      * Converts string to PascalCase
      * @param string $string
+     * @return string
      */
-    public static function toPascalCase($string): string
+    public static function toPascalCase(string $string): string
     {
         return self::firstUpper(self::toCamelCase($string));
     }
@@ -26,7 +27,7 @@ class Strings extends Nette\Utils\Strings
      * @param string $string
      * @return string
      */
-    public static function toCamelCase($string)
+    public static function toCamelCase(string $string): string
     {
         $func = fn($matches): string => self::upper($matches[2]);
 
@@ -38,7 +39,7 @@ class Strings extends Nette\Utils\Strings
      * @param string $s
      * @return string
      */
-    public static function firstLower($s)
+    public static function firstLower(string $s): string
     {
         return self::lower(self::substring($s, 0, 1)) . self::substring($s, 1);
     }
@@ -46,8 +47,9 @@ class Strings extends Nette\Utils\Strings
     /**
      * Converts string to snake_case
      * @param string $string
+     * @return string
      */
-    public static function toSnakeCase($string): string
+    public static function toSnakeCase(string $string): string
     {
         $replace = [' ', '-'];
         return self::trim(

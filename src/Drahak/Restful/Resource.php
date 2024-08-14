@@ -28,57 +28,61 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
         Nette\SmartObject::__unset as SO__unset;
     }
 
-    public function __construct(private array $data = [])
+    public function __construct(
+        private array $data = []
+    )
     {
     }
 
     /**
      * get info if the resource has some data set or is empty
-     * @return boolean
      */
-    public function hasData()
+    public function hasData(): bool
     {
         return !empty($this->data);
     }
 
+    /******************** Serializable ********************/
+
+    public function __serialize(): array
+    {
+        return $this->data;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->data = $data;
+    }
+
     /**
      * Serialize result set
-     * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return Json::encode($this->data);
     }
 
-    /******************** Serializable ********************/
-
     /**
      * Unserialize Resource
-     * @param string $serialized
      */
-    public function unserialize($serialized)
+    public function unserialize(string $data): void
     {
-        $this->data = Json::decode($serialized);
+        $this->data = Json::decode($data);
     }
 
-    /**
-     * @return bool
-     */
-    public function offsetExists(mixed $offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->data[$offset]);
     }
 
     /******************** ArrayAccess interface ********************/
-    /**
-     * @return mixed
-     */
-    public function offsetGet(mixed $offset)
+
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->data[$offset];
     }
 
-    public function offsetSet(mixed $offset, mixed $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset === NULL) {
             $offset = count($this->data);
@@ -86,7 +90,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
         $this->data[$offset] = $value;
     }
 
-    public function offsetUnset(mixed $offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->data[$offset]);
     }
@@ -95,7 +99,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * Get resource data iterator
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->getData());
     }
@@ -106,7 +110,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * Get result set data
      * @return array
      */
-    public function getData()
+    public function getData(): iterable
     {
         return $this->data;
     }
@@ -120,7 +124,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * @return mixed
      * @throws Exception|MemberAccessException
      */
-    public function &__get($name)
+    public function &__get(string $name)
     {
         try {
             return $this->SO__get($name);
@@ -135,9 +139,8 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     /**
      * Magic setter to $this->data
-     * @param string $name
      */
-    public function __set($name, mixed $value)
+    public function __set(string $name, mixed $value)
     {
         try {
             $this->SO__set($name, $value);
@@ -151,7 +154,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         return !$this->SO__isset($name) ? isset($this->data[$name]) : TRUE;
     }
@@ -161,7 +164,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * @param string $name
      * @throws Exception|MemberAccessException
      */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         try {
             $this->SO__unset($name);
@@ -173,6 +176,4 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
             throw $e;
         }
     }
-
-
 }

@@ -3,7 +3,7 @@
 namespace Drahak\Restful\Security\Authentication;
 
 use Drahak\Restful\Http\IInput;
-use Drahak\Restful\Security\RequestTimeoutException;
+use Drahak\Restful\Security\Exceptions\RequestTimeoutException;
 use Nette;
 
 /**
@@ -19,7 +19,10 @@ class TimeoutAuthenticator implements IRequestAuthenticator
      * @param string $requestTimeKey in user request data
      * @param int $timeout in milliseconds
      */
-    public function __construct(private $requestTimeKey, private $timeout)
+    public function __construct(
+        #[\SensitiveParameter] private readonly string $requestTimeKey,
+        private readonly int $timeout,
+    )
     {
     }
 

@@ -2,7 +2,7 @@
 
 namespace Drahak\Restful\Application;
 
-use Nette\Application\IRouter;
+use Nette\Routing\Router;
 use Nette\Http;
 
 /**
@@ -10,7 +10,7 @@ use Nette\Http;
  * @package Drahak\Restful\Routes
  * @author Drahomír Hanák
  */
-interface IResourceRouter extends IRouter
+interface IResourceRouter extends Router
 {
 
     /** Resource methods */
@@ -31,19 +31,17 @@ interface IResourceRouter extends IRouter
      * @param int $method
      * @return bool
      */
-    public function isMethod($method);
+    public function isMethod(int $method): bool;
 
     /**
      * Get request method flag
      * @return string|null
      */
-    public function getMethod(Http\IRequest $httpRequest);
+    public function getMethod(Http\IRequest $httpRequest): ?string;
 
     /**
      * Get action dictionary
-     * @return array methodFlag => presenterActionName
+     * @return array<string, string> methodFlag => presenterActionName
      */
-    public function getActionDictionary();
-
-
+    public function getActionDictionary(): array;
 }

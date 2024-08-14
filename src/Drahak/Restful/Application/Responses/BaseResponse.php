@@ -5,81 +5,67 @@ namespace Drahak\Restful\Application\Responses;
 use Drahak;
 use Drahak\Restful\Mapping\IMapper;
 use Nette;
-use Nette\Application\IResponse;
 use stdClass;
-use Traversable;
 
 /**
  * BaseResponse
  * @package Drahak\Restful\Application\Responses
  * @author Drahomír Hanák
- *
- * @property-read string $contentType
- * @property-write IMapper $mapper
  */
 abstract class BaseResponse implements IResponse
 {
     use Nette\SmartObject;
 
-    /** @var array|stdClass|Traversable */
-    protected $data;
+    protected iterable|stdClass $data = [];
 
-    /** @var IMapper */
-    protected $mapper;
+    private bool $prettyPrint = TRUE;
 
-    /** @var boolean */
-    private $prettyPrint = TRUE;
-
-    public function __construct(IMapper $mapper, protected $contentType = NULL)
+    public function __construct(
+        protected IMapper $mapper,
+        protected readonly string|null $contentType = NULL,
+    )
     {
-        $this->mapper = $mapper;
     }
 
     /**
      * Is pretty print enabled
-     * @return bool
      */
-    public function isPrettyPrint()
+    public function isPrettyPrint(): bool
     {
         return $this->prettyPrint;
     }
 
     /**
      * Set pretty print
-     * @param boolean $pretty
      */
-    public function setPrettyPrint($pretty)
+    public function setPrettyPrint(bool $pretty): self
     {
-        $this->prettyPrint = (bool)$pretty;
+        $this->prettyPrint = $pretty;
         return $this;
     }
 
     /**
      * Get response content type
-     * @return string
      */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->contentType;
     }
 
     /**
      * Get response data
-     * @return array|stdClass|Traversable
      */
-    public function getData()
+    public function getData(): iterable|stdClass|string
     {
         return $this->data;
     }
 
     /**
      * Set mapper
-     * @return BaseResponse
      */
-    public function setMapper(IMapper $mapper)
+    public function setMapper(IMapper $mapper): self
     {
         $this->mapper = $mapper;
         return $this;
     }
-
 }

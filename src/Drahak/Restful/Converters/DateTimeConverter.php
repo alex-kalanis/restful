@@ -19,25 +19,25 @@ class DateTimeConverter implements IConverter
     /**
      * @param string $format of date time
      */
-    public function __construct(private $format = 'c')
+    public function __construct(
+        private readonly string $format = 'c',
+    )
     {
     }
 
     /**
      * Converts DateTime objects in resource to string
-     * @return array
      */
-    public function convert(array $resource)
+    public function convert(array $resource): array
     {
-        $data = $this->parseDateTimeToString($resource);
-        return $data;
+        return (array) $this->parseDateTimeToString($resource);
     }
 
     /**
-     * @param $array
-     * @return array
+     * @param mixed $array
+     * @return mixed
      */
-    private function parseDateTimeToString($array)
+    private function parseDateTimeToString(mixed $array): mixed
     {
         if (!is_array($array)) {
             if ($array instanceof DateTime || interface_exists('DateTimeInterface') && $array instanceof DateTimeInterface) {
