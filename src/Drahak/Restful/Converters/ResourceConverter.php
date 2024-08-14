@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
 use Nette;
@@ -11,44 +12,41 @@ use Nette;
  */
 class ResourceConverter
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var IConverter[] */
-	private $converters = array();
+    /** @var IConverter[] */
+    private $converters = [];
 
-	/**
-	 * Get converters
-	 * @return IConverter[]
-	 */
-	public function getConverters()
-	{
-		return $this->converters;
-	}
+    /**
+     * Get converters
+     * @return IConverter[]
+     */
+    public function getConverters()
+    {
+        return $this->converters;
+    }
 
-	/**
-	 * Add resource data converter to list
-	 * @param IConverter $converter
-	 * @return ResourceConverter
-	 */
-	public function addConverter(IConverter $converter)
-	{
-		$this->converters[] = $converter;
-		return $this;
-	}
+    /**
+     * Add resource data converter to list
+     */
+    public function addConverter(IConverter $converter): static
+    {
+        $this->converters[] = $converter;
+        return $this;
+    }
 
-	/**
-	 * Converts data from resource using converters
-	 * @param array $data
-	 * @return array
-	 */
-	public function convert(array $data)
-	{
-		/** @var IConverter $converter */
-		foreach ($this->converters as $converter) {
-			$data = $converter->convert($data);
-		}
+    /**
+     * Converts data from resource using converters
+     * @return array
+     */
+    public function convert(array $data)
+    {
+        /** @var IConverter $converter */
+        foreach ($this->converters as $converter) {
+            $data = $converter->convert($data);
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
 }

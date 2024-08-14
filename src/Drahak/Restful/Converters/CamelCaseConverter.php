@@ -1,8 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette;
 use Drahak\Restful\Utils\Strings;
+use Nette;
+use Traversable;
 
 /**
  * CamelCaseConverter
@@ -11,40 +13,39 @@ use Drahak\Restful\Utils\Strings;
  */
 class CamelCaseConverter implements IConverter
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
     /**
      * Converts resource data keys to camelCase
-     * @param array $resource
      * @return array
      */
-	public function convert(array $resource)
-	{
-		$this->convertToCamel($resource);
-		return $resource;
-	}
+    public function convert(array $resource)
+    {
+        $this->convertToCamel($resource);
+        return $resource;
+    }
 
-	/**
-	 * Convert array keys to camel case
-	 * @param array|\Traversable $array
-	 */
-	private function convertToCamel(&$array)
-	{
-		if ($array instanceof \Traversable) {
-			$array = iterator_to_array($array);
-		}
+    /**
+     * Convert array keys to camel case
+     * @param array|Traversable $array
+     */
+    private function convertToCamel(&$array)
+    {
+        if ($array instanceof Traversable) {
+            $array = iterator_to_array($array);
+        }
 
-		foreach (array_keys($array) as $key) {
-			$value = &$array[$key];
-			unset($array[$key]);
+        foreach (array_keys($array) as $key) {
+            $value = &$array[$key];
+            unset($array[$key]);
 
-			$transformedKey = Strings::toCamelCase($key);
-			if (is_array($value) || $value instanceof \Traversable) {
-				$this->convertToCamel($value);
-			}
-			$array[$transformedKey] = $value;
-			unset($value);
-		}
-	}
+            $transformedKey = Strings::toCamelCase($key);
+            if (is_iterable($value)) {
+                $this->convertToCamel($value);
+            }
+            $array[$transformedKey] = $value;
+            unset($value);
+        }
+    }
 
 }

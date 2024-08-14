@@ -1,8 +1,9 @@
 <?php
+
 namespace Drahak\Restful\Resource;
 
-use Nette;
 use Drahak\Restful\IResource;
+use Nette;
 
 /**
  * Link representation in resource
@@ -12,95 +13,81 @@ use Drahak\Restful\IResource;
  * @property-read string $href
  * @property-read string $rel
  */
-class Link implements IResource
+class Link implements IResource, \Stringable
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** Link pointing on self */
-	const SELF = 'self';
-	/** Link pointing on next page */
-	const NEXT = 'next';
-	/** Link pointing on previous page */
-	const PREVIOUS = 'prev';
-	/** Link pointing on last page */
-	const LAST = 'last';
+    /** Link pointing on self */
+    public const SELF = 'self';
+    /** Link pointing on next page */
+    public const NEXT = 'next';
+    /** Link pointing on previous page */
+    public const PREVIOUS = 'prev';
+    /** Link pointing on last page */
+    public const LAST = 'last';
 
-	/** @var string */
-	private $href;
+    /**
+     * @param string $href
+     * @param string $rel
+     */
+    public function __construct(private $href, private $rel = self::SELF)
+    {
+    }
 
-	/** @var string */
-	private $rel;
+    /**
+     * Get link URL
+     * @return string
+     */
+    public function getHref()
+    {
+        return $this->href;
+    }
 
-	/**
-	 * @param string $href
-	 * @param string $rel
-	 */
-	public function __construct($href, $rel = self::SELF)
-	{
-		$this->href = $href;
-		$this->rel = $rel;
-	}
+    /**
+     * Create link with new href
+     * @param string $href
+     */
+    public function setHref($href): self
+    {
+        return new Link($href, $this->rel);
+    }
 
-	/**
-	 * Get link URL
-	 * @return string
-	 */
-	public function getHref()
-	{
-		return $this->href;
-	}
+    /**
+     * Get link rel
+     * @return string
+     */
+    public function getRel()
+    {
+        return $this->rel;
+    }
 
-	/**
-	 * Get link rel
-	 * @return string
-	 */
-	public function getRel()
-	{
-		return $this->rel;
-	}
+    /**
+     * Create link with new rel
+     * @param string $rel
+     */
+    public function setRel($rel): self
+    {
+        return new Link($this->href, $rel);
+    }
 
-	/**
-	 * Create link with new href
-	 * @param string $href
-	 * @return Link
-	 */
-	public function setHref($href)
-	{
-		return new Link($href, $this->rel);
-	}
+    /**
+     * Converts link to string
+     */
+    public function __toString(): string
+    {
+        return '<' . $this->href . '>;rel="' . $this->rel . '"';
+    }
 
-	/**
-	 * Create link with new rel
-	 * @param string $rel
-	 * @return Link
-	 */
-	public function setRel($rel)
-	{
-		return new Link($this->href, $rel);
-	}
+    /****************** Resource element interface ******************/
 
-	/**
-	 * Converts link to string
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return '<' . $this->href . '>;rel="' . $this->rel . '"';
-	}
-
-	/****************** Resource element interface ******************/
-
-	/**
-	 * Get element value or array data
-	 * @return mixed
-	 */
-	public function getData()
-	{
-		return array(
-			'href' => $this->href,
-			'rel' => $this->rel
-		);
-	}
+    /**
+     * Get element value or array data
+     * @return mixed
+     */
+    public function getData()
+    {
+        return ['href' => $this->href, 'rel' => $this->rel];
+    }
 
 
 }

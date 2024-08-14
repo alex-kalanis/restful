@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security\Process;
 
 use Drahak\Restful\Http\IInput;
@@ -10,25 +11,21 @@ use Drahak\Restful\Http\IInput;
  */
 class NullAuthentication extends AuthenticationProcess
 {
-	/**
-	 * Authenticate request data
-	 * @param IInput $input
-	 * @return bool
-	 */
-	protected function authRequestData(IInput $input)
-	{
-		return TRUE;
-	}
+    /**
+     * Authenticate request data
+     */
+    protected function authRequestData(IInput $input): bool
+    {
+        return TRUE;
+    }
 
-	/**
-	 * Authenticate request time
-	 * @param IInput $input
-	 * @return bool
-	 */
-	protected function authRequestTimeout(IInput $input)
-	{
-		return TRUE;
-	}
+    /**
+     * Authenticate request time
+     */
+    protected function authRequestTimeout(IInput $input): bool
+    {
+        return TRUE;
+    }
 
 
 }

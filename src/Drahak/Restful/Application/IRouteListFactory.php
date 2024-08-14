@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Application;
 
 use Drahak\Restful\Application\Routes\ResourceRouteList;
@@ -11,11 +12,11 @@ use Drahak\Restful\Application\Routes\ResourceRouteList;
 interface IRouteListFactory
 {
 
-	/**
-	 * Create resources route list
-	 * @param string|null $module
-	 * @return ResourceRouteList
-	 */
-	public function create($module = NULL);
+    /**
+     * Create resources route list
+     * @param string|null $module
+     * @return ResourceRouteList
+     */
+    public function create($module = NULL);
 
 }

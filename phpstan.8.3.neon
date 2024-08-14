@@ -1,9 +1,10 @@
 parameters:
 	level: 9
 	paths:
-		- 'php-src'
+		- 'src'
 	excludePaths:
-		- 'php-tests/_autoload.php'
-		- 'php-tests/_bootstrap.php'
+		- 'tests/Drahak/bootstrap.php'
+		- 'tests/Drahak/DatabaseTestCase.php'
+		- 'tests/Drahak/TestCase.php'
 	bootstrapFiles:
-		- 'php-tests/_autoload.php'
+		- 'tests/Drahak/bootstrap.php'

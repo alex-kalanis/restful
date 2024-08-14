@@ -1,9 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
-use Nette;
-use IteratorAggregate;
 use ArrayIterator;
+use IteratorAggregate;
+use Nette;
 use Traversable;
 
 /**
@@ -17,80 +18,64 @@ use Traversable;
  */
 class Error implements IteratorAggregate
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var string */
-	private $field;
+    /**
+     * @param string $field
+     * @param string $message
+     * @param int $code
+     */
+    public function __construct(private $field, private $message, private $code)
+    {
+    }
 
-	/** @var string */
-	private $message;
+    /**
+     * Get error code
+     * @return int
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
 
-	/** @var int */
-	private $code;
+    /****************** Getters ******************/
 
-	/**
-	 * @param string $field
-	 * @param string $message
-	 * @param int $code
-	 */
-	public function __construct($field, $message, $code)
-	{
-		$this->field = $field;
-		$this->message = $message;
-		$this->code = $code;
-	}
+    /**
+     * Get error field name
+     * @return string
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
 
-	/**
-	 * Converts error caret to an array
-	 * @return array
-	 */
-	public function toArray()
-	{
-		return array(
-			'field' => $this->field,
-			'message' => $this->message,
-			'code' => $this->code
-		);
-	}
+    /**
+     * Get validation error message
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 
-	/****************** Getters ******************/
+    /**
+     * Iterate through error data to convert it
+     * @return Traversable
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->toArray());
+    }
 
-	/**
-	 * Get error code
-	 * @return int
-	 */
-	public function getCode()
-	{
-		return $this->code;
-	}
+    /****************** Iterator aggregate interface ******************/
 
-	/**
-	 * Get error field name
-	 * @return string
-	 */
-	public function getField()
-	{
-		return $this->field;
-	}
-
-	/**
-	 * Get validation error message
-	 * @return string
-	 */
-	public function getMessage()
-	{
-		return $this->message;
-	}
-
-	/****************** Iterator aggregate interface ******************/
-
-	/**
-	 * Iterate through error data to convert it
-	 * @return Traversable
-	 */
-	public function getIterator()
-	{
-		return new ArrayIterator($this->toArray());
-	}
+    /**
+     * Converts error caret to an array
+     * @return array
+     */
+    public function toArray()
+    {
+        return ['field' => $this->field, 'message' => $this->message, 'code' => $this->code];
+    }
 
 }

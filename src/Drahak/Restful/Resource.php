@@ -1,13 +1,15 @@
 <?php
+
 namespace Drahak\Restful;
 
 use ArrayAccess;
-use Serializable;
 use ArrayIterator;
+use Exception;
 use IteratorAggregate;
 use Nette;
-use Nette\Utils\Json;
 use Nette\MemberAccessException;
+use Nette\Utils\Json;
+use Serializable;
 
 /**
  * REST resource
@@ -19,176 +21,158 @@ use Nette\MemberAccessException;
  */
 class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResource
 {
-	use Nette\SmartObject {
-		Nette\SmartObject::__get as SO__get;
-		Nette\SmartObject::__set as SO__set;
-		Nette\SmartObject::__isset as SO__isset;
-		Nette\SmartObject::__unset as SO__unset;
-	}
+    use Nette\SmartObject {
+        Nette\SmartObject::__get as SO__get;
+        Nette\SmartObject::__set as SO__set;
+        Nette\SmartObject::__isset as SO__isset;
+        Nette\SmartObject::__unset as SO__unset;
+    }
 
-	/** @var array */
-	private $data = array();
+    public function __construct(private array $data = [])
+    {
+    }
 
-	/**
-	 * @param array $data
-	 */
-	public function __construct(array $data = array())
-	{
-		$this->data = $data;
-	}
+    /**
+     * get info if the resource has some data set or is empty
+     * @return boolean
+     */
+    public function hasData()
+    {
+        return !empty($this->data);
+    }
 
-	/**
-	 * Get result set data
-	 * @return array
-	 */
-	public function getData()
-	{
-		return $this->data;
-	}
+    /**
+     * Serialize result set
+     * @return string
+     */
+    public function serialize()
+    {
+        return Json::encode($this->data);
+    }
 
-	/**
-	 * get info if the resource has some data set or is empty
-	 * @return boolean
-	 */
-	public function hasData()
-	{
-		return !empty($this->data);
-	}
+    /******************** Serializable ********************/
 
-	/******************** Serializable ********************/
+    /**
+     * Unserialize Resource
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        $this->data = Json::decode($serialized);
+    }
 
-	/**
-	 * Serialize result set
-	 * @return string
-	 */
-	public function serialize()
-	{
-		return Json::encode($this->data);
-	}
+    /**
+     * @return bool
+     */
+    public function offsetExists(mixed $offset)
+    {
+        return isset($this->data[$offset]);
+    }
 
-	/**
-	 * Unserialize Resource
-	 * @param string $serialized
-	 */
-	public function unserialize($serialized)
-	{
-		$this->data = Json::decode($serialized);
-	}
+    /******************** ArrayAccess interface ********************/
+    /**
+     * @return mixed
+     */
+    public function offsetGet(mixed $offset)
+    {
+        return $this->data[$offset];
+    }
 
-	/******************** ArrayAccess interface ********************/
+    public function offsetSet(mixed $offset, mixed $value)
+    {
+        if ($offset === NULL) {
+            $offset = count($this->data);
+        }
+        $this->data[$offset] = $value;
+    }
 
-	/**
-	 * @param mixed $offset
-	 * @return bool
-	 */
-	public function offsetExists($offset)
-	{
-		return isset($this->data[$offset]);
-	}
+    public function offsetUnset(mixed $offset)
+    {
+        unset($this->data[$offset]);
+    }
 
-	/**
-	 * @param mixed $offset
-	 * @return mixed
-	 */
-	public function offsetGet($offset)
-	{
-		return $this->data[$offset];
-	}
+    /**
+     * Get resource data iterator
+     * @return ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->getData());
+    }
 
-	/**
-	 * @param mixed $offset
-	 * @param mixed $value
-	 */
-	public function offsetSet($offset, $value)
-	{
-		if ($offset === NULL) {
-			$offset = count($this->data);
-		}
-		$this->data[$offset] = $value;
-	}
+    /******************** Iterator aggregate interface ********************/
 
-	/**
-	 * @param mixed $offset
-	 */
-	public function offsetUnset($offset)
-	{
-		unset($this->data[$offset]);
-	}
+    /**
+     * Get result set data
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	/******************** Iterator aggregate interface ********************/
+    /******************** Magic methods ********************/
 
-	/**
-	 * Get resource data iterator
-	 * @return ArrayIterator
-	 */
-	public function getIterator()
-	{
-		return new ArrayIterator($this->getData());
-	}
+    /**
+     * Magic getter from $this->data
+     * @param string $name
+     *
+     * @return mixed
+     * @throws Exception|MemberAccessException
+     */
+    public function &__get($name)
+    {
+        try {
+            return $this->SO__get($name);
+        } catch (MemberAccessException $e) {
+            if (isset($this->data[$name])) {
+                return $this->data[$name];
+            }
+            throw $e;
+        }
 
-	/******************** Magic methods ********************/
+    }
 
-	/**
-	 * Magic getter from $this->data
-	 * @param string $name
-	 *
-	 * @throws \Exception|\Nette\MemberAccessException
-	 * @return mixed
-	 */
-	public function &__get($name)
-	{
-		try {
-			return $this->SO__get($name);
-		} catch (MemberAccessException $e) {
-			if (isset($this->data[$name])) {
-				return $this->data[$name];
-			}
-			throw $e;
-		}
+    /**
+     * Magic setter to $this->data
+     * @param string $name
+     */
+    public function __set($name, mixed $value)
+    {
+        try {
+            $this->SO__set($name, $value);
+        } catch (MemberAccessException) {
+            $this->data[$name] = $value;
+        }
+    }
 
-	}
+    /**
+     * Magic isset to $this->data
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return !$this->SO__isset($name) ? isset($this->data[$name]) : TRUE;
+    }
 
-	/**
-	 * Magic setter to $this->data
-	 * @param string $name
-	 * @param mixed $value
-	 */
-	public function __set($name, $value)
-	{
-		try {
-			$this->SO__set($name, $value);
-		} catch (MemberAccessException $e) {
-			$this->data[$name] = $value;
-		}
-	}
-
-	/**
-	 * Magic isset to $this->data
-	 * @param string $name
-	 * @return bool
-	 */
-	public function __isset($name)
-	{
-		return !$this->SO__isset($name) ? isset($this->data[$name]) : TRUE;
-	}
-
-	/**
-	 * Magic unset from $this->data
-	 * @param string $name
-	 * @throws \Exception|\Nette\MemberAccessException
-	 */
-	public function __unset($name)
-	{
-		try {
-			$this->SO__unset($name);
-		} catch (MemberAccessException $e) {
-			if (isset($this->data[$name])) {
-				unset($this->data[$name]);
-				return;
-			}
-			throw $e;
-		}
-	}
+    /**
+     * Magic unset from $this->data
+     * @param string $name
+     * @throws Exception|MemberAccessException
+     */
+    public function __unset($name)
+    {
+        try {
+            $this->SO__unset($name);
+        } catch (MemberAccessException $e) {
+            if (isset($this->data[$name])) {
+                unset($this->data[$name]);
+                return;
+            }
+            throw $e;
+        }
+    }
 
 
 }

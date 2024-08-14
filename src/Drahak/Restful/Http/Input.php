@@ -1,13 +1,16 @@
 <?php
+
 namespace Drahak\Restful\Http;
 
 use ArrayIterator;
-use IteratorAggregate;
-use Nette;
 use Drahak\Restful\Validation\IDataProvider;
 use Drahak\Restful\Validation\IField;
 use Drahak\Restful\Validation\IValidationScope;
 use Drahak\Restful\Validation\IValidationScopeFactory;
+use Exception;
+use IteratorAggregate;
+use Nette;
+use Nette\MemberAccessException;
 
 /**
  * Request Input parser
@@ -18,127 +21,112 @@ use Drahak\Restful\Validation\IValidationScopeFactory;
  */
 class Input implements IteratorAggregate, IInput, IDataProvider
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var array */
-	private $data;
+    /** @var IValidationScope */
+    private $validationScope;
 
-	/** @var IValidationScope */
-	private $validationScope;
+    public function __construct(private IValidationScopeFactory $validationScopeFactory, private array $data = [])
+    {
+    }
 
-	/** @var IValidationScopeFactory */
-	private $validationScopeFactory;
+    /******************** IInput ********************/
 
-	/**
-	 * @param IValidationScopeFactory $validationScopeFactory
-	 * @param array $data
-	 */
-	public function __construct(IValidationScopeFactory $validationScopeFactory, array $data = array())
-	{
-		$this->data = $data;
-		$this->validationScopeFactory = $validationScopeFactory;
-	}
+    /**
+     * @param string $name
+     * @return mixed
+     *
+     * @throws Exception|MemberAccessException
+     */
+    public function &__get($name)
+    {
+        $data = $this->getData();
+        if (array_key_exists($name, $data)) {
+            return $data[$name];
+        }
+        throw new MemberAccessException('Cannot read an undeclared property ' . static::class . '::$' . $name . '.');
+    }
 
-	/******************** IInput ********************/
+    /**
+     * Get parsed input data
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	/**
-	 * Get parsed input data
-	 * @return array
-	 */
-	public function getData()
-	{
-		return $this->data;
-	}
+    /******************** Magic methods ********************/
+    /**
+     * Set input data
+     */
+    public function setData(array $data): static
+    {
+        $this->data = $data;
+        return $this;
+    }
 
-	/**
-	 * Set input data
-	 * @param array $data
-	 * @return Input
-	 */
-	public function setData(array $data)
-	{
-		$this->data = $data;
-		return $this;
-	}
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        $data = $this->getData();
+        return array_key_exists($name, $data);
+    }
 
-	/******************** Magic methods ********************/
+    /******************** Iterator aggregate interface ********************/
 
-	/**
-	 * @param string $name
-	 * @return mixed
-	 *
-	 * @throws \Exception|\Nette\MemberAccessException
-	 */
-	public function &__get($name)
-	{
-		$data = $this->getData();
-		if (array_key_exists($name, $data)) {
-			return $data[$name];
-		}
-		throw new \Nette\MemberAccessException('Cannot read an undeclared property '.get_class($this).'::$'.$name.'.');
-	}
+    /**
+     * Get input data iterator
+     * @return InputIterator
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->getData());
+    }
 
-	/**
-	 * @param string $name
-	 * @return bool
-	 */
-	public function __isset($name)
-	{
-		$data = $this->getData();
-		return array_key_exists($name, $data);
-	}
+    /******************** Validation data provider interface ********************/
 
-	/******************** Iterator aggregate interface ********************/
+    /**
+     * Get validation field
+     * @param string $name
+     * @return IField
+     */
+    public function field($name)
+    {
+        return $this->getValidationScope()->field($name);
+    }
 
-	/**
-	 * Get input data iterator
-	 * @return InputIterator
-	 */
-	public function getIterator()
-	{
-		return new ArrayIterator($this->getData());
-	}
+    /**
+     * Get validation scope
+     * @return IValidationScope
+     */
+    public function getValidationScope()
+    {
+        if (!$this->validationScope) {
+            $this->validationScope = $this->validationScopeFactory->create();
+        }
+        return $this->validationScope;
+    }
 
-	/******************** Validation data provider interface ********************/
+    /**
+     * Is input valid
+     * @return bool
+     */
+    public function isValid()
+    {
+        return !$this->validate();
+    }
 
-	/**
-	 * Get validation field
-	 * @param string $name
-	 * @return IField
-	 */
-	public function field($name)
-	{
-		return $this->getValidationScope()->field($name);
-	}
-
-	/**
-	 * Validate input data
-	 * @return array
-	 */
-	public function validate()
-	{
-		return $this->getValidationScope()->validate($this->getData());
-	}
-
-	/**
-	 * Is input valid
-	 * @return bool
-	 */
-	public function isValid()
-	{
-		return !$this->validate();
-	}
-
-	/**
-	 * Get validation scope
-	 * @return IValidationScope
-	 */
-	public function getValidationScope()
-	{
-		if (!$this->validationScope) {
-			$this->validationScope = $this->validationScopeFactory->create();
-		}
-		return $this->validationScope;
-	}
+    /**
+     * Validate input data
+     * @return array
+     */
+    public function validate()
+    {
+        return $this->getValidationScope()->validate($this->getData());
+    }
 
 }

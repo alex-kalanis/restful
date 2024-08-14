@@ -50,7 +50,7 @@ class MethodAnnotationTest extends TestCase
 
 		$this->presenterReflection->expects('getMethods')
 			->once()
-			->andReturn(array($methodReflection));
+			->andReturn([$methodReflection]);
 
 		$this->presenterReflection->expects('getShortName')
 			->once()

@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 /**
@@ -9,10 +10,10 @@ namespace Drahak\Restful\Validation;
 interface IValidationScopeFactory
 {
 
-	/**
-	 * Validation schema factory
-	 * @return \Drahak\Restful\Validation\IValidationScope
-	 */
-	public function create();
+    /**
+     * Validation schema factory
+     * @return IValidationScope
+     */
+    public function create();
 
 }

@@ -1,5 +1,8 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
+
+use Traversable;
 
 /**
  * Resource data mapper interface
@@ -9,22 +12,20 @@ namespace Drahak\Restful\Mapping;
 interface IMapper
 {
 
-	/**
-	 * Convert array or Traversable input to string output response
-	 * @param array|\Traversable $data
-	 * @param bool $prettyPrint
-	 * @return mixed
-	 *
-	 */
-	public function stringify($data, $prettyPrint = TRUE);
+    /**
+     * Convert array or Traversable input to string output response
+     * @param array|Traversable $data
+     * @param bool $prettyPrint
+     * @return mixed
+     *
+     */
+    public function stringify($data, $prettyPrint = TRUE);
 
-	/**
-	 * Convert client request data to array or traversable
-	 * @param mixed $data
-	 * @return array|\Traversable
-	 *
-	 * @throws MappingException
-	 */
-	public function parse($data);
+    /**
+     * Convert client request data to array or traversable
+     * @return array|Traversable
+     * @throws MappingException
+     */
+    public function parse(mixed $data);
 
 }

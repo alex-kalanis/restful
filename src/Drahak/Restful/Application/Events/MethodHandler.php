@@ -1,14 +1,17 @@
 <?php
+
 namespace Drahak\Restful\Application\Events;
 
-use Drahak\Restful\Application\MethodOptions;
 use Drahak\Restful\Application\BadRequestException;
+use Drahak\Restful\Application\MethodOptions;
 use Drahak\Restful\Http\Request;
+use Exception;
+use Nette;
 use Nette\Application\Application;
 use Nette\Application\BadRequestException as NetteBadRequestException;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
-use Nette;
+use Throwable;
 
 /**
  * MethodHandler
@@ -17,71 +20,53 @@ use Nette;
  */
 class MethodHandler
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var IRequest */
-	private $request;
+    public function __construct(private IRequest $request, private IResponse $response, private MethodOptions $methods)
+    {
+    }
 
-	/** @var IResponse */
-	private $response;
+    /**
+     * On application run
+     *
+     * @throws BadRequestException
+     */
+    public function run(Application $application)
+    {
+        $router = $application->getRouter();
+        $appRequest = $router->match($this->request);
+        if (!$appRequest) {
+            $this->checkAllowedMethods();
+        }
+    }
 
-	/** @var MethodOptions */
-	private $methods;
+    /**
+     * Check allowed methods
+     *
+     * @throws BadRequestException If method is not supported but another one can be used
+     */
+    protected function checkAllowedMethods()
+    {
+        $availableMethods = $this->methods->getOptions($this->request->getUrl());
+        if (!$availableMethods || in_array($this->request->method, $availableMethods)) {
+            return;
+        }
 
-	/**
-	 * @param IRequest $request
-	 * @param MethodOptions $methods
-	 */
-	public function __construct(IRequest $request, IResponse $response, MethodOptions $methods)
-	{
-		$this->request = $request;
-		$this->response = $response;
-		$this->methods = $methods;
-	}
+        $allow = implode(', ', $availableMethods);
+        $this->response->setHeader('Allow', $allow);
+        throw BadRequestException::methodNotSupported(
+            'Method not supported. Available methods: ' . $allow);
+    }
 
-	/**
-	 * On application run
-	 * @param Application $application
-	 *
-	 * @throws BadRequestException
-	 */
-	public function run(Application $application)
-	{
-		$router = $application->getRouter();
-		$appRequest = $router->match($this->request);
-		if (!$appRequest) {
-			$this->checkAllowedMethods();
-		}
-	}
-
-	/**
-	 * On application error
-	 * @param  Application $application 
-	 * @param  \Exception|\Throwable $e
-	 */
-	public function error(Application $application,$e)
-	{
-		if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
-			$this->checkAllowedMethods();
-		}
-	}
-
-	/**
-	 * Check allowed methods
-	 *
-	 * @throws BadRequestException If method is not supported but another one can be used
-	 */
-	protected function checkAllowedMethods()
-	{
-		$availableMethods = $this->methods->getOptions($this->request->getUrl());
-		if (!$availableMethods || in_array($this->request->method, $availableMethods)) {
-			return;
-		}
-
-		$allow = implode(', ', $availableMethods);
-		$this->response->setHeader('Allow', $allow);
-		throw BadRequestException::methodNotSupported(
-			'Method not supported. Available methods: ' . $allow);
-	}
+    /**
+     * On application error
+     * @param Exception|Throwable $e
+     */
+    public function error(Application $application, $e)
+    {
+        if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
+            $this->checkAllowedMethods();
+        }
+    }
 
 }

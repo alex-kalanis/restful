@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\RuntimeException;

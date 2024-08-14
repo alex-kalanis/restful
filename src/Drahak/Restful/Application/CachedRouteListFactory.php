@@ -1,10 +1,11 @@
 <?php
+
 namespace Drahak\Restful\Application;
 
 use Drahak\Restful\Application\Routes\ResourceRouteList;
+use Nette;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
-use Nette;
 use Nette\Utils\Finder;
 
 /**
@@ -14,66 +15,53 @@ use Nette\Utils\Finder;
  */
 final class CachedRouteListFactory implements IRouteListFactory
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** Cache name */
-	const CACHE_NAME = 'resourceRouteList';
+    /** Cache name */
+    public const CACHE_NAME = 'resourceRouteList';
 
-	/** @var Cache */
-	private $cache;
+    /** @var Cache */
+    private $cache;
 
-	/** @var string */
-	private $presentersRoot;
+    /**
+     * @param string $presentersRoot
+     */
+    public function __construct(private $presentersRoot, private IRouteListFactory $routeListFactory, IStorage $storage)
+    {
+        $this->cache = new Cache($storage, self::class);
+    }
 
-	/** @var IRouteListFactory */
-	private $routeListFactory;
+    /**
+     * Create cached route list
+     * @return ResourceRouteList
+     */
+    private function createCached($module = NULL)
+    {
+        $files = [];
+        $presenterFiles = Finder::findFiles('*Presenter.php')->from($this->presentersRoot);
+        foreach ($presenterFiles as $path => $splFile) {
+            $files[] = $path;
+        }
 
-	/**
-	 * @param string $presentersRoot
-	 * @param IRouteListFactory $routeListFactory
-	 * @param IStorage $storage
-	 */
-	public function __construct($presentersRoot, IRouteListFactory $routeListFactory, IStorage $storage)
-	{
-		$this->presentersRoot = $presentersRoot;
-		$this->routeListFactory = $routeListFactory;
-		$this->cache = new Cache($storage, get_class($this));
-	}
+        $routeList = $this->routeListFactory->create($module);
+        $this->cache->save(self::CACHE_NAME, $routeList, [Cache::FILES => $files]);
+        return $routeList;
+    }
 
-	/**
-	 * Create cached route list
-	 * @param null $module
-	 * @return ResourceRouteList
-	 */
-	private function createCached($module = NULL)
-	{
-		$files = array();
-		$presenterFiles = Finder::findFiles('*Presenter.php')->from($this->presentersRoot);
-		foreach ($presenterFiles as $path => $splFile) {
-			$files[] = $path;
-		}
+    /******************** Route list factory ********************/
 
-		$routeList = $this->routeListFactory->create($module);
-		$this->cache->save(self::CACHE_NAME, $routeList, array(
-			Cache::FILES => $files
-		));
-		return $routeList;
-	}
-
-	/******************** Route list factory ********************/
-
-	/**
-	 * Create resources route list
-	 * @param string|null $module
-	 * @return ResourceRouteList
-	 */
-	public function create($module = NULL)
-	{
-		$routeList = $this->cache->load(self::CACHE_NAME);
-		if ($routeList !== NULL) {
-			return $routeList;
-		}
-		return $this->createCached($module);
-	}
+    /**
+     * Create resources route list
+     * @param string|null $module
+     * @return ResourceRouteList
+     */
+    public function create($module = NULL)
+    {
+        $routeList = $this->cache->load(self::CACHE_NAME);
+        if ($routeList !== NULL) {
+            return $routeList;
+        }
+        return $this->createCached($module);
+    }
 
 }

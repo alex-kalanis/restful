@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful;
 
 /**
@@ -9,11 +10,10 @@ namespace Drahak\Restful;
 interface IResourceFactory
 {
 
-	/**
-	 * Create new API resource
-	 * @param array $data
-	 * @return IResource
-	 */
-	public function create(array $data = array());
+    /**
+     * Create new API resource
+     * @return IResource
+     */
+    public function create(array $data = []);
 
 }

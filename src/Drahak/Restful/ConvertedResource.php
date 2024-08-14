@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful;
 
 use Drahak\Restful\Converters\ResourceConverter;
@@ -10,27 +11,19 @@ use Drahak\Restful\Converters\ResourceConverter;
 class ConvertedResource extends Resource
 {
 
-	/** @var ResourceConverter */
-	private $resourceConverter;
+    public function __construct(private readonly ResourceConverter $resourceConverter, array $data = [])
+    {
+        parent::__construct($data);
+    }
 
-	/**
-	 * @param ResourceConverter $resourceConverter
-	 * @param array $data
-	 */
-	public function __construct(ResourceConverter $resourceConverter, array $data = array())
-	{
-		parent::__construct($data);
-		$this->resourceConverter = $resourceConverter;
-	}
-
-	/**
-	 * Get parsed resource
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data = parent::getData();
-		return $this->resourceConverter->convert($data);
-	}
+    /**
+     * Get parsed resource
+     * @return array
+     */
+    public function getData()
+    {
+        $data = parent::getData();
+        return $this->resourceConverter->convert($data);
+    }
 
 }

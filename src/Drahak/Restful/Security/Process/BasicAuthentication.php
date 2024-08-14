@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security\Process;
 
 use Drahak\Restful\Http\IInput;
@@ -15,43 +16,32 @@ use Nette\Security\User;
 class BasicAuthentication extends AuthenticationProcess
 {
 
-	/** @var User */
-	private $user;
+    public function __construct(private readonly User $user)
+    {
+    }
 
-	/**
-	 * @param User $user
-	 */
-	public function __construct(User $user)
-	{
-		$this->user = $user;
-	}
+    /**
+     * Authenticate request data
+     * @return bool
+     * @throws AuthenticationException
+     */
+    protected function authRequestData(IInput $input)
+    {
+        if (!$this->user->isLoggedIn()) {
+            throw new AuthenticationException('User not logged in');
+        }
+    }
 
-	/**
-	 * Authenticate request data
-	 * @param IInput $input
-	 * @return bool
-	 *
-	 * @throws AuthenticationException
-	 */
-	protected function authRequestData(IInput $input)
-	{
-		if (!$this->user->isLoggedIn()) {
-			throw new AuthenticationException('User not logged in');
-		}
-	}
-
-	/**
-	 * Authenticate request timeout
-	 * @param IInput $input
-	 * @return bool
-	 *
-	 * @throws RequestTimeoutException
-	 */
-	protected function authRequestTimeout(IInput $input)
-	{
-		if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
-			throw new RequestTimeoutException('User session expired');
-		}
-	}
+    /**
+     * Authenticate request timeout
+     * @return bool
+     * @throws RequestTimeoutException
+     */
+    protected function authRequestTimeout(IInput $input)
+    {
+        if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
+            throw new RequestTimeoutException('User session expired');
+        }
+    }
 
 }

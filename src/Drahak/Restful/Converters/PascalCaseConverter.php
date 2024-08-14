@@ -1,8 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette;
 use Drahak\Restful\Utils\Strings;
+use Nette;
+use Traversable;
 
 /**
  * PascalCaseConverter
@@ -11,40 +13,39 @@ use Drahak\Restful\Utils\Strings;
  */
 class PascalCaseConverter implements IConverter
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/**
-	 * Converts resource data keys to PascalCase
-	 * @param array $resource
-	 * @return array
-	 */
-	public function convert(array $resource)
-	{
-		$this->convertToPascal($resource);
-		return $resource;
-	}
+    /**
+     * Converts resource data keys to PascalCase
+     * @return array
+     */
+    public function convert(array $resource)
+    {
+        $this->convertToPascal($resource);
+        return $resource;
+    }
 
-	/**
-	 * Convert array keys to camel case
-	 * @param array|\Traversable $array
-	 */
-	private function convertToPascal(&$array)
-	{
-		if ($array instanceof \Traversable) {
-			$array = iterator_to_array($array);
-		}
+    /**
+     * Convert array keys to camel case
+     * @param array|Traversable $array
+     */
+    private function convertToPascal(&$array)
+    {
+        if ($array instanceof Traversable) {
+            $array = iterator_to_array($array);
+        }
 
-		foreach (array_keys($array) as $key) {
-			$value = &$array[$key];
-			unset($array[$key]);
+        foreach (array_keys($array) as $key) {
+            $value = &$array[$key];
+            unset($array[$key]);
 
-			$transformedKey = Strings::toPascalCase($key);
-			if (is_array($value) || $value instanceof \Traversable) {
-				$this->convertToPascal($value);
-			}
-			$array[$transformedKey] = $value;
-			unset($value);
-		}
-	}
+            $transformedKey = Strings::toPascalCase($key);
+            if (is_iterable($value)) {
+                $this->convertToPascal($value);
+            }
+            $array[$transformedKey] = $value;
+            unset($value);
+        }
+    }
 
 }

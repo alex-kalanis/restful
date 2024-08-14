@@ -1,117 +1,101 @@
 <?php
+
 namespace Drahak\Restful\Application\Routes;
 
 use Nette;
-use Nette\Application\IRouter;
+use Nette\Application;
 use Nette\Application\Routers\Route;
 use Nette\Http;
-use Nette\Http\Url;
+use Nette\Routing\Router;
 use Nette\Utils\Strings;
-use Nette\Application;
 
 /**
- * API strict route 
+ * API strict route
  * - forces URL in form <prefix>/<presenter>[/<relation>[/<relationId>[/<relation>...]]]
- * - contrtructs app request to <Module>:<Presenter>:read<Relation[0]><Relation[1]>(<RelationId[0]>, <RelationId[1]>, ...)
+ * - constructs app request to <Module>:<Presenter>:read<Relation[0]><Relation[1]>(<RelationId[0]>, <RelationId[1]>, ...)
  * @author Drahomír Hanák
  */
-class StrictRoute implements IRouter
+class StrictRoute implements Router
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var string */
-	protected $prefix;
+    /** method dictionary */
+    protected $methods = [Http\IRequest::GET => 'read', Http\IRequest::POST => 'create', Http\IRequest::PUT => 'update', Http\IRequest::DELETE => 'delete', Http\IRequest::HEAD => 'head', 'PATCH' => 'patch', 'OPTIONS' => 'options'];
 
-	/** @var string|NULL */
-	protected $module;
+    /**
+     * @param string $prefix
+     * @param stirng $module
+     */
+    public function __construct(protected $prefix = '', protected $module = NULL)
+    {
+    }
 
-	/** method dictionary */
-	protected $methods = array(
-		Http\IRequest::GET => 'read',
-		Http\IRequest::POST => 'create',
-		Http\IRequest::PUT => 'update',
-		Http\IRequest::DELETE => 'delete',
-		Http\IRequest::HEAD => 'head',
-		'PATCH' => 'patch',
-		'OPTIONS' => 'options',
-	);
+    /**
+     * Match request
+     * @param IRequest $request
+     * @return Request
+     */
+    public function match(Http\IRequest $request): ?array
+    {
+        $path = $request->url->getPathInfo();
+        if (!\str_contains((string) $path, $this->prefix)) {
+            return NULL;
+        }
 
-	/**
-	 * @param  string $prefix 
-	 * @param  stirng $module
-	 */
-	public function __construct($prefix = '', $module = NULL)
-	{
-		$this->prefix = $prefix;
-		$this->module = $module;
-	}
-	
-	/**
-	 * Match request
-	 * @param  IRequest $request 
-	 * @return Request            
-	 */
-	public function match(Http\IRequest $request)
-	{
-		$path = $request->url->getPathInfo();
-		if (!Strings::contains($path, $this->prefix)) {
-			return NULL;
-		}
+        $path = Strings::substring($path, strlen($this->prefix) + 1);
+        $pathParts = explode('/', $path);
+        $pathArguments = array_slice($pathParts, 1);
 
-		$path = Strings::substring($path, strlen($this->prefix) + 1);
-		$pathParts = explode('/', $path);
-		$pathArguments = array_slice($pathParts, 1);
+        $action = $this->getActionName($request->getMethod(), $pathArguments);
+        $params = $this->getPathParameters($pathArguments);
+        $params[Route::MODULE_KEY] = $this->module;
+        $params[Route::PRESENTER_KEY] = $pathParts[0];
+        $params['action'] = $action;
 
-		$action = $this->getActionName($request->getMethod(), $pathArguments);
-		$params = $this->getPathParameters($pathArguments);
-		$params[Route::MODULE_KEY] = $this->module;
-		$params[Route::PRESENTER_KEY] = $pathParts[0];
-		$params['action'] = $action;
+        $presenter = ($this->module ? $this->module . ':' : '') . $params[Route::PRESENTER_KEY];
 
-		$presenter = ($this->module ? $this->module . ':' : '') . $params[Route::PRESENTER_KEY];
+        $appRequest = new Application\Request($presenter, $request->getMethod(), $params, $request->getPost(), $request->getFiles());
+        return $appRequest;
+    }
 
-		$appRequest = new Application\Request($presenter, $request->getMethod(), $params, $request->getPost(), $request->getFiles());
-		return $appRequest;
-	}
-	
-	public function constructUrl(Application\Request $request, Url $refUrl)
-	{
-		return NULL;
-	}
+    /**
+     * Get action name
+     * @param string $method
+     * @param array $arguments
+     * @return string
+     */
+    private function getActionName($method, $arguments)
+    {
+        if (!isset($this->methods[$method])) {
+            throw new InvalidArgumentException(
+                'Reuqest method must be one of ' . join(', ', array_keys($this->methods)) . ', ' . $method . ' given'
+            );
+        }
 
-	/**
-	 * Get path parameters
-	 * @param  array $arguments 
-	 * @return array            
-	 */
-	private function getPathParameters($arguments)
-	{
-		$parameters = array();
-		for ($i = 1, $count = count($arguments); $i < $count; $i += 2) {
-			$parameters[] = $arguments[$i];
-		}
-		return array('params' => $parameters);
-	}
+        $name = $this->methods[$method];
+        for ($i = 0, $count = count($arguments); $i < $count; $i += 2) {
+            $name += Strings::firstUpper($arguments[$i]);
+        }
+        return $name;
+    }
 
-	/**
-	 * Get action name 
-	 * @param  string $method   
-	 * @param  array $arguments 
-	 * @return string
-	 */
-	private function getActionName($method, $arguments)
-	{
-		if (!isset($this->methods[$method])) {
-			throw new InvalidArgumentException(
-				'Reuqest method must be one of ' . join(', ', array_keys($this->methods)) . ', ' . $method . ' given'
-			);
-		}
+    /**
+     * Get path parameters
+     * @param array $arguments
+     * @return array
+     */
+    private function getPathParameters($arguments)
+    {
+        $parameters = [];
+        for ($i = 1, $count = count($arguments); $i < $count; $i += 2) {
+            $parameters[] = $arguments[$i];
+        }
+        return ['params' => $parameters];
+    }
 
-		$name = $this->methods[$method];
-		for ($i = 0, $count = count($arguments); $i < $count; $i += 2) {
-			$name += Strings::firstUpper($arguments[$i]);
-		}
-		return $name;
-	}
+    public function constructUrl(array $request, Http\UrlScript $refUrl): ?string
+    {
+        return NULL;
+    }
 
 }

@@ -2,6 +2,7 @@
 .idea/
 
 # Setuptools, their dist folder
+composer.phar
 composer.lock
 vendor/
 build/

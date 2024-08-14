@@ -1,9 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Security\Authentication;
 
-use Nette;
 use Drahak\Restful\Http\IInput;
 use Drahak\Restful\Security\RequestTimeoutException;
+use Nette;
 
 /**
  * Verify request timeout to avoid replay attack (needs to be applied with any HashAuthenticator)
@@ -12,46 +13,36 @@ use Drahak\Restful\Security\RequestTimeoutException;
  */
 class TimeoutAuthenticator implements IRequestAuthenticator
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var string */
-	private $requestTimeKey;
+    /**
+     * @param string $requestTimeKey in user request data
+     * @param int $timeout in milliseconds
+     */
+    public function __construct(private $requestTimeKey, private $timeout)
+    {
+    }
 
-	/** @var int */
-	private $timeout;
+    /**
+     * Authenticate request timeout
+     *
+     * @throws RequestTimeoutException
+     */
+    public function authenticate(IInput $input): bool
+    {
+        $timestamp = time();
+        $data = $input->getData();
+        if (!isset($data[$this->requestTimeKey]) || !$data[$this->requestTimeKey]) {
+            throw new RequestTimeoutException('Request time not found in requested data.');
+        }
 
-	/**
-	 * @param string $requestTimeKey in user request data
-	 * @param int $timeout in milliseconds
-	 */
-	public function __construct($requestTimeKey, $timeout)
-	{
-		$this->requestTimeKey = $requestTimeKey;
-		$this->timeout = $timeout;
-	}
+        $diff = $timestamp - $data[$this->requestTimeKey];
+        if ($diff > $this->timeout) {
+            throw new RequestTimeoutException('Request timeout');
+        }
 
-	/**
-	 * Authenticate request timeout
-	 * @param IInput $input
-	 * @return bool
-	 *
-	 * @throws RequestTimeoutException
-	 */
-	public function authenticate(IInput $input)
-	{
-		$timestamp = time();
-		$data = $input->getData();
-		if (!isset($data[$this->requestTimeKey]) || !$data[$this->requestTimeKey]) {
-			throw new RequestTimeoutException('Request time not found in requested data.');
-		}
+        return TRUE;
 
-		$diff = $timestamp - $data[$this->requestTimeKey];
-		if ($diff > $this->timeout) {
-			throw new RequestTimeoutException('Request timeout');
-		}
-
-		return TRUE;
-
-	}
+    }
 
 }

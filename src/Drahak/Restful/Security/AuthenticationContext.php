@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\Http\IInput;
@@ -12,33 +13,30 @@ use Nette;
  */
 class AuthenticationContext
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var AuthenticationProcess */
-	private $process;
+    /** @var AuthenticationProcess */
+    private $process;
 
-	/**
-	 * Set authentication process to use
-	 * @param AuthenticationProcess $process
-	 * @return AuthenticationContext
-	 */
-	public function setAuthProcess(AuthenticationProcess $process)
-	{
-		$this->process = $process;
-		return $this;
-	}
+    /**
+     * Set authentication process to use
+     */
+    public function setAuthProcess(AuthenticationProcess $process): static
+    {
+        $this->process = $process;
+        return $this;
+    }
 
-	/**
-	 * Authenticate request with authentication process strategy
-	 * @param IInput $input
-	 * @return bool
-	 *
-	 * @throws AuthenticationException
-	 * @throws RequestTimeoutException
-	 */
-	public function authenticate(IInput $input)
-	{
-		return $this->process->authenticate($input);
-	}
+    /**
+     * Authenticate request with authentication process strategy
+     * @return bool
+     *
+     * @throws AuthenticationException
+     * @throws RequestTimeoutException
+     */
+    public function authenticate(IInput $input)
+    {
+        return $this->process->authenticate($input);
+    }
 
 }

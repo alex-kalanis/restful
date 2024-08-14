@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 /**
@@ -9,38 +10,36 @@ namespace Drahak\Restful\Validation;
 interface IValidator
 {
 
-	// Equality rules
-	const EQUAL = ':equal';
-	const IS_IN = ':equal';
-	const REQUIRED = 'required';
+    // Equality rules
+    public const EQUAL = ':equal';
+    public const IS_IN = ':equal';
+    public const REQUIRED = 'required';
 
-	// Textual rules
-	const MIN_LENGTH = 'string:%d..';
-	const MAX_LENGTH = 'string:..%d';
-	const LENGTH = 'string:%d..%d';
-	const EMAIL = ':email';
-	const URL = ':url';
-	const REGEXP = ':regexp';
-	const PATTERN = ':regexp'; // same as regexp
+    // Textual rules
+    public const MIN_LENGTH = 'string:%d..';
+    public const MAX_LENGTH = 'string:..%d';
+    public const LENGTH = 'string:%d..%d';
+    public const EMAIL = ':email';
+    public const URL = ':url';
+    public const REGEXP = ':regexp';
+    public const PATTERN = ':regexp'; // same as regexp
 
-	// Numeric rules
-	const INTEGER = 'int';
-	const NUMERIC = 'numeric';
-	const FLOAT = 'float';
-	const RANGE = 'numeric:%s..%s';
+    // Numeric rules
+    public const INTEGER = 'int';
+    public const NUMERIC = 'numeric';
+    public const FLOAT = 'float';
+    public const RANGE = 'numeric:%s..%s';
 
-	// Special
-	const UUID = 'uuid';
-	const CALLBACK = 'callback';
+    // Special
+    public const UUID = 'uuid';
+    public const CALLBACK = 'callback';
 
-	/**
-	 * Validate value with rule
-	 * @param mixed $value
-	 * @param Rule $rule
-	 * @return void
-	 *
-	 * @throws ValidationException
-	 */
-	public function validate($value, Rule $rule);
+    /**
+     * Validate value with rule
+     * @return void
+     *
+     * @throws ValidationException
+     */
+    public function validate(mixed $value, Rule $rule);
 
 }

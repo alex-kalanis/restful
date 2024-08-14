@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 use Nette;
@@ -16,124 +17,119 @@ use Nette;
  */
 class Rule
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var string */
-	protected $field;
+    /** @var string */
+    protected $field;
 
-	/** @var string */
-	protected $message;
+    /** @var string */
+    protected $message;
 
-	/** @var int */
-	protected $code;
+    /** @var int */
+    protected $code;
 
-	/** @var string */
-	protected $expression;
+    /** @var string */
+    protected $expression;
 
-	/** @var array */
-	protected $argument;
+    /** @var array */
+    protected $argument;
 
 
-	/******************** Getters & setters ********************/
+    /******************** Getters & setters ********************/
 
-	/**
-	 * Set rule error code
-	 * @param int $code
-	 * @return Rule
-	 */
-	public function setCode($code)
-	{
-		$this->code = $code;
-		return $this;
-	}
+    /**
+     * Get rule error code
+     * @return int
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
 
-	/**
-	 * Get rule error code
-	 * @return int
-	 */
-	public function getCode()
-	{
-		return $this->code;
-	}
+    /**
+     * Set rule error code
+     * @param int $code
+     */
+    public function setCode($code): static
+    {
+        $this->code = $code;
+        return $this;
+    }
 
-	/**
-	 * Set field name
-	 * @param string $field
-	 * @return Rule
-	 */
-	public function setField($field)
-	{
-		$this->field = $field;
-		return $this;
-	}
+    /**
+     * Get field name
+     * @return string
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
 
-	/**
-	 * Get field name
-	 * @return string
-	 */
-	public function getField()
-	{
-		return $this->field;
-	}
+    /**
+     * Set field name
+     * @param string $field
+     */
+    public function setField($field): static
+    {
+        $this->field = $field;
+        return $this;
+    }
 
-	/**
-	 * Set rule error message
-	 * @param string $message
-	 * @return Rule
-	 */
-	public function setMessage($message)
-	{
-		$this->message = $message;
-		return $this;
-	}
+    /**
+     * Get rule error message
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 
-	/**
-	 * Get rule error message
-	 * @return string
-	 */
-	public function getMessage()
-	{
-		return $this->message;
-	}
+    /**
+     * Set rule error message
+     * @param string $message
+     */
+    public function setMessage($message): static
+    {
+        $this->message = $message;
+        return $this;
+    }
 
-	/**
-	 * Set rule expression
-	 * @param string $expression
-	 * @return Rule
-	 */
-	public function setExpression($expression)
-	{
-		$this->expression = $expression;
-		return $this;
-	}
+    /**
+     * Get rule expression
+     * @return string
+     */
+    public function getExpression()
+    {
+        return $this->expression;
+    }
 
-	/**
-	 * Get rule expression
-	 * @return string
-	 */
-	public function getExpression()
-	{
-		return $this->expression;
-	}
+    /**
+     * Set rule expression
+     * @param string $expression
+     */
+    public function setExpression($expression): static
+    {
+        $this->expression = $expression;
+        return $this;
+    }
 
-	/**
-	 * Set rule argument(s)
-	 * @param array $argument
-	 * @return Rule
-	 */
-	public function setArgument($argument)
-	{
-		$this->argument = (array)$argument;
-		return $this;
-	}
+    /**
+     * Get rule arguments
+     * @return array
+     */
+    public function getArgument()
+    {
+        return $this->argument;
+    }
 
-	/**
-	 * Get rule arguments
-	 * @return array
-	 */
-	public function getArgument()
-	{
-		return $this->argument;
-	}
+    /**
+     * Set rule argument(s)
+     * @param array $argument
+     */
+    public function setArgument($argument): static
+    {
+        $this->argument = (array)$argument;
+        return $this;
+    }
 
 }

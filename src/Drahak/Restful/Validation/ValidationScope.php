@@ -1,9 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 use Nette;
-use Nette\Utils\Validators;
 use Nette\Utils\Strings;
+use Nette\Utils\Validators;
 
 /**
  * ValidationScope
@@ -14,120 +15,109 @@ use Nette\Utils\Strings;
  */
 class ValidationScope implements IValidationScope
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var IValidator */
-	private $validator;
+    /** @var Field[] */
+    private $fields = [];
 
-	/** @var Field[] */
-	private $fields = array();
+    public function __construct(private IValidator $validator)
+    {
+    }
 
-	/**
-	 * @param IValidator $validator
-	 */
-	public function __construct(IValidator $validator)
-	{
-		$this->validator = $validator;
-	}
+    /****************** Validation scope interface ******************/
 
-	/****************** Validation scope interface ******************/
+    /**
+     * Create field or get existing
+     * @param string $name
+     * @return IField
+     */
+    public function field($name)
+    {
+        if (!isset($this->fields[$name])) {
+            $this->fields[$name] = $this->createField($name);
+        }
+        return $this->fields[$name];
+    }
 
-	/**
-	 * Create field or get existing
-	 * @param string $name
-	 * @return IField
-	 */
-	public function field($name)
-	{
-		if (!isset($this->fields[$name])) {
-			$this->fields[$name] = $this->createField($name);
-		}
-		return $this->fields[$name];
-	}
+    /**
+     * Create field
+     * @param string $name
+     * @return Field
+     */
+    protected function createField($name)
+    {
+        return new Field($name, $this->getValidator());
+    }
 
-	/**
-	 * Validate all field in collection
-	 * @param array $data
-	 * @return Error[]
-	 */
-	public function validate(array $data)
-	{
-		$errors = array();
-		/** @var IField $field */
-		foreach ($this->fields as $field) {
-			$fieldErrors = $this->validateDeeply($field, $data, $field->getName());
-			$errors = array_merge($errors, $fieldErrors);
-		}
-		return $errors;
-	}
+    /**
+     * Get validator
+     * @return mixed
+     */
+    public function getValidator()
+    {
+        return $this->validator;
+    }
 
-	/**
-	 * Create field
-	 * @param string $name
-	 * @return Field
-	 */
-	protected function createField($name)
-	{
-		return new Field($name, $this->getValidator());
-	}
+    /**
+     * Validate all field in collection
+     * @return Error[]
+     */
+    public function validate(array $data): array
+    {
+        $errors = [];
+        /** @var IField $field */
+        foreach ($this->fields as $field) {
+            $fieldErrors = $this->validateDeeply($field, $data, $field->getName());
+            $errors = array_merge($errors, $fieldErrors);
+        }
+        return $errors;
+    }
 
-	/**
-	 * Recursively validate data using dot notation
-	 * @param  IField $field 
-	 * @param  array  $data 
-	 * @param  string $path
-	 * @return array
-	 */
-	protected function validateDeeply(IField $field, $data, $path)
-	{
-		$errors = array();
+    /****************** Getters & setters ******************/
+    /**
+     * Recursively validate data using dot notation
+     * @param array $data
+     * @param string $path
+     */
+    protected function validateDeeply(IField $field, $data, $path): array
+    {
+        $errors = [];
 
-        if (Validators::isList($data) && count($data)) { 
+        if (Validators::isList($data) && count($data)) {
             foreach ($data as $item) {
                 $newErrors = $this->validateDeeply($field, $item, $path);
                 $errors = array_merge($errors, $newErrors);
             }
         } else {
-			$keys = explode(".", $path);
-			$last = count($keys) - 1;
-			foreach ($keys as $index => $key) {
-				$isLast = $index == $last;
-				$value = isset($data[$key]) ? $data[$key] : NULL;
+            $keys = explode(".", $path);
+            $last = count($keys) - 1;
+            foreach ($keys as $index => $key) {
+                $isLast = $index == $last;
+                $value = $data[$key] ?? NULL;
 
-				if (is_array($value)) {
-					$newPath = Strings::replace($path, "~^$key\.~");
-					$newErrors = $this->validateDeeply($field, $value, $newPath);
-					$errors = array_merge($errors, $newErrors);
-					break; // because recursion already handled this path validation
-				} else if ($isLast || $value === NULL) {
-					$newErrors = $field->validate($value);
-					$errors = array_merge($errors, $newErrors);  
-					break;
-				} 
-			}
+                if (is_array($value)) {
+                    $newPath = Strings::replace($path, "~^$key\.~");
+                    $newErrors = $this->validateDeeply($field, $value, $newPath);
+                    $errors = array_merge($errors, $newErrors);
+                    break; // because recursion already handled this path validation
+                } else if ($isLast || $value === NULL) {
+                    $newErrors = $field->validate($value);
+                    $errors = array_merge($errors, $newErrors);
+                    break;
+                }
+            }
         }
 
         return $errors;
-	}
+    }
 
-	/****************** Getters & setters ******************/
-
-	/**
-	 * Get validator
-	 * @return mixed
-	 */
-	public function getValidator()
-	{
-		return $this->validator;
-	}
-
-	/**
-	 * Get schema fields
-	 * @return IField[]
-	 */
-	public function getFields()
-	{
-		return $this->fields;
-	}
+    /**
+     * Get schema fields
+     * @return IField[]
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
 
 }

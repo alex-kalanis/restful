@@ -1,10 +1,11 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
+use Drahak\Restful\IResource;
+use Nette;
 use stdClass;
 use Traversable;
-use Nette;
-use Drahak\Restful\IResource;
 
 /**
  * ObjectConverter
@@ -13,41 +14,40 @@ use Drahak\Restful\IResource;
  */
 class ObjectConverter implements IConverter
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/**
-	 * Converts stdClass and traversable objects in resource to array
-	 * @param array $resource
-	 * @return array
-	 */
-	public function convert(array $resource)
-	{
-		return $this->parseObjects($resource);
-	}
+    /**
+     * Converts stdClass and traversable objects in resource to array
+     * @return array
+     */
+    public function convert(array $resource)
+    {
+        return $this->parseObjects($resource);
+    }
 
-	/**
-	 * Parse objects in resource
-	 * @param array|Traversable|stdClass $data
-	 * @return array
-	 */
-	protected function parseObjects($data)
-	{
-		if ($data instanceof Traversable) {
-			$data = iterator_to_array($data, TRUE);
-		} else if ($data instanceof stdClass) {
-			$data = (array)$data;
-		}
+    /**
+     * Parse objects in resource
+     * @param array|Traversable|stdClass $data
+     * @return array
+     */
+    protected function parseObjects($data)
+    {
+        if ($data instanceof Traversable) {
+            $data = iterator_to_array($data, TRUE);
+        } else if ($data instanceof stdClass) {
+            $data = (array)$data;
+        }
 
-		foreach ($data as $key => $value) {
-			if ($value instanceof IResource) {
-				$value = $value->getData();
-			}
+        foreach ($data as $key => $value) {
+            if ($value instanceof IResource) {
+                $value = $value->getData();
+            }
 
-			if ($value instanceof Traversable || $value instanceof stdClass || is_array($value)) {
-				$data[$key] = $this->parseObjects($value);
-			}
-		}
-		return $data;
-	}
+            if ($value instanceof Traversable || $value instanceof stdClass || is_array($value)) {
+                $data[$key] = $this->parseObjects($value);
+            }
+        }
+        return $data;
+    }
 
 }

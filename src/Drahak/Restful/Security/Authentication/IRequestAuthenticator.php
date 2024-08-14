@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security\Authentication;
 
 use Drahak\Restful\Http\IInput;
@@ -11,11 +12,10 @@ use Drahak\Restful\Http\IInput;
 interface IRequestAuthenticator
 {
 
-	/**
-	 * Authenticate request
-	 * @param IInput $input
-	 * @return bool
-	 */
-	public function authenticate(IInput $input);
+    /**
+     * Authenticate request
+     * @return bool
+     */
+    public function authenticate(IInput $input);
 
 }

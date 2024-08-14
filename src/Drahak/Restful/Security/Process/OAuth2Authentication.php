@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security\Process;
 
 use Drahak\OAuth2;
@@ -15,60 +16,48 @@ use Drahak\Restful\Security\AuthenticationException;
 class OAuth2Authentication extends AuthenticationProcess
 {
 
-	/** @var AccessTokenFacade */
-	private $storage;
+    public function __construct(private readonly AccessTokenFacade $storage, private readonly OAuth2\Http\IInput $oauthInput)
+    {
+    }
 
-	/** @var OAuth2\Http\IInput */
-	private $oauthInput;
+    /**
+     * Authenticate request data
+     * @return bool|void
+     * @throws AuthenticationException
+     */
+    protected function authRequestData(IInput $input)
+    {
+        $token = $this->oauthInput->getAuthorization();
+        if (!$token) {
+            throw new AuthenticationException('Token was not found.');
+        }
+    }
 
-	public function __construct(AccessTokenFacade $storage, OAuth2\Http\IInput $oauthInput)
-	{
-		$this->storage = $storage;
-		$this->oauthInput = $oauthInput;
-	}
+    /**
+     * Authenticate request timeout
+     * @return bool|void
+     * @throws AuthenticationException
+     */
+    protected function authRequestTimeout(IInput $input)
+    {
+        try {
+            $this->getAccessToken();
+        } catch (InvalidAccessTokenException $e) {
+            throw new AuthenticationException('Invalid or expired access token.', 0, $e);
+        }
+    }
 
-	/**
-	 * Get access token
-	 * @return OAuth2\Storage\AccessTokens\IAccessToken|NULL
-	 *
-	 * @throws InvalidAccessTokenException
-	 */
-	public function getAccessToken()
-	{
-		$token = $this->oauthInput->getAuthorization();
-		return $this->storage->getEntity($token);
-	}
-
-	/**
-	 * Authenticate request data
-	 * @param IInput $input
-	 * @return bool|void
-	 *
-	 * @throws AuthenticationException
-	 */
-	protected function authRequestData(IInput $input)
-	{
-		$token = $this->oauthInput->getAuthorization();
-		if (!$token) {
-			throw new AuthenticationException('Token was not found.');
-		}
-	}
-
-	/**
-	 * Authenticate request timeout
-	 * @param IInput $input
-	 * @return bool|void
-	 *
-	 * @throws AuthenticationException
-	 */
-	protected function authRequestTimeout(IInput $input)
-	{
-		try {
-			$this->getAccessToken();
-		} catch (InvalidAccessTokenException $e) {
-			throw new AuthenticationException('Invalid or expired access token.', 0, $e);
-		}
-	}
+    /**
+     * Get access token
+     * @return OAuth2\Storage\AccessTokens\IAccessToken|NULL
+     *
+     * @throws InvalidAccessTokenException
+     */
+    public function getAccessToken(): ?\Drahak\OAuth2\Storage\ITokens
+    {
+        $token = $this->oauthInput->getAuthorization();
+        return $this->storage->getEntity($token);
+    }
 
 
 }

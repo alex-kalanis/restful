@@ -2,7 +2,10 @@
 
 # Ignore stuff for export
 /.github     export-ignore
+/discard     export-ignore
 /doc         export-ignore
-/examples    export-ignore
-/tests       export-ignore
 /phpdocker   export-ignore
+/examples    export-ignore
+/temp        export-ignore
+/tests       export-ignore
+/vendor      export-ignore

@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
 use Drahak\Restful\LogicException;

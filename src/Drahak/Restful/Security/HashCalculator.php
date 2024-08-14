@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\Http\IInput;
@@ -17,63 +18,58 @@ use Nette\Http\IRequest;
  */
 class HashCalculator implements IAuthTokenCalculator
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** Fingerprint hash algorithm */
-	const HASH = 'sha256';
+    /** Fingerprint hash algorithm */
+    public const HASH = 'sha256';
 
-	/** @var string */
-	private $privateKey;
+    /** @var string */
+    private $privateKey;
 
-	/** @var IMapper */
-	private $mapper;
+    /** @var IMapper */
+    private $mapper;
 
-	/**
-	 * @param MapperContext $mapper
-	 * @param IRequest $httpRequest
-	 */
-	public function __construct(MapperContext $mapperContext, IRequest $httpRequest)
-	{
-		$this->mapper = $mapperContext->getMapper($httpRequest->getHeader('content-type'));
-	}
+    /**
+     * @param MapperContext $mapper
+     */
+    public function __construct(MapperContext $mapperContext, IRequest $httpRequest)
+    {
+        $this->mapper = $mapperContext->getMapper($httpRequest->getHeader('content-type'));
+    }
 
-	/**
-	 * Set hash data calculator mapper
-	 * @param IMapper $mapper
-	 * @return HashCalculator
-	 */
-	public function setMapper(IMapper $mapper)
-	{
-		$this->mapper = $mapper;
-		return $this;
-	}
+    /**
+     * Set hash data calculator mapper
+     */
+    public function setMapper(IMapper $mapper): static
+    {
+        $this->mapper = $mapper;
+        return $this;
+    }
 
-	/**
-	 * Set hash calculator security private key
-	 * @param string $privateKey
-	 * @return IAuthTokenCalculator
-	 */
-	public function setPrivateKey($privateKey)
-	{
-		$this->privateKey = $privateKey;
-		return $this;
-	}
+    /**
+     * Set hash calculator security private key
+     * @param string $privateKey
+     * @return IAuthTokenCalculator
+     */
+    public function setPrivateKey($privateKey): static
+    {
+        $this->privateKey = $privateKey;
+        return $this;
+    }
 
-	/**
-	 * Calculates hash
-	 * @param IInput $input
-	 * @return string
-	 *
-	 * @throws \Drahak\Restful\InvalidStateException
-	 */
-	public function calculate(IInput $input)
-	{
-		if (!$this->privateKey) {
-			throw new InvalidStateException('Private key is not set');
-		}
+    /**
+     * Calculates hash
+     *
+     * @throws InvalidStateException
+     */
+    public function calculate(IInput $input): string
+    {
+        if (!$this->privateKey) {
+            throw new InvalidStateException('Private key is not set');
+        }
 
-		$dataString = $this->mapper->stringify($input->getData());
-		return hash_hmac(self::HASH, $dataString, $this->privateKey);
-	}
+        $dataString = $this->mapper->stringify($input->getData());
+        return hash_hmac(self::HASH, (string) $dataString, $this->privateKey);
+    }
 
 }

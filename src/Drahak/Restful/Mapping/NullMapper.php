@@ -1,7 +1,9 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
 use Nette;
+use Traversable;
 
 /**
  * NullMapper
@@ -10,30 +12,30 @@ use Nette;
  */
 class NullMapper implements IMapper
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/**
-	 * Convert array or Traversable input to string output response
-	 * @param array|\Traversable $data
-	 * @param bool $prettyPrint
-	 * @return mixed
-	 */
-	public function stringify($data, $prettyPrint = TRUE)
-	{
-		return $data;
-	}
+    /**
+     * Convert array or Traversable input to string output response
+     * @param array|Traversable $data
+     * @param bool $prettyPrint
+     * @return mixed
+     */
+    public function stringify($data, $prettyPrint = TRUE)
+    {
+        return $data;
+    }
 
-	/**
-	 * Convert client request data to array or traversable
-	 * @param mixed $data
-	 * @return array|\Traversable
-	 *
-	 * @throws MappingException
-	 */
-	public function parse($data)
-	{
-		return array();
-	}
+    /**
+     * Convert client request data to array or traversable
+     * @param mixed $data
+     * @return array|Traversable
+     *
+     * @throws MappingException
+     */
+    public function parse($data)
+    {
+        return [];
+    }
 
 
 }

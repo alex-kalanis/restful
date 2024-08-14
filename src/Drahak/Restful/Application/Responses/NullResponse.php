@@ -1,8 +1,9 @@
 <?php
+
 namespace Drahak\Restful\Application\Responses;
 
-use Nette\Application\IResponse;
 use Nette;
+use Nette\Application\IResponse;
 use Nette\Http;
 
 /**
@@ -12,16 +13,14 @@ use Nette\Http;
  */
 class NullResponse implements IResponse
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/**
-	 * Do nothing
-	 * @param Http\IRequest $httpRequest
-	 * @param Http\IResponse $httpResponse
-	 */
-	public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse)
-	{
-	}
+    /**
+     * Do nothing
+     */
+    public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse)
+    {
+    }
 
 
 }

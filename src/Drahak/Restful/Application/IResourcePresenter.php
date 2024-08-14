@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Application;
 
 use Nette\Application\IPresenter;
@@ -11,10 +12,10 @@ use Nette\Application\IPresenter;
 interface IResourcePresenter extends IPresenter
 {
 
-	/**
-	 * Set API resource
-	 * @return void
-	 */
-	public function sendResource();
+    /**
+     * Set API resource
+     * @return void
+     */
+    public function sendResource();
 
 }

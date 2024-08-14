@@ -33,8 +33,8 @@ class ResourceFactoryTest extends TestCase
     public function setUp()
     {
 		parent::setUp();
-        $this->request = $this->mockista->create('Nette\Http\IRequest');
-        $this->resourceConverter = $this->mockista->create('Drahak\Restful\Converters\ResourceConverter');
+        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $this->resourceConverter = $this->mockista->create(\Drahak\Restful\Converters\ResourceConverter::class);
         $this->factory = new ResourceFactory($this->request, $this->resourceConverter);
     }
     
@@ -51,7 +51,7 @@ class ResourceFactoryTest extends TestCase
 
 	public function testCreateResourceWithDefaultData()
 	{
-		$data = array('test' => 'factory');
+		$data = ['test' => 'factory'];
 
         $this->request->expects('getHeader')
             ->once()

@@ -1,9 +1,10 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
+use Drahak\Restful\InvalidStateException;
 use Nette;
 use Nette\Utils\Strings;
-use Drahak\Restful\InvalidStateException;
 
 /**
  * MapperContext
@@ -12,37 +13,36 @@ use Drahak\Restful\InvalidStateException;
  */
 class MapperContext
 {
-	use Nette\SmartObject;
+    use Nette\SmartObject;
 
-	/** @var array */
-	protected $services = array();
+    /** @var array */
+    protected $services = [];
 
-	/**
-	 * Add mapper
-	 * @param string $contentType
-	 * @param IMapper $mapper
-	 */
-	public function addMapper($contentType, IMapper $mapper)
-	{
-		$this->services[$contentType] = $mapper;
-	}
+    /**
+     * Add mapper
+     * @param string $contentType
+     */
+    public function addMapper($contentType, IMapper $mapper)
+    {
+        $this->services[$contentType] = $mapper;
+    }
 
-	/**
-	 * Get mapper
-	 * @param string $contentType in format mimeType[; charset=utf8]
-	 * @return IMapper
-	 *
-	 * @throws InvalidStateException
-	 */
-	public function getMapper($contentType)
-	{
-		$contentType = explode(';', $contentType);
-		$contentType = Strings::trim($contentType[0]);
-		$contentType = $contentType ? $contentType : 'NULL';
-		if (!isset($this->services[$contentType])) {
-			throw new InvalidStateException('There is no mapper for Content-Type: ' . $contentType);
-		}
-		return $this->services[$contentType];
-	}
+    /**
+     * Get mapper
+     * @param string $contentType in format mimeType[; charset=utf8]
+     * @return IMapper
+     *
+     * @throws InvalidStateException
+     */
+    public function getMapper($contentType)
+    {
+        $contentType = explode(';', $contentType);
+        $contentType = Strings::trim($contentType[0]);
+        $contentType = $contentType ?: 'NULL';
+        if (!isset($this->services[$contentType])) {
+            throw new InvalidStateException('There is no mapper for Content-Type: ' . $contentType);
+        }
+        return $this->services[$contentType];
+    }
 
 }

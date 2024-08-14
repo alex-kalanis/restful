@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 /**
@@ -9,18 +10,17 @@ namespace Drahak\Restful\Validation;
 interface IValidationScope
 {
 
-	/**
-	 * Create field or get existing
-	 * @param string $name
-	 * @return IField
-	 */
-	public function field($name);
+    /**
+     * Create field or get existing
+     * @param string $name
+     * @return IField
+     */
+    public function field($name);
 
-	/**
-	 * Validate all field in collection
-	 * @param array $data
-	 * @return Error
-	 */
-	public function validate(array $data);
+    /**
+     * Validate all field in collection
+     * @return Error
+     */
+    public function validate(array $data);
 
 }

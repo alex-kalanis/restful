@@ -32,18 +32,14 @@ class ConvertedResourceTest extends TestCase
     public function setUp()
     {
 		parent::setUp();
-		$this->data = array(
-			'I really_do not_like_WhenPeople do not_comply WithStandards' => 'Hello'
-		);
-		$this->resourceConverter = $this->mockista->create('Drahak\Restful\Converters\ResourceConverter');
+		$this->data = ['I really_do not_like_WhenPeople do not_comply WithStandards' => 'Hello'];
+		$this->resourceConverter = $this->mockista->create(\Drahak\Restful\Converters\ResourceConverter::class);
 		$this->resource = new ConvertedResource($this->resourceConverter, $this->data);
     }
     
     public function testGetConvertedDataUsingResourceConverter()
     {
-		$converted = array(
-			'i_really_do_not_like__when_people_do_not_comply__with_standards' => 'Hello'
-		);
+		$converted = ['i_really_do_not_like__when_people_do_not_comply__with_standards' => 'Hello'];
 
 		$this->resourceConverter->expects('convert')
 			->once()

@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\Http\IInput;
@@ -11,18 +12,17 @@ use Drahak\Restful\Http\IInput;
 interface IAuthTokenCalculator
 {
 
-	/**
-	 * Set hash private key
-	 * @param string $key
-	 * @return IAuthTokenCalculator
-	 */
-	public function setPrivateKey($key);
+    /**
+     * Set hash private key
+     * @param string $key
+     * @return IAuthTokenCalculator
+     */
+    public function setPrivateKey($key);
 
-	/**
-	 * Calculate fingerprint hash
-	 * @param IInput $input
-	 * @return string
-	 */
-	public function calculate(IInput $input);
+    /**
+     * Calculate fingerprint hash
+     * @return string
+     */
+    public function calculate(IInput $input);
 
 }

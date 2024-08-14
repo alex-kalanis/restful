@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Security\Process;
 
 use Drahak\Restful\Http\IInput;
@@ -13,37 +14,25 @@ use Drahak\Restful\Security\Authentication\TimeoutAuthenticator;
 class SecuredAuthentication extends AuthenticationProcess
 {
 
-	/** @var HashAuthenticator */
-	private $hashAuth;
+    public function __construct(private readonly HashAuthenticator $hashAuth, private readonly TimeoutAuthenticator $timeAuth)
+    {
+    }
 
-	/** @var TimeoutAuthenticator */
-	private $timeAuth;
+    /**
+     * Authenticate request data
+     */
+    protected function authRequestData(IInput $input): bool
+    {
+        return $this->hashAuth->authenticate($input);
+    }
 
-	public function __construct(HashAuthenticator $hashAuth, TimeoutAuthenticator $timeAuth)
-	{
-		$this->hashAuth = $hashAuth;
-		$this->timeAuth = $timeAuth;
-	}
-
-	/**
-	 * Authenticate request data
-	 * @param IInput $input
-	 * @return bool
-	 */
-	protected function authRequestData(IInput $input)
-	{
-		return $this->hashAuth->authenticate($input);
-	}
-
-	/**
-	 * Authenticate request time
-	 * @param IInput $input
-	 * @return bool
-	 */
-	protected function authRequestTimeout(IInput $input)
-	{
-		return $this->timeAuth->authenticate($input);
-	}
+    /**
+     * Authenticate request time
+     */
+    protected function authRequestTimeout(IInput $input): bool
+    {
+        return $this->timeAuth->authenticate($input);
+    }
 
 
 }

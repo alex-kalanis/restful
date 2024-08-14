@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful\Http;
 
 /**
@@ -9,10 +10,10 @@ namespace Drahak\Restful\Http;
 interface IInput
 {
 
-	/**
-	 * Get parsed input data
-	 * @return array
-	 */
-	public function getData();
+    /**
+     * Get parsed input data
+     * @return array
+     */
+    public function getData();
 
 }

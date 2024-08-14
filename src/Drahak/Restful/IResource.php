@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful;
 
 /**
@@ -6,23 +7,23 @@ namespace Drahak\Restful;
  * @package Drahak\Restful
  * @author Drahomír Hanák
  */
-interface IResource 
+interface IResource
 {
 
-	/** Result types */
-	const XML = 'application/xml';
-	const JSON = 'application/json';
-	const JSONP = 'application/javascript';
-	const QUERY = 'application/x-www-form-urlencoded';
-	const DATA_URL = 'application/x-data-url';
-	const FILE = 'application/octet-stream';
-	const FORM = 'multipart/form-data';
-	const NULL = NULL;
+    /** Result types */
+    public const XML = 'application/xml';
+    public const JSON = 'application/json';
+    public const JSONP = 'application/javascript';
+    public const QUERY = 'application/x-www-form-urlencoded';
+    public const DATA_URL = 'application/x-data-url';
+    public const FILE = 'application/octet-stream';
+    public const FORM = 'multipart/form-data';
+    public const NULL = NULL;
 
-	/**
-	 * Get element value or array data
-	 * @return array|Traversable
-	 */
-	public function getData();
+    /**
+     * Get element value or array data
+     * @return array|Traversable
+     */
+    public function getData();
 
 }
