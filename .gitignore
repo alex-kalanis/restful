@@ -12,8 +12,12 @@ dist/
 phpunit
 phpunit-*
 .phpunit.cache*
+*.actual
+*.expected
 
 # external libs
+temp/
+tests/temp/
 tests/external/
 tests/data/clover.xml
 discard/
