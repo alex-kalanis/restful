@@ -300,16 +300,17 @@ class RestfulExtension extends CompilerExtension
                 new Statement($this->prefix('@cachedRouteListFactory') . '::create')
             ]
         );
-        if ($config['routes']['generateAtStart']) {
-            $setup = $container->getDefinition('router')
-                ->getSetup();
-            array_unshift($setup, $statement);
-            $container->getDefinition('router')
-                ->setSetup($setup);
-        } else {
-            $container->getDefinition('router')
-                ->addSetup($statement);
-        }
+        // todo: jak to sakra funguje?!
+//        if ($config['routes']['generateAtStart']) {
+//            $setup = $container->getDefinition('router')
+//                ->getSetup();
+//            array_unshift($setup, $statement);
+//            $container->getDefinition('router')
+//                ->setSetup($setup);
+//        } else {
+//            $container->getDefinition('router')
+//                ->addSetup($statement);
+//        }
     }
 
     private function loadResourceRoutePanel(ContainerBuilder $container, array $config): void

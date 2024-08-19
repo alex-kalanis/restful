@@ -30,7 +30,7 @@ class ResponseFactory
         'PATCH' => 200,
     ];
 
-    private ?IResponse $response;
+    private ?IResponse $response = null;
 
     public function __construct(
         private readonly IRequest      $request,
