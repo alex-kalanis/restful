@@ -34,7 +34,7 @@ class ResourceRouterPanel implements IBarPanel
     public function getTab(): string
     {
         $icon = Html::el('img')
-            ->src(FileSystem::read(__DIR__ . '/icon.png'))
+            ->src('data:image/png;base64,' . base64_encode(FileSystem::read(__DIR__ . '/icon.png')))
             ->height('16px');
         return '<span class="REST API resource routes">' . $icon . 'API resources</span>';
     }
