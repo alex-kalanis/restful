@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Http;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Http\IInput;
 use Picabo\Restful\Http\InputFactory;
 use Picabo\Restful\Exceptions\InvalidStateException;
@@ -21,13 +21,10 @@ use Tests\TestCase;
 class InputFactoryTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $request;
 
-    /** @var MockInterface */
     private $mapperContext;
 
-    /** @var MockInterface */
     private $validationScopeFactory;
 
     /** @var InputFactory */
@@ -36,10 +33,10 @@ class InputFactoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $this->request = Mockery::mock(\Nette\Http\IRequest::class);
         $this->request->expects('getRawBody')->once();
-        $this->mapperContext = $this->mockista->create(\Picabo\Restful\Mapping\MapperContext::class);
-        $this->validationScopeFactory = $this->mockista->create(\Picabo\Restful\Validation\IValidationScopeFactory::class);
+        $this->mapperContext = Mockery::mock(\Picabo\Restful\Mapping\MapperContext::class);
+        $this->validationScopeFactory = Mockery::mock(\Picabo\Restful\Validation\IValidationScopeFactory::class);
         $this->inputFactory = new InputFactory($this->request, $this->mapperContext, $this->validationScopeFactory);
     }
 

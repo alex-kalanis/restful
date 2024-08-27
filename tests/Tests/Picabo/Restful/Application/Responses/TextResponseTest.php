@@ -5,7 +5,7 @@ namespace Tests\Picabo\Restful\Application\Responses;
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 use Picabo\Restful\Application\Responses\TextResponse;
-use Mockista\MockInterface;
+use Mockery;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -19,7 +19,6 @@ use Tests\TestCase;
 class TextResponseTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $mapper;
 
     /** @var TextResponse */
@@ -28,7 +27,7 @@ class TextResponseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mapper = $this->mockista->create(\Picabo\Restful\Mapping\IMapper::class);
+        $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\IMapper::class);
         $this->response = new TextResponse(['hello' => 'world'], $this->mapper, 'application/json');
     }
 
@@ -41,8 +40,8 @@ class TextResponseTest extends TestCase
             ->with(array('hello' => 'world'), TRUE)
             ->andReturn($output);
 
-        $httpRequest = $this->mockista->create(\Nette\Http\IRequest::class);
-        $httpResponse = $this->mockista->create(\Nette\Http\IResponse::class);
+        $httpRequest = Mockery::mock(\Nette\Http\IRequest::class);
+        $httpResponse = Mockery::mock(\Nette\Http\IResponse::class);
 
         $httpResponse->expects('setContentType')
             ->once()

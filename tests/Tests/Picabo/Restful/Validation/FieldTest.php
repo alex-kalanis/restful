@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Validation;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Validation\Field;
 use Picabo\Restful\Validation\IValidator;
 use Picabo\Restful\Validation\Exceptions\ValidationException;
@@ -21,7 +21,6 @@ use Tests\TestCase;
 class FieldTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $validator;
 
     /** @var Field */
@@ -104,7 +103,7 @@ class FieldTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->validator = $this->mockista->create('Picabo\Restful\Validation\Validator');
+        $this->validator = Mockery::mock(\Picabo\Restful\Validation\Validator::class);
         $this->field = new Field('test', $this->validator);
     }
 

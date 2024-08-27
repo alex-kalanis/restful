@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\ConvertedResource;
 use Picabo\Restful\Converters\ResourceConverter;
 use Tester\Assert;
@@ -23,7 +23,6 @@ class ConvertedResourceTest extends TestCase
     /** @var array */
     private $data;
 
-    /** @var MockInterface */
     private $resourceConverter;
 
     /** @var ConvertedResource */
@@ -33,7 +32,7 @@ class ConvertedResourceTest extends TestCase
     {
         parent::setUp();
         $this->data = ['I really_do not_like_WhenPeople do not_comply WithStandards' => 'Hello'];
-        $this->resourceConverter = $this->mockista->create(ResourceConverter::class);
+        $this->resourceConverter = Mockery::mock(ResourceConverter::class);
         $this->resource = new ConvertedResource($this->resourceConverter, $this->data);
     }
 

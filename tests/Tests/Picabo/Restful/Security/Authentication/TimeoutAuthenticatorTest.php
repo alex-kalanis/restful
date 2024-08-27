@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Security\Authentication;
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Security\Authentication\TimeoutAuthenticator;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,7 +19,6 @@ use Tests\TestCase;
 class TimeoutAuthenticatorTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $input;
 
     /** @var TimeoutAuthenticator */
@@ -51,7 +50,7 @@ class TimeoutAuthenticatorTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->input = $this->mockista->create(\Picabo\Restful\Http\IInput::class);
+        $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
         $this->authenticator = new TimeoutAuthenticator('timestamp', 600);
     }
 

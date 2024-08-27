@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Http;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Nette;
 use Nette\Http\IResponse;
 use Picabo\Restful\Http\ResponseFactory;
@@ -25,24 +25,20 @@ class ResponseFactoryTest extends TestCase
     /** @var ResponseFactory */
     private $factory;
 
-    /** @var MockInterface */
     private $request;
 
-    /** @var MockInterface */
     private $response;
 
-    /** @var MockInterface */
     private $filter;
 
-    /** @var MockInterface */
     private $url;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->filter = $this->mockista->create(\Picabo\Restful\Utils\RequestFilter::class);
-        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
-        $this->response = $this->mockista->create(\Nette\Http\IResponse::class);
+        $this->filter = Mockery::mock(\Picabo\Restful\Utils\RequestFilter::class);
+        $this->request = Mockery::mock(\Nette\Http\IRequest::class);
+        $this->response = Mockery::mock(\Nette\Http\IResponse::class);
         $this->url = new Nette\Http\UrlScript('http://resource/');
         $this->factory = new ResponseFactory($this->request, $this->filter);
         $this->factory->setResponse($this->response);
@@ -93,11 +89,10 @@ class ResponseFactoryTest extends TestCase
 
     /**
      * Create paginator mock
-     * @return MockInterface
      */
     private function createPaginatorMock()
     {
-        $paginator = $this->mockista->create(\Nette\Utils\Paginator::class);
+        $paginator = Mockery::mock(\Nette\Utils\Paginator::class);
         $paginator->expects('getPage')->atLeastOnce()->andReturn(1);
         $paginator->expects('getLastPage')->atLeastOnce()->andReturn(10);
         $paginator->expects('getItemsPerPage')->atLeastOnce()->andReturn(10);

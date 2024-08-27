@@ -37,7 +37,7 @@ class Validator implements IValidator
      */
     public static function validateCallback(mixed $value, Rule $rule): void
     {
-        $callback = $rule->getArgument()[0];
+        $callback = $rule->getArgument();
         $result = $callback($value);
         if ($result === FALSE) {
             throw ValidationException::createFromRule($rule, $value);

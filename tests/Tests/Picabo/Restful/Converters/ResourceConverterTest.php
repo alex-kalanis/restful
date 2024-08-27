@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Converters;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Converters\ResourceConverter;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,7 +19,6 @@ use Tests\TestCase;
 class ResourceConverterTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $converter;
 
     /** @var ResourceConverter */
@@ -28,7 +27,7 @@ class ResourceConverterTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->converter = $this->mockista->create('Picabo\Restful\Converters\IConverter');
+        $this->converter = Mockery::mock(\Picabo\Restful\Converters\IConverter::class);
         $this->resourceConverter = new ResourceConverter;
     }
 

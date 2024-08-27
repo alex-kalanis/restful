@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Http;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Nette\Http\RequestFactory;
 use Picabo\Restful\Http\ApiRequestFactory;
 use Tester\Assert;
@@ -26,25 +26,24 @@ class ApiRequestFactoryTest extends TestCase
     /** @var RequestFactory */
     private $requestFactory;
 
-    /** @var MockInterface */
     private $request;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->request = $this->createRequestMock();
-        $this->requestFactory = $this->mockista->create(\Nette\Http\RequestFactory::class);
+        $this->requestFactory = Mockery::mock(\Nette\Http\RequestFactory::class);
         $this->requestFactory->expects('createHttpRequest')->andReturn($this->request);
         $this->apiRequestFactory = new ApiRequestFactory($this->requestFactory);
     }
 
     private function createRequestMock()
     {
-        $url = $this->mockista->create(\Nette\Http\UrlScript::class);
+        $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $url->expects('__get')->once()->with('query')->andReturn('');
         $url->expects('setQuery')->once();
 
-        $request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $request = Mockery::mock(\Nette\Http\IRequest::class);
         $request->expects('getUrl')->once()->andReturn($url);
         $request->expects('getQuery')->once()->andReturn(NULL);
         $request->expects('getPost')->once()->andReturn(NULL);

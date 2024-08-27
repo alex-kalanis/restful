@@ -6,7 +6,6 @@ if (@!include __DIR__ . '/../../vendor/autoload.php') {
 require_once __DIR__ . '/TestCase.php';
 
 // configure environment
-Tester\Environment::setup();
 class_alias(\Tester\Assert::class, 'Assert');
 date_default_timezone_set('Europe/Prague');
 

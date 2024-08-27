@@ -8,7 +8,7 @@ use Picabo\Restful\Application\ResponseFactory;
 use Picabo\Restful\Application\Responses\JsonpResponse;
 use Picabo\Restful\Application\Responses\TextResponse;
 use Picabo\Restful\IResource;
-use Mockista\MockInterface;
+use Mockery;
 use Nette;
 use Tester\Assert;
 use Tests\TestCase;
@@ -25,23 +25,15 @@ class ResponseFactoryTest extends TestCase
     /** @var ResponseFactory */
     private $factory;
 
-    /** @var MockInterface */
     private $resource;
 
-    /** @var MockInterface */
     private $mapper;
 
-    /** @var MockInterface */
     private $request;
 
-    /** @var MockInterface */
     private $response;
 
-    /** @var MockInterface */
     private $mapperContext;
-
-    /** @var MockInterface */
-    private $cacheValidator;
 
     public function testCreateResponse(): void
     {
@@ -317,13 +309,13 @@ class ResponseFactoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->response = $this->mockista->create(\Nette\Http\IResponse::class);
-        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
-        $this->mapperContext = $this->mockista->create(\Picabo\Restful\Mapping\MapperContext::class);
+        $this->response = Mockery::mock(\Nette\Http\IResponse::class);
+        $this->request = Mockery::mock(\Nette\Http\IRequest::class);
+        $this->mapperContext = Mockery::mock(\Picabo\Restful\Mapping\MapperContext::class);
         $this->factory = new ResponseFactory($this->response, $this->request, $this->mapperContext);
         $this->factory->setJsonp('jsonp');
-        $this->resource = $this->mockista->create(\Picabo\Restful\Resource::class);
-        $this->mapper = $this->mockista->create(\Picabo\Restful\Mapping\IMapper::class);
+        $this->resource = Mockery::mock(\Picabo\Restful\Resource::class);
+        $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\IMapper::class);
     }
 
 }

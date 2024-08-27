@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Security;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Security\HashCalculator;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,10 +19,8 @@ use Tests\TestCase;
 class HashCalculatorTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $mapper;
 
-    /** @var MockInterface */
     private $input;
 
     /** @var HashCalculator */
@@ -50,12 +48,12 @@ class HashCalculatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mapper = $this->mockista->create(\Picabo\Restful\Mapping\QueryMapper::class);
-        $this->input = $this->mockista->create(\Picabo\Restful\Http\IInput::class);
+        $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\QueryMapper::class, \Picabo\Restful\Mapping\IMapper::class);
+        $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
 
-        $request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $request = Mockery::mock(\Nette\Http\IRequest::class);
         $request->expects('getHeader')->once()->with('content-type')->andReturn('text/plain');
-        $mapperContext = $this->mockista->create(\Picabo\Restful\Mapping\MapperContext::class);
+        $mapperContext = Mockery::mock(\Picabo\Restful\Mapping\MapperContext::class);
         $mapperContext->expects('getMapper')->once()->with('text/plain')->andReturn($this->mapper);
         $this->calculator = new HashCalculator($mapperContext, $request);
     }

@@ -4,6 +4,7 @@ namespace Tests\Picabo\Restful\Application\Responses;
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
+use Mockery;
 use Picabo\Restful\Application\Responses\NullResponse;
 use Tester\Assert;
 use Tests\TestCase;
@@ -28,8 +29,8 @@ class NullResponseTest extends TestCase
 
     public function testDoNotSendResponse(): void
     {
-        $httpRequest = $this->mockista->create(\Nette\Http\IRequest::class);
-        $httpResponse = $this->mockista->create(\Nette\Http\IResponse::class);
+        $httpRequest = Mockery::mock(\Nette\Http\IRequest::class);
+        $httpResponse = Mockery::mock(\Nette\Http\IResponse::class);
 
         ob_start();
         $result = $this->response->send($httpRequest, $httpResponse);

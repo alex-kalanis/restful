@@ -283,7 +283,7 @@ class ValidatorTest extends TestCase
         Assert::true($this->validator->validate('test', $this->rule));
     }
 
-    public function testThrowsValidationExceptionIfCallbackValidatorResurnsFalse(): void
+    public function testThrowsValidationExceptionIfCallbackValidatorReturnsFalse(): void
     {
         $this->rule->expression = IValidator::CALLBACK;
         $this->rule->argument = function ($value) {

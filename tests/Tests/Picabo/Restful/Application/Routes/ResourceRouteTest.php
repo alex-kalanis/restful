@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../../../bootstrap.php';
 
 use Picabo\Restful\Application\Routes\ResourceRoute;
 use Picabo\Restful\Application\IResourceRouter;
-use Mockista\MockInterface;
+use Mockery;
 use Nette;
 use Nette\Http\IRequest;
 use Tester\Assert;
@@ -25,7 +25,6 @@ class ResourceRouteTest extends TestCase
     /** @var ResourceRoute */
     private $route;
 
-    /** @var MockInterface */
     private $httpRequest;
 
     protected function setUp(): void
@@ -41,7 +40,7 @@ class ResourceRouteTest extends TestCase
                 IResourceRouter::DELETE => 'delete',
             )
         ), IResourceRouter::CRUD);
-        $this->httpRequest = $this->mockista->create(\Nette\Http\IRequest::class);
+        $this->httpRequest = Mockery::mock(\Nette\Http\IRequest::class);
     }
 
     public function testRouteListeningOnCrudRequestMethods(): void
@@ -136,13 +135,9 @@ class ResourceRouteTest extends TestCase
         $this->httpRequest->expects('isSecured')->once()->andReturn(FALSE);
     }
 
-    /**
-     * @param string $path
-     * @return MockInterface
-     */
     private function createRequestUrlMock($path = 'resources/test')
     {
-        $url = $this->mockista->create(\Nette\Http\Url::class);
+        $url = Mockery::mock(\Nette\Http\Url::class);
         $url->expects('getHost')->once()->andReturn('host.test');
         $url->expects('getPath')->once()->andReturn($path);
         $url->expects('getBasePath')->once()->andReturn('');

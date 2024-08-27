@@ -4,7 +4,8 @@ namespace Tests\Picabo\Restful\Security\Process;
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
+use Picabo\Restful\Security\Authentication;
 use Picabo\Restful\Security\Process\SecuredAuthentication;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,13 +20,10 @@ use Tests\TestCase;
 class SecuredAuthenticationTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $input;
 
-    /** @var MockInterface */
     private $hashAuth;
 
-    /** @var MockInterface */
     private $timeAuth;
 
     /** @var SecuredAuthentication */
@@ -49,9 +47,9 @@ class SecuredAuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->input = $this->mockista->create(\Picabo\Restful\Http\IInput::class);
-        $this->hashAuth = $this->mockista->create(\Picabo\Restful\Security\Authentication\HashAuthenticator::class);
-        $this->timeAuth = $this->mockista->create(\Picabo\Restful\Security\Authentication\TimeoutAuthenticator::class);
+        $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
+        $this->hashAuth = Mockery::mock(Authentication\HashAuthenticator::class, Authentication\IRequestAuthenticator::class);
+        $this->timeAuth = Mockery::mock(Authentication\TimeoutAuthenticator::class, Authentication\IRequestAuthenticator::class);
         $this->process = new SecuredAuthentication($this->hashAuth, $this->timeAuth);
     }
 

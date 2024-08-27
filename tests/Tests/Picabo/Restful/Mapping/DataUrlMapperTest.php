@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Mapping;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Mapping\DataUrlMapper;
 use Tester\Assert;
 use Tests\TestCase;
@@ -22,7 +22,6 @@ class DataUrlMapperTest extends TestCase
     /** @var DataUrlMapper */
     private $mapper;
 
-    /** @var MockInterface */
     private $media;
 
     public function testEncodeContentToBase64WithMimeTypeFromMediaObject(): void
@@ -48,7 +47,7 @@ class DataUrlMapperTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->media = $this->mockista->create(\Picabo\Restful\Resource\Media::class);
+        $this->media = Mockery::mock(\Picabo\Restful\Resource\Media::class);
         $this->mapper = new DataUrlMapper;
     }
 

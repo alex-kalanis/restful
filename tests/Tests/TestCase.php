@@ -2,7 +2,6 @@
 namespace Tests;
 
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Mockista\Registry;
 use Tester;
 
 /**
@@ -13,12 +12,4 @@ use Tester;
 class TestCase extends Tester\TestCase
 {
     use MockeryPHPUnitIntegration;
-
-    /** @var Registry */
-    protected $mockista;
-
-    protected function setUp()
-    {
-        $this->mockista = new Registry;
-    }
 }

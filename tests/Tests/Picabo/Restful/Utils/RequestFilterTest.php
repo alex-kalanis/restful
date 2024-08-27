@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Utils;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Nette;
 use Picabo\Restful\Utils\RequestFilter;
 use Tester\Assert;
@@ -20,7 +20,6 @@ use Tests\TestCase;
 class RequestFilterTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $request;
 
     /** @var RequestFilter */
@@ -116,7 +115,7 @@ class RequestFilterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $this->request = Mockery::mock(\Nette\Http\IRequest::class);
         $this->filter = new RequestFilter($this->request);
     }
 

@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Application;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Application\RouteAnnotation;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,7 +19,6 @@ use Tests\TestCase;
 class MethodAnnotationTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $presenterReflection;
 
     /** @var RouteAnnotation */
@@ -27,7 +26,7 @@ class MethodAnnotationTest extends TestCase
 
     public function testCreateRoutesFromPresenterActionAnnotations(): void
     {
-        $methodReflection = $this->mockista->create(\Nette\Reflection\Method::class);
+        $methodReflection = Mockery::mock(\Nette\Utils\ReflectionMethod::class);
         $methodReflection->expects('hasAnnotation')
             ->once()
             ->with('GET')
@@ -56,7 +55,7 @@ class MethodAnnotationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->presenterReflection = $this->mockista->create(\Nette\Reflection\ClassType::class);
+        $this->presenterReflection = Mockery::mock(\Nette\Utils\Type::class);
         $this->methodAnnotation = new RouteAnnotation($this->presenterReflection, 'GET');
     }
 }

@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Mapping;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\IResource;
 use Picabo\Restful\Mapping\MapperContext;
 use Tester\Assert;
@@ -20,10 +20,8 @@ use Tests\TestCase;
 class MapperContextTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $json;
 
-    /** @var MockInterface */
     private $xml;
 
     /** @var MapperContext */
@@ -53,8 +51,8 @@ class MapperContextTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->json = $this->mockista->create(\Picabo\Restful\Mapping\JsonMapper::class);
-        $this->xml = $this->mockista->create(\Picabo\Restful\Mapping\XmlMapper::class);
+        $this->json = Mockery::mock(\Picabo\Restful\Mapping\JsonMapper::class, \Picabo\Restful\Mapping\IMapper::class);
+        $this->xml = Mockery::mock(\Picabo\Restful\Mapping\XmlMapper::class, \Picabo\Restful\Mapping\IMapper::class);
 
         $this->context = new MapperContext;
         $this->context->addMapper(IResource::JSON, $this->json);

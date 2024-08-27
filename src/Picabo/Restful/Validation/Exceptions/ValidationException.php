@@ -33,13 +33,20 @@ class ValidationException extends LogicException
         mixed $value = NULL
     ): self
     {
+        $arg = $rule->getArgument();
+        $printable = match (true) {
+            is_object($arg) => [get_class($arg)],
+            is_callable($arg) => [get_debug_type($arg)],
+            default => (array) $arg,
+        };
+
         return new self(
             $rule->getField(),
             (
             $value
                 ? "'" . Strings::truncate($value, 60) . "' is invalid value: "
                 : ''
-            ) . vsprintf($rule->getMessage(), $rule->getArgument()),
+            ) . vsprintf($rule->getMessage(), $printable),
             $rule->getCode(),
         );
     }

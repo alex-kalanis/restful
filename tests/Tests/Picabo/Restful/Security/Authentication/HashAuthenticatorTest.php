@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Security\Authentication;
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Security\Authentication\HashAuthenticator;
 use Picabo\Restful\Security\HashCalculator;
 use Tester\Assert;
@@ -20,13 +20,10 @@ use Tests\TestCase;
 class HashAuthenticatorTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $input;
 
-    /** @var MockInterface */
     private $request;
 
-    /** @var MockInterface */
     private $calculator;
 
     /** @var HashAuthenticator */
@@ -84,9 +81,9 @@ class HashAuthenticatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->input = $this->mockista->create(\Picabo\Restful\Http\IInput::class);
-        $this->calculator = $this->mockista->create(\Picabo\Restful\Security\IAuthTokenCalculator::class);
-        $this->request = $this->mockista->create(\Nette\Http\IRequest::class);
+        $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
+        $this->calculator = Mockery::mock(\Picabo\Restful\Security\IAuthTokenCalculator::class);
+        $this->request = Mockery::mock(\Nette\Http\IRequest::class);
         $this->authenticator = new HashAuthenticator('topSecretKey', $this->request, $this->calculator);
     }
 

@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Security\Process;
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\OAuth2\Storage\Exceptions\InvalidAccessTokenException;
 use Picabo\Restful\Security\Process\OAuth2Authentication;
 use Tester\Assert;
@@ -20,13 +20,10 @@ use Tests\TestCase;
 class OAuth2AuthenticationTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $token;
 
-    /** @var MockInterface */
     private $input;
 
-    /** @var MockInterface */
     private $inputFake;
 
     /** @var OAuth2Authentication */
@@ -82,9 +79,9 @@ class OAuth2AuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->token = $this->mockista->create(\Picabo\OAuth2\Storage\AccessTokens\AccessTokenFacade::class);
-        $this->input = $this->mockista->create(\Picabo\OAuth2\Http\IInput::class);
-        $this->inputFake = $this->mockista->create(\Picabo\Restful\Http\IInput::class);
+        $this->token = Mockery::mock(\Picabo\OAuth2\Storage\AccessTokens\AccessTokenFacade::class, \Picabo\OAuth2\Storage\ITokenFacade::class);
+        $this->input = Mockery::mock(\Picabo\OAuth2\Http\IInput::class);
+        $this->inputFake = Mockery::mock(\Picabo\Restful\Http\IInput::class);
         $this->process = new OAuth2Authentication($this->token, $this->input);
     }
 

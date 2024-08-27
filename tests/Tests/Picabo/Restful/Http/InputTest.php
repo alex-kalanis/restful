@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful\Http;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Http\Input;
 use Tester\Assert;
 use Tests\TestCase;
@@ -22,10 +22,8 @@ class InputTest extends TestCase
     /** @var array */
     private $data;
 
-    /** @var MockInterface */
     private $validationScope;
 
-    /** @var MockInterface */
     private $validationScopeFactory;
 
     /** @var Input */
@@ -35,8 +33,8 @@ class InputTest extends TestCase
     {
         parent::setUp();
         $this->data = array('hello_message' => 'Hello World');
-        $this->validationScope = $this->mockista->create(\Picabo\Restful\Validation\ValidationScope::class);
-        $this->validationScopeFactory = $this->mockista->create(\Picabo\Restful\Validation\IValidationScopeFactory::class);
+        $this->validationScope = Mockery::mock(\Picabo\Restful\Validation\ValidationScope::class);
+        $this->validationScopeFactory = Mockery::mock(\Picabo\Restful\Validation\IValidationScopeFactory::class);
         $this->input = new Input($this->validationScopeFactory, $this->data);
     }
 
@@ -80,7 +78,7 @@ class InputTest extends TestCase
 
     public function testGetValidationField(): void
     {
-        $field = $this->mockista->create(\Picabo\Restful\Validation\Field::class);
+        $field = Mockery::mock(\Picabo\Restful\Validation\Field::class);
         $this->validationScopeFactory->expects('create')
             ->once()
             ->andReturn($this->validationScope);

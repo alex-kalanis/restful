@@ -4,7 +4,7 @@ namespace Tests\Picabo\Restful;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Mockista\MockInterface;
+use Mockery;
 use Nette\Http\IRequest;
 use Picabo\Restful\Converters\ResourceConverter;
 use Picabo\Restful\IResource;
@@ -22,10 +22,7 @@ use Tests\TestCase;
 class ResourceFactoryTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $request;
-
-    /** @var MockInterface */
     private $resourceConverter;
 
     /** @var ResourceFactory */
@@ -34,8 +31,8 @@ class ResourceFactoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->request = $this->mockista->create(IRequest::class);
-        $this->resourceConverter = $this->mockista->create(ResourceConverter::class);
+        $this->request = Mockery::mock(IRequest::class);
+        $this->resourceConverter = Mockery::mock(ResourceConverter::class);
         $this->factory = new ResourceFactory($this->request, $this->resourceConverter);
     }
 

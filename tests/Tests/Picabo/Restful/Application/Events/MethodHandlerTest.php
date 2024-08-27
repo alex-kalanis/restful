@@ -10,7 +10,7 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Routing\Router;
 use Picabo\Restful\Application\Events\MethodHandler;
-use Mockista\MockInterface;
+use Mockery;
 use Picabo\Restful\Application\Exceptions\BadRequestException;
 use Picabo\Restful\Application\MethodOptions;
 use Tester\Assert;
@@ -29,37 +29,27 @@ class MethodHandlerTest extends TestCase
     /** @var MethodHandler */
     private $methodHandler;
 
-    /** @var MockInterface */
     private $request;
 
-    /** @var MockInterface */
     private $response;
 
-    /** @var MockInterface */
     private $methodOptions;
 
-    /** @var MockInterface */
     private $application;
 
-    /** @var MockInterface */
     private $router;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->methodOptions = $this->mockista->create(MethodOptions::class);
-        $this->request = $this->mockista->create(IRequest::class);
+        $this->methodOptions = Mockery::mock(MethodOptions::class);
+        $this->request = Mockery::mock(IRequest::class);
         $this->request->method = 'METHOD';
-        $this->response = $this->mockista->create(IResponse::class);
-        $this->application = $this->mockista->create(Application::class);
-        $this->router = $this->mockista->create(Router::class);
+        $this->response = Mockery::mock(IResponse::class);
+        $this->application = Mockery::mock(Application::class);
+        $this->router = Mockery::mock(Router::class);
 
         $this->methodHandler = new MethodHandler($this->request, $this->response, $this->methodOptions);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->mockista->assertExpectations();
     }
 
     public function testPassesIfRouterMatchesCurrentRequest(): void
@@ -72,7 +62,7 @@ class MethodHandlerTest extends TestCase
 
     public function testPassesIfRouterDoesntMatchButThereAreNoAvailableMethods(): void
     {
-        $url = $this->mockista->create(\Nette\Http\UrlScript::class);
+        $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $this->application->expects('getRouter')->once()->andReturn($this->router);
         $this->router->expects('match')->once()->with($this->request)->andReturn(FALSE);
         $this->request->expects('getUrl')->once()->andReturn($url);
@@ -86,7 +76,7 @@ class MethodHandlerTest extends TestCase
     {
         $this->application->expects('getRouter')->once()->andReturn($this->router);
         $this->router->expects('match')->once()->with($this->request)->andReturn(FALSE);
-        $url = $this->mockista->create(\Nette\Http\UrlScript::class);
+        $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $this->request->expects('getUrl')->once()->andReturn($url);
         $this->methodOptions->expects('getOptions')->once()->with($url)->andReturn(array('GET', 'POST'));
         $this->response->expects('setHeader')->once()->with('Allow', 'GET, POST');
@@ -104,7 +94,7 @@ class MethodHandlerTest extends TestCase
 
     public function testThrowsExceptionIfBadRequestExceptionAppears(): void
     {
-        $url = $this->mockista->create(\Nette\Http\UrlScript::class);
+        $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $this->request->expects('getUrl')->once()->andReturn($url);
         $this->methodOptions->expects('getOptions')->once()->with($url)->andReturn(array('PATCH', 'PUT'));
         $this->response->expects('setHeader')->once()->with('Allow', 'PATCH, PUT');

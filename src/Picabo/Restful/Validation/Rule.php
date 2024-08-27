@@ -14,11 +14,11 @@ class Rule
     use Nette\SmartObject;
 
     public function __construct(
-        protected string $field = '',
-        protected string $message = '',
-        protected int    $code = 0,
-        protected string $expression = '',
-        protected array  $argument = [],
+        public string $field = '',
+        public string $message = '',
+        public int    $code = 0,
+        public string $expression = '',
+        public array|string|\Closure  $argument = [],
     )
     {
     }
@@ -37,7 +37,7 @@ class Rule
     /**
      * Set rule error code
      */
-    public function setCode(int $code): self
+    public function setCode(int $code): static
     {
         $this->code = $code;
         return $this;
@@ -71,7 +71,7 @@ class Rule
     /**
      * Set rule error message
      */
-    public function setMessage(string $message): self
+    public function setMessage(string $message): static
     {
         $this->message = $message;
         return $this;
@@ -88,7 +88,7 @@ class Rule
     /**
      * Set rule expression
      */
-    public function setExpression(string $expression): self
+    public function setExpression(string $expression): static
     {
         $this->expression = $expression;
         return $this;
@@ -96,18 +96,18 @@ class Rule
 
     /**
      * Get rule arguments
-     * @return array
+     * @return array|string|\Closure
      */
-    public function getArgument(): array
+    public function getArgument(): array|string|\Closure
     {
         return $this->argument;
     }
 
     /**
      * Set rule argument(s)
-     * @param array $argument
+     * @param array|string|\Closure $argument
      */
-    public function setArgument(array $argument): self
+    public function setArgument(array|string|\Closure $argument): static
     {
         $this->argument = $argument;
         return $this;

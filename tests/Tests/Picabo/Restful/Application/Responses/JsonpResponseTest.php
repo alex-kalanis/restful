@@ -5,7 +5,7 @@ namespace Tests\Picabo\Restful\Application\Responses;
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 use Picabo\Restful\Application\Responses\JsonpResponse;
-use Mockista\MockInterface;
+use Mockery;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -19,24 +19,21 @@ use Tests\TestCase;
 class JsonpResponseTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $httpRequest;
 
-    /** @var MockInterface */
     private $httpResponse;
 
     /** @var JsonpResponse */
     private $response;
 
-    /** @var MockInterface */
     private $mapper;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->httpRequest = $this->mockista->create(\Nette\Http\IRequest::class);
-        $this->httpResponse = $this->mockista->create(\Nette\Http\IResponse::class);
-        $this->mapper = $this->mockista->create(\Picabo\Restful\Mapping\IMapper::class);
+        $this->httpRequest = Mockery::mock(\Nette\Http\IRequest::class);
+        $this->httpResponse = Mockery::mock(\Nette\Http\IResponse::class);
+        $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\IMapper::class);
         $this->response = new JsonpResponse(['test' => 'JSONP'], $this->mapper);
     }
 

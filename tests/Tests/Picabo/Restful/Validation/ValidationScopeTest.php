@@ -8,9 +8,7 @@ use Picabo\Restful\Validation\IField;
 use Picabo\Restful\Validation\IValidator;
 use Picabo\Restful\Validation\Exceptions\ValidationException;
 use Picabo\Restful\Validation\ValidationScope;
-use Mockista\MockInterface;
-use Nette;
-use Tester;
+use Mockery;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -24,7 +22,6 @@ use Tests\TestCase;
 class ValidationScopeTest extends TestCase
 {
 
-    /** @var MockInterface */
     private $validator;
 
     /** @var ValidationScope */
@@ -33,7 +30,7 @@ class ValidationScopeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->validator = $this->mockista->create(\Picabo\Restful\Validation\Validator::class);
+        $this->validator = Mockery::mock(\Picabo\Restful\Validation\Validator::class);
         $this->schema = new ValidationScope($this->validator);
     }
 
