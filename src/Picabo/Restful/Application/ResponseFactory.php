@@ -199,7 +199,7 @@ class ResponseFactory implements IResponseFactory
     /**
      * Set pretty print
      */
-    public function setPrettyPrint(string $prettyPrint): self
+    public function setPrettyPrint(bool $prettyPrint): self
     {
         $this->prettyPrint = $prettyPrint;
         return $this;
