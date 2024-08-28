@@ -143,7 +143,8 @@ class RestfulExtension extends CompilerExtension
             ->addSetup('$service->addMapper(?, ?)', [IResource::QUERY, $this->prefix('@queryMapper')])
             ->addSetup('$service->addMapper(?, ?)', [IResource::DATA_URL, $this->prefix('@dataUrlMapper')])
             ->addSetup('$service->addMapper(?, ?)', [IResource::FILE, $this->prefix('@nullMapper')])
-            ->addSetup('$service->addMapper(?, ?)', [IResource::NULL, $this->prefix('@nullMapper')]);
+            ->addSetup('$service->addMapper(?, ?)', [IResource::NULL, $this->prefix('@nullMapper')])
+        ;
 
         if (isset($config['mappers'])) {
             foreach ($config['mappers'] as $mapperName => $mapper) {

@@ -64,7 +64,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
         AuthenticationContext $authentication,
         InputFactory          $inputFactory,
         RequestFilter         $requestFilter
-    )
+    ): void
     {
         $this->responseFactory = $responseFactory;
         $this->resourceFactory = $resourceFactory;

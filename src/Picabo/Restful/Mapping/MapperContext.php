@@ -21,9 +21,9 @@ class MapperContext
     /**
      * Add mapper
      */
-    public function addMapper(string $contentType, IMapper $mapper): void
+    public function addMapper(?string $contentType, IMapper $mapper): void
     {
-        $this->services[$contentType] = $mapper;
+        $this->services[$this->safeContentType($contentType)] = $mapper;
     }
 
     /**
@@ -33,14 +33,22 @@ class MapperContext
      *
      * @throws InvalidStateException
      */
-    public function getMapper(string $contentType): IMapper
+    public function getMapper(?string $contentType): IMapper
     {
         $contentType = explode(';', $contentType);
-        $contentType = Strings::trim($contentType[0]);
-        $contentType = $contentType ?: 'NULL';
+        $contentType = $this->safeContentType($contentType[0] ?: null);
         if (!isset($this->services[$contentType])) {
             throw new InvalidStateException('There is no mapper for Content-Type: ' . $contentType);
         }
         return $this->services[$contentType];
+    }
+
+    protected function safeContentType(?string $contentType): string
+    {
+        if (is_null($contentType)) {
+            return 'NULL';
+        }
+        $contentType = Strings::trim($contentType);
+        return $contentType ?: 'NULL';
     }
 }
