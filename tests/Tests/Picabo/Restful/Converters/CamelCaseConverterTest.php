@@ -18,8 +18,7 @@ use Tests\TestCase;
 class CamelCaseConverterTest extends TestCase
 {
 
-    /** @var CamelCaseConverter */
-    private $converter;
+    private CamelCaseConverter $converter;
 
     public function testConvertsArrayKeysToCamelCase(): void
     {

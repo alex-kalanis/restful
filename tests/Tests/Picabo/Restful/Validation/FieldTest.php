@@ -23,22 +23,21 @@ class FieldTest extends TestCase
 
     private $validator;
 
-    /** @var Field */
-    private $field;
+    private Field $field;
 
     public function testAddRuleToField(): void
     {
-        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', 100);
+        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', [100]);
         $rules = $this->field->getRules();
-        Assert::equal($rules[0]->field, 'test');
-        Assert::equal($rules[0]->message, 'Please enter a value of at least %d characters.');
-        Assert::equal($rules[0]->argument, array(100));
-        Assert::equal($rules[0]->expression, IValidator::MAX_LENGTH);
+        Assert::equal($rules[0]->getField(), 'test');
+        Assert::equal($rules[0]->getMessage(), 'Please enter a value of at least %d characters.');
+        Assert::equal($rules[0]->getArgument(), array(100));
+        Assert::equal($rules[0]->getExpression(), IValidator::MAX_LENGTH);
     }
 
     public function testValidateFieldValue(): void
     {
-        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', 100);
+        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', [100]);
         $rules = $this->field->getRules();
 
         $this->validator->expects('validate')
@@ -54,7 +53,7 @@ class FieldTest extends TestCase
     public function testProvideErrorListWhenValidationFails(): void
     {
         $exception = new ValidationException('test', 'Please enter a value of at least 3 characters.');
-        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', 3);
+        $this->field->addRule(IValidator::MAX_LENGTH, 'Please enter a value of at least %d characters.', [3]);
         $rules = $this->field->getRules();
 
         $this->validator->expects('validate')
@@ -64,9 +63,9 @@ class FieldTest extends TestCase
 
         $result = $this->field->validate('hello world');
 
-        Assert::same($result[0]->field, 'test');
-        Assert::same($result[0]->message, 'Please enter a value of at least 3 characters.');
-        Assert::equal($result[0]->code, 0);
+        Assert::same($result[0]->getField(), 'test');
+        Assert::same($result[0]->getMessage(), 'Please enter a value of at least 3 characters.');
+        Assert::equal($result[0]->getCode(), 0);
     }
 
     public function testSkipOptionalFieldIfIsNotSet(): void
@@ -79,7 +78,7 @@ class FieldTest extends TestCase
 
     public function testSetValidationRuleCode(): void
     {
-        $this->field->addRule(IValidator::EMAIL, 'Please enter valid email address', NULL, 4025);
+        $this->field->addRule(IValidator::EMAIL, 'Please enter valid email address', [NULL], 4025);
         $rule = $this->field->getRules()[0];
         Assert::equal($rule->code, 4025);
     }

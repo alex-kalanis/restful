@@ -25,7 +25,7 @@ class DataUrlMapper implements IMapper
      *
      * @throws InvalidArgumentException
      */
-    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
+    public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         if (!$data instanceof Media) {
             throw new InvalidArgumentException(
@@ -41,7 +41,7 @@ class DataUrlMapper implements IMapper
      * @return iterable|string
      * @throws MappingException
      */
-    public function parse(mixed $data): iterable|string
+    public function parse(mixed $data): iterable|string|object
     {
         $matches = Strings::match(strval($data), "@^data:([\w/]+?);(\w+?),(.*)$@si");
         if (!$matches) {

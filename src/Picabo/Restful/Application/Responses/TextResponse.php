@@ -16,7 +16,7 @@ class TextResponse extends BaseResponse
 {
 
     public function __construct(
-        protected readonly Media $media,
+        protected readonly Media|iterable|stdClass|string $media,
         IMapper                  $mapper,
         ?string                  $contentType = NULL,
     )
@@ -29,7 +29,9 @@ class TextResponse extends BaseResponse
      */
     public function getData(): iterable|stdClass|string
     {
-        return $this->media->getContent();
+        return ($this->media instanceof Media)
+            ? $this->media->getContent()
+            : $this->media;
     }
 
     /**

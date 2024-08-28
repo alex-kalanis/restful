@@ -19,8 +19,7 @@ use Tests\TestCase;
 class DateTimeConverterTest extends TestCase
 {
 
-    /** @var DateTimeConverter */
-    private $converter;
+    private DateTimeConverter $converter;
 
     public function testConvertDateTimeObjectsToString(): void
     {

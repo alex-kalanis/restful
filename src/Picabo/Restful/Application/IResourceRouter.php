@@ -28,16 +28,16 @@ interface IResourceRouter extends Router
 
     /**
      * Is this route mapped to given method
-     * @param int $method
+     * @param string $method
      * @return bool
      */
-    public function isMethod(int $method): bool;
+    public function isMethod(string $method): bool;
 
     /**
      * Get request method flag
-     * @return string|null
+     * @return int|null
      */
-    public function getMethod(Http\IRequest $httpRequest): ?string;
+    public function getMethod(Http\IRequest $httpRequest): ?int;
 
     /**
      * Get action dictionary

@@ -24,8 +24,7 @@ class MapperContextTest extends TestCase
 
     private $xml;
 
-    /** @var MapperContext */
-    private $context;
+    private MapperContext $context;
 
     public function testSelectMapperByContentType(): void
     {

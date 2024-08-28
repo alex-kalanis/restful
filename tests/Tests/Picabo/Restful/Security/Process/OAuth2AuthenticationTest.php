@@ -5,6 +5,7 @@ namespace Tests\Picabo\Restful\Security\Process;
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 use Mockery;
+use Picabo\OAuth2\Storage\AccessTokens\AccessToken;
 use Picabo\OAuth2\Storage\Exceptions\InvalidAccessTokenException;
 use Picabo\Restful\Security\Process\OAuth2Authentication;
 use Tester\Assert;
@@ -26,12 +27,13 @@ class OAuth2AuthenticationTest extends TestCase
 
     private $inputFake;
 
-    /** @var OAuth2Authentication */
-    private $process;
+    private OAuth2Authentication $process;
 
     public function testSuccessfullyAuthenticateAccessToken(): void
     {
         $token = '54a6f2ewq86f25rgr6n8r58hr28tj6vd';
+
+        $resultToken = new AccessToken($token, new \DateTime(), 1, null, []);
 
         $this->input->expects('getAuthorization')
             ->once()
@@ -40,7 +42,7 @@ class OAuth2AuthenticationTest extends TestCase
         $this->token->expects('getEntity')
             ->once()
             ->with($token)
-            ->andReturn(array('access_token' => $token));
+            ->andReturn($resultToken);
 
         Assert::true($this->process->authenticate($this->inputFake));
     }

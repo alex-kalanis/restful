@@ -24,8 +24,7 @@ class ValidationScopeTest extends TestCase
 
     private $validator;
 
-    /** @var ValidationScope */
-    private $schema;
+    private ValidationScope $schema;
 
     protected function setUp(): void
     {
@@ -48,7 +47,7 @@ class ValidationScopeTest extends TestCase
 
         $testField = $this->schema->field('test');
         $testField->addRule(IValidator::INTEGER, 'Please add integer');
-        $intigerRule = $testField->rules[0];
+        $intigerRule = $testField->getRules()[0];
 
         $this->validator->expects('validate')
             ->once()
@@ -56,8 +55,8 @@ class ValidationScopeTest extends TestCase
             ->andThrow($exception);
 
         $errors = $this->schema->validate(array('test' => 'Hello world'));
-        Assert::equal($errors[0]->field, 'test');
-        Assert::equal($errors[0]->message, 'Please add integer');
+        Assert::equal($errors[0]->getField(), 'test');
+        Assert::equal($errors[0]->getMessage(), 'Please add integer');
     }
 
     public function testValidateDataUsingDotNotation(): void
@@ -66,7 +65,7 @@ class ValidationScopeTest extends TestCase
 
         $ageField = $this->schema->field('user.age');
         $ageField->addRule(IValidator::INTEGER, 'Please provide age as an integer');
-        $intigerRule = $ageField->rules[0];
+        $intigerRule = $ageField->getRules()[0];
 
         $this->validator->expects('validate')
             ->once()
@@ -74,8 +73,8 @@ class ValidationScopeTest extends TestCase
             ->andThrow($exception);
 
         $errors = $this->schema->validate(array('user' => array('age' => 'test')));
-        Assert::equal($errors[0]->field, 'user.age');
-        Assert::equal($errors[0]->message, 'Please provide age as an integer');
+        Assert::equal($errors[0]->getField(), 'user.age');
+        Assert::equal($errors[0]->getMessage(), 'Please provide age as an integer');
     }
 
     public function testValidateMissingValueIfTheFieldIsRequired(): void
@@ -84,9 +83,9 @@ class ValidationScopeTest extends TestCase
 
         $ageField = $this->schema->field('user.name');
         $ageField->addRule(IValidator::REQUIRED, "Please fill user name");
-        $ageField->addRule(IValidator::MIN_LENGTH, "Min 10 chars", 10);
-        $requiredRule = $ageField->rules[0];
-        $minLengthRule = $ageField->rules[1];
+        $ageField->addRule(IValidator::MIN_LENGTH, "Min 10 chars", [10]);
+        $requiredRule = $ageField->getRules()[0];
+        $minLengthRule = $ageField->getRules()[1];
 
         $this->validator->expects('validate')
             ->once()
@@ -98,8 +97,8 @@ class ValidationScopeTest extends TestCase
             ->andThrow($exception);
 
         $errors = $this->schema->validate(array('user' => array('name' => 'Ar')));
-        Assert::equal($errors[0]->field, 'user.name');
-        Assert::equal($errors[0]->message, 'Required field user.name is missing');
+        Assert::equal($errors[0]->getField(), 'user.name');
+        Assert::equal($errors[0]->getMessage(), 'Required field user.name is missing');
     }
 
     public function testValidateInvalidValuesWhenUsingDotNotation(): void
@@ -108,7 +107,7 @@ class ValidationScopeTest extends TestCase
 
         $ageField = $this->schema->field('user.name');
         $ageField->addRule(IValidator::REQUIRED, "Please fill user name");
-        $requiredRule = $ageField->rules[0];
+        $requiredRule = $ageField->getRules()[0];
 
         $this->validator->expects('validate')
             ->once()
@@ -116,8 +115,8 @@ class ValidationScopeTest extends TestCase
             ->andThrow($exception);
 
         $errors = $this->schema->validate(array('user' => 'tester'));
-        Assert::equal($errors[0]->field, 'user.name');
-        Assert::equal($errors[0]->message, 'Required field user.name is missing');
+        Assert::equal($errors[0]->getField(), 'user.name');
+        Assert::equal($errors[0]->getMessage(), 'Required field user.name is missing');
     }
 
     public function testValidateAllItemsInArray(): void
@@ -126,7 +125,7 @@ class ValidationScopeTest extends TestCase
 
         $field = $this->schema->field('user.name');
         $field->addRule(IValidator::INTEGER, 'Min 10 chars');
-        $rule = $field->rules[0];
+        $rule = $field->getRules()[0];
 
         $this->validator->expects('validate')
             ->once()
@@ -138,10 +137,10 @@ class ValidationScopeTest extends TestCase
             ->andThrow($exception);
 
         $errors = $this->schema->validate(array('user' => array(array('name' => 'Test'), array('name' => 'Me'))));
-        Assert::equal($errors[0]->field, 'user.name');
-        Assert::equal($errors[0]->message, 'Min 10 chars');
-        Assert::equal($errors[1]->field, 'user.name');
-        Assert::equal($errors[1]->message, 'Min 10 chars');
+        Assert::equal($errors[0]->getField(), 'user.name');
+        Assert::equal($errors[0]->getMessage(), 'Min 10 chars');
+        Assert::equal($errors[1]->getField(), 'user.name');
+        Assert::equal($errors[1]->getMessage(), 'Min 10 chars');
     }
 
 }

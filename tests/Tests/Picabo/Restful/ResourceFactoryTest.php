@@ -25,8 +25,7 @@ class ResourceFactoryTest extends TestCase
     private $request;
     private $resourceConverter;
 
-    /** @var ResourceFactory */
-    private $factory;
+    private ResourceFactory $factory;
 
     public function setUp(): void
     {

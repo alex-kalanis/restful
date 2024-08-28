@@ -18,8 +18,7 @@ use Tests\TestCase;
 class QueryMapperTest extends TestCase
 {
 
-    /** @var QueryMapper */
-    private $mapper;
+    private QueryMapper $mapper;
 
     public function testParseRequest(): void
     {

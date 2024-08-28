@@ -12,7 +12,7 @@ use stdClass;
  */
 interface IResponse extends Response
 {
-    public function getContentType(): string;
+    public function getContentType(): ?string;
 
     public function getData(): iterable|stdClass|string;
 }

@@ -20,8 +20,8 @@ class ResponseFactory implements IResponseFactory
 {
     use Nette\SmartObject;
 
-    /** @var string JSONP request key */
-    private string $jsonp = '';
+    /** @var string|null JSONP request key */
+    private ?string $jsonp = null;
 
     /** @var string pretty print key */
     private string $prettyPrintKey = 'prettyPrint';
@@ -41,7 +41,7 @@ class ResponseFactory implements IResponseFactory
     public function __construct(
         private IResponse              $response,
         private readonly IRequest      $request,
-        private readonly MapperContext $mapperContext
+        private readonly MapperContext $mapperContext,
     )
     {
     }
@@ -50,7 +50,7 @@ class ResponseFactory implements IResponseFactory
      * Get JSONP key
      * @return [type] [description]
      */
-    public function getJsonp(): string
+    public function getJsonp(): ?string
     {
         return $this->jsonp;
     }
@@ -58,7 +58,7 @@ class ResponseFactory implements IResponseFactory
     /**
      * Set JSONP key
      */
-    public function setJsonp(string $jsonp): self
+    public function setJsonp(?string $jsonp): self
     {
         $this->jsonp = $jsonp;
         return $this;
@@ -117,10 +117,10 @@ class ResponseFactory implements IResponseFactory
      */
     public function create(IResource $resource, ?string $contentType = NULL): Responses\IResponse
     {
-        if ($contentType === NULL) {
-            $contentType = $this->jsonp === FALSE || !$this->request->getQuery($this->jsonp) ?
-                $this->getPreferredContentType($this->request->getHeader('Accept')) :
-                IResource::JSONP;
+        if (is_null($contentType)) {
+            $contentType = is_null($this->jsonp) || empty($this->request->getQuery($this->jsonp))
+                ? $this->getPreferredContentType($this->request->getHeader('Accept'))
+                : IResource::JSONP;
         }
 
         if (!isset($this->responses[$contentType])) {
@@ -133,11 +133,20 @@ class ResponseFactory implements IResponseFactory
 
         if (empty($resource->getData())) {
             $this->response->setCode(204); // No content
-            return new $this->responses[IResource::NULL];
+            $reflection = new \ReflectionClass($this->responses[$contentType]);
+            return $reflection->newInstance(
+                $resource->getData(),
+                $this->mapperContext->getMapper($contentType),
+            );
         }
 
         $responseClass = $this->responses[$contentType];
-        $response = new $responseClass($resource->getData(), $this->mapperContext->getMapper($contentType), $contentType);
+        $reflection = new \ReflectionClass($responseClass);
+        $response = $reflection->newInstance(
+            $resource->getData(),
+            $this->mapperContext->getMapper($contentType),
+            $contentType,
+        );
         if ($response instanceof Responses\BaseResponse) {
             $response->setPrettyPrint($this->isPrettyPrint());
         }

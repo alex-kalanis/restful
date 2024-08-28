@@ -18,8 +18,7 @@ use Tests\TestCase;
 class PascalCaseConverterTest extends TestCase
 {
 
-    /** @var PascalCaseConverter */
-    private $converter;
+    private PascalCaseConverter $converter;
 
     public function testConvertsArrayKeysToCamelCase(): void
     {

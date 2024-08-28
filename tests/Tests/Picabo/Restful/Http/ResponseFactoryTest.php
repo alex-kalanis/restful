@@ -22,8 +22,7 @@ use Tests\TestCase;
 class ResponseFactoryTest extends TestCase
 {
 
-    /** @var ResponseFactory */
-    private $factory;
+    private ResponseFactory $factory;
 
     private $request;
 
@@ -93,12 +92,12 @@ class ResponseFactoryTest extends TestCase
     private function createPaginatorMock()
     {
         $paginator = Mockery::mock(\Nette\Utils\Paginator::class);
-        $paginator->expects('getPage')->atLeastOnce()->andReturn(1);
-        $paginator->expects('getLastPage')->atLeastOnce()->andReturn(10);
-        $paginator->expects('getItemsPerPage')->atLeastOnce()->andReturn(10);
-        $paginator->expects('getOffset')->atLeastOnce()->andReturn(10);
-        $paginator->expects('getItemCount')->atLeastOnce()->andReturn(100);
-        $paginator->expects('setPage')->atLeastOnce();
+        $paginator->expects('getPage')->atLeast()->once()->andReturn(1);
+        $paginator->expects('getLastPage')->atLeast()->once()->andReturn(10);
+        $paginator->expects('getItemsPerPage')->atLeast()->once()->andReturn(10);
+        $paginator->expects('getOffset')->atLeast()->once()->andReturn(10);
+        $paginator->expects('getItemCount')->atLeast()->once()->andReturn(100);
+        $paginator->expects('setPage')->atLeast()->once();
         return $paginator;
     }
 

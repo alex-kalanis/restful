@@ -20,7 +20,7 @@ class QueryMapper implements IMapper
      * @param iterable|string $data
      * @param bool $prettyPrint
      */
-    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
+    public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         if ($data instanceof Traversable) {
             $data = iterator_to_array($data, TRUE);
@@ -35,7 +35,7 @@ class QueryMapper implements IMapper
      *
      * @throws MappingException
      */
-    public function parse(mixed $data): iterable|string
+    public function parse(mixed $data): iterable|string|object
     {
         $result = [];
         parse_str(strval($data), $result);

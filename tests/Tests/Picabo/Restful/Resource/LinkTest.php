@@ -18,8 +18,7 @@ use Tests\TestCase;
 class LinkTest extends TestCase
 {
 
-    /** @var Link */
-    private $link;
+    private Link $link;
 
     public function setUp(): void
     {

@@ -32,7 +32,7 @@ class ErrorResponse implements IResponse
     /**
      * Get response content type
      */
-    public function getContentType(): string
+    public function getContentType(): ?string
     {
         return $this->response->getContentType();
     }

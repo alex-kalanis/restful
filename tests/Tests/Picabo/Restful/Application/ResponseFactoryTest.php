@@ -9,7 +9,6 @@ use Picabo\Restful\Application\Responses\JsonpResponse;
 use Picabo\Restful\Application\Responses\TextResponse;
 use Picabo\Restful\IResource;
 use Mockery;
-use Nette;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -22,8 +21,7 @@ use Tests\TestCase;
  */
 class ResponseFactoryTest extends TestCase
 {
-    /** @var ResponseFactory */
-    private $factory;
+    private ResponseFactory $factory;
 
     private $resource;
 
@@ -48,7 +46,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->resource->expects('getData')
             ->once()
-            ->andReturn(array());
+            ->andReturn([]);
 
         $this->resource->expects('hasData')
             ->once()
@@ -82,7 +80,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->resource->expects('getData')
             ->once()
-            ->andReturn('test');
+            ->andReturn(['test']);
 
         $this->resource->expects('hasData')
             ->once()
@@ -103,10 +101,10 @@ class ResponseFactoryTest extends TestCase
             ->with('prettyPrint')
             ->andReturn(FALSE);
 
-        $this->factory->registerResponse('text', \Nette\Application\Responses\TextResponse::class);
+        $this->factory->registerResponse('text', TextResponse::class);
         $response = $this->factory->create($this->resource);
 
-        Assert::true($response instanceof Nette\Application\Responses\TextResponse);
+        Assert::true($response instanceof TextResponse);
     }
 
     public function testCreateJsonpResponseWhenJsonpIsActive(): void
@@ -118,7 +116,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->resource->expects('getData')
             ->once()
-            ->andReturn('test');
+            ->andReturn(['test']);
 
         $this->resource->expects('hasData')
             ->once()
@@ -176,7 +174,7 @@ class ResponseFactoryTest extends TestCase
 
         $factory = $this->factory;
         Assert::throws(function () use ($factory) {
-            $factory->registerResponse('test/plain', \Picabo\TestResponse::class);
+            $factory->registerResponse('test/plain', '\Picabo\TestResponse');
         }, \Picabo\Restful\Exceptions\InvalidArgumentException::class);
     }
 
@@ -195,7 +193,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->resource->expects('getData')
             ->once()
-            ->andReturn(array());
+            ->andReturn([]);
 
         $this->resource->expects('hasData')
             ->once()
@@ -216,6 +214,11 @@ class ResponseFactoryTest extends TestCase
             ->with('prettyPrint')
             ->andReturn(FALSE);
 
+        $this->request->expects('getQuery')
+            ->once()
+            ->with('')
+            ->andReturn(null);
+
         $response = $this->factory->create($this->resource);
         Assert::true($response instanceof TextResponse);
     }
@@ -229,7 +232,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->resource->expects('getData')
             ->once()
-            ->andReturn('test');
+            ->andReturn(['test']);
 
         $this->resource->expects('hasData')
             ->once()
@@ -238,7 +241,7 @@ class ResponseFactoryTest extends TestCase
         $this->request->expects('getQuery')
             ->once()
             ->with('jsonp')
-            ->andReturn(NULL);
+            ->andReturn([]);
 
         $this->request->expects('getQuery')
             ->once()
@@ -283,14 +286,14 @@ class ResponseFactoryTest extends TestCase
         $this->request->expects('getQuery')
             ->once()
             ->with('jsonp')
-            ->andReturn(FALSE);
+            ->andReturn('');
 
         $this->request->expects('getQuery')
             ->once()
             ->with('pretty')
-            ->andReturn(FALSE);
+            ->andReturn('');
 
-        $this->factory->prettyPrintKey = 'pretty';
+        $this->factory->setPrettyPrintKey('pretty');
         $response = $this->factory->create($this->resource);
 
         Assert::true($response instanceof TextResponse);
@@ -312,7 +315,11 @@ class ResponseFactoryTest extends TestCase
         $this->response = Mockery::mock(\Nette\Http\IResponse::class);
         $this->request = Mockery::mock(\Nette\Http\IRequest::class);
         $this->mapperContext = Mockery::mock(\Picabo\Restful\Mapping\MapperContext::class);
-        $this->factory = new ResponseFactory($this->response, $this->request, $this->mapperContext);
+        $this->factory = new ResponseFactory(
+            $this->response,
+            $this->request,
+            $this->mapperContext,
+        );
         $this->factory->setJsonp('jsonp');
         $this->resource = Mockery::mock(\Picabo\Restful\Resource::class);
         $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\IMapper::class);

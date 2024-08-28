@@ -38,11 +38,11 @@ class Field implements IField
     ];
 
     /** @var Rule[] */
-    private array $rules = [];
+    protected array $rules = [];
 
     public function __construct(
-        private readonly string     $name,
-        private readonly IValidator $validator
+        protected readonly string     $name,
+        protected readonly IValidator $validator
     )
     {
     }

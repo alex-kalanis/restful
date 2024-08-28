@@ -18,8 +18,7 @@ use Tests\TestCase;
 class SnakeCaseConverterTest extends TestCase
 {
 
-    /** @var SnakeCaseConverter */
-    private $converter;
+    private SnakeCaseConverter $converter;
 
     public function testConvertsArrayKeysToSnakeCase(): void
     {

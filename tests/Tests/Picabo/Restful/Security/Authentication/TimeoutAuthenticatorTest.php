@@ -21,8 +21,7 @@ class TimeoutAuthenticatorTest extends TestCase
 
     private $input;
 
-    /** @var TimeoutAuthenticator */
-    private $authenticator;
+    private TimeoutAuthenticator $authenticator;
 
     public function testSuccessfulAuthenticaton(): void
     {

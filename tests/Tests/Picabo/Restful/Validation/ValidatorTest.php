@@ -20,23 +20,23 @@ use Tests\TestCase;
 class ValidatorTest extends TestCase
 {
 
-    /** @var Rule */
-    private $rule;
+    private Rule $rule;
 
-    /** @var Validator */
-    private $validator;
+    private Validator $validator;
 
     public function testValidateRegularExpression(): void
     {
         $this->rule->expression = IValidator::REGEXP;
-        $this->rule->argument = "/[a-z0-9]*/i";
-        Assert::true($this->validator->validate('05das', $this->rule));
+        $this->rule->argument = ["/[a-z0-9]*/i"];
+        Assert::noError(function (): void {
+            $this->validator->validate('05das', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenRegularExpressionNotMatch(): void
     {
         $this->rule->expression = IValidator::REGEXP;
-        $this->rule->argument = '/[a-z0-9]{5}/i';
+        $this->rule->argument = ['/[a-z0-9]{5}/i'];
         Assert::throws(function () {
             $this->validator->validate('05_as', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
@@ -45,7 +45,7 @@ class ValidatorTest extends TestCase
     public function testThrowsExceptionWhenRegularExpressionIsNotGiven(): void
     {
         $this->rule->expression = IValidator::REGEXP;
-        $this->rule->argument = NULL;
+        $this->rule->argument = [NULL];
         Assert::throws(function () {
             $this->validator->validate('05_as', $this->rule);
         }, \Picabo\Restful\Exceptions\InvalidArgumentException::class);
@@ -54,14 +54,16 @@ class ValidatorTest extends TestCase
     public function testValidateEqualExpression(): void
     {
         $this->rule->expression = IValidator::EQUAL;
-        $this->rule->argument = 10;
-        Assert::true($this->validator->validate('10', $this->rule));
+        $this->rule->argument = [10];
+        Assert::noError(function (): void {
+            $this->validator->validate('10', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenValuesAreNotSame(): void
     {
         $this->rule->expression = IValidator::EQUAL;
-        $this->rule->argument = 10;
+        $this->rule->argument = [10];
         Assert::throws(function () {
             $this->validator->validate('5', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
@@ -70,7 +72,9 @@ class ValidatorTest extends TestCase
     public function testValidateEmailExpression(): void
     {
         $this->rule->expression = IValidator::EMAIL;
-        Assert::true($this->validator->validate('test@domain.com', $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate('test@domain.com', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenEmailIsInvalid(): void
@@ -84,7 +88,9 @@ class ValidatorTest extends TestCase
     public function testValidateUrl(): void
     {
         $this->rule->expression = IValidator::URL;
-        Assert::true($this->validator->validate('http://www.domain.com', $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate('http://www.domain.com', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenUrlIsInvalid(): void
@@ -98,14 +104,16 @@ class ValidatorTest extends TestCase
     public function testStringMinimalLength(): void
     {
         $this->rule->expression = IValidator::MIN_LENGTH;
-        $this->rule->argument = 10;
-        Assert::true($this->validator->validate('asdasfdsb515sdvbsbf', $this->rule));
+        $this->rule->argument = [10];
+        Assert::noError(function (): void {
+            $this->validator->validate('asdasfdsb515sdvbsbf', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenStingLengthIsTooShort(): void
     {
         $this->rule->expression = IValidator::MIN_LENGTH;
-        $this->rule->argument = 10;
+        $this->rule->argument = [10];
         Assert::throws(function () {
             $this->validator->validate('as', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
@@ -114,36 +122,46 @@ class ValidatorTest extends TestCase
     public function testStringMaximalLength(): void
     {
         $this->rule->expression = IValidator::MAX_LENGTH;
-        $this->rule->argument = 10;
-        Assert::true($this->validator->validate('asdasd', $this->rule));
+        $this->rule->argument = [10];
+        Assert::noError(function (): void {
+            $this->validator->validate('asdasd', $this->rule);
+        });
     }
 
     public function testIsNumberWithinRange(): void
     {
         $this->rule->expression = IValidator::RANGE;
         $this->rule->argument = array(10, 20);
-        Assert::true($this->validator->validate(15, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(15, $this->rule);
+        });
     }
 
     public function testIsNumberBiggerThenGiven(): void
     {
         $this->rule->expression = IValidator::RANGE;
         $this->rule->argument = array(10, NULL);
-        Assert::true($this->validator->validate(15, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(15, $this->rule);
+        });
     }
 
     public function testIsNumberLowerThenGiven(): void
     {
         $this->rule->expression = IValidator::RANGE;
         $this->rule->argument = array(NULL, 10);
-        Assert::true($this->validator->validate(5, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(5, $this->rule);
+        });
     }
 
     public function testIsRealNumber(): void
     {
         $this->rule->expression = IValidator::RANGE;
         $this->rule->argument = array(NULL, NULL);
-        Assert::true($this->validator->validate(5, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(5, $this->rule);
+        });
     }
 
     public function testRangeRuleThrowsExceptionIfValueIsNotOfNumericType(): void
@@ -167,7 +185,7 @@ class ValidatorTest extends TestCase
     public function testThrowsExceptionWhenStringIsTooLong(): void
     {
         $this->rule->expression = IValidator::MAX_LENGTH;
-        $this->rule->argument = 10;
+        $this->rule->argument = [10];
         Assert::throws(function () {
             $this->validator->validate('asad5aa18dvsa8dv49sd', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
@@ -177,14 +195,16 @@ class ValidatorTest extends TestCase
     {
         $this->rule->expression = IValidator::LENGTH;
         $this->rule->argument = array(5, 10);
-        Assert::true($this->validator->validate('ad6as46', $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate('ad6as46', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenStringLegthIsOutOfRange(): void
     {
         $this->rule->expression = IValidator::LENGTH;
         $this->rule->argument = array(5, 10);
-        Assert::throws(function () {
+        Assert::throws(function (): void {
             $this->validator->validate('asad5aa18dvsa8dv49sd', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
     }
@@ -192,13 +212,15 @@ class ValidatorTest extends TestCase
     public function testValidateIntegerValue(): void
     {
         $this->rule->expression = IValidator::INTEGER;
-        Assert::true($this->validator->validate(456, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(456, $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenValueIsNotAnInteger(): void
     {
         $this->rule->expression = IValidator::INTEGER;
-        Assert::throws(function () {
+        Assert::throws(function (): void {
             $this->validator->validate('45', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
     }
@@ -206,7 +228,9 @@ class ValidatorTest extends TestCase
     public function testValidateFloatValue(): void
     {
         $this->rule->expression = IValidator::FLOAT;
-        Assert::true($this->validator->validate(45.45698, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(45.45698, $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenValueIsNotFloat(): void
@@ -220,7 +244,9 @@ class ValidatorTest extends TestCase
     public function testValidateNumericValue(): void
     {
         $this->rule->expression = IValidator::NUMERIC;
-        Assert::true($this->validator->validate('45.45698', $this->rule));
+        Assert::noError(function () {
+            $this->validator->validate('45.45698', $this->rule);
+        });
     }
 
     public function testThrowsExceptionWhenValueIsNotNumeric(): void
@@ -234,25 +260,31 @@ class ValidatorTest extends TestCase
     public function testValidateUuid(): void
     {
         $this->rule->expression = IValidator::UUID;
-        Assert::true($this->validator->validate('bfc5b0f9-a33a-4bf5-8745-0701114ce4f3', $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate('bfc5b0f9-a33a-4bf5-8745-0701114ce4f3', $this->rule);
+        });
     }
 
     public function testPassRequiredRuleValidationIfFieldIsNotNull(): void
     {
         $this->rule->expression = IValidator::REQUIRED;
-        Assert::true($this->validator->validate('a', $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate('a', $this->rule);
+        });
     }
 
     public function testPassRequiredRuleValidationIfFieldIsZero(): void
     {
         $this->rule->expression = IValidator::REQUIRED;
-        Assert::true($this->validator->validate(0, $this->rule));
+        Assert::noError(function (): void {
+            $this->validator->validate(0, $this->rule);
+        });
     }
 
     public function testThrowsValidationExceptionIfRequiredFiledIsNull(): void
     {
         $this->rule->expression = IValidator::REQUIRED;
-        Assert::throws(function () {
+        Assert::throws(function (): void {
             $this->validator->validate(NULL, $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
     }
@@ -260,7 +292,7 @@ class ValidatorTest extends TestCase
     public function testThrowsExceptionWhenValueIsNotValidUUID(): void
     {
         $this->rule->expression = IValidator::UUID;
-        Assert::throws(function () {
+        Assert::throws(function (): void {
             $this->validator->validate('bfc5b0f9-a33a-4bf5-8745', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
     }
@@ -269,7 +301,7 @@ class ValidatorTest extends TestCase
     {
         $this->validator->handle['test'] = 'Hello wordl!';
         $this->rule->expression = 'test';
-        Assert::exception(function () {
+        Assert::exception(function (): void {
             $this->validator->validate('test', $this->rule);
         }, \Picabo\Restful\Exceptions\InvalidStateException::class);
     }
@@ -277,19 +309,21 @@ class ValidatorTest extends TestCase
     public function testPassCallbackRuleIfItReturnsTrue(): void
     {
         $this->rule->expression = IValidator::CALLBACK;
-        $this->rule->argument = function ($value) {
+        $this->rule->argument = [function ($value): bool {
             return true;
-        };
-        Assert::true($this->validator->validate('test', $this->rule));
+        }];
+        Assert::noError(function (): void {
+            $this->validator->validate('test', $this->rule);
+        });
     }
 
     public function testThrowsValidationExceptionIfCallbackValidatorReturnsFalse(): void
     {
         $this->rule->expression = IValidator::CALLBACK;
-        $this->rule->argument = function ($value) {
+        $this->rule->argument = [function ($value): bool {
             return false;
-        };
-        Assert::exception(function () {
+        }];
+        Assert::exception(function (): void {
             $this->validator->validate('test', $this->rule);
         }, \Picabo\Restful\Validation\Exceptions\ValidationException::class);
     }

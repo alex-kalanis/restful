@@ -27,8 +27,7 @@ class InputFactoryTest extends TestCase
 
     private $validationScopeFactory;
 
-    /** @var InputFactory */
-    private $inputFactory;
+    private InputFactory $inputFactory;
 
     public function setUp(): void
     {
@@ -53,13 +52,16 @@ class InputFactoryTest extends TestCase
         );
 
         $this->request->expects('getPost')
-            ->atLeastOnce()
+            ->atLeast()
+            ->once()
             ->andReturn($post);
         $this->request->expects('getQuery')
-            ->atLeastOnce()
+            ->atLeast()
+            ->once()
             ->andReturn($query);
         $this->request->expects('getHeader')
-            ->atLeastOnce()
+            ->atLeast()
+            ->once()
             ->with('Content-Type')
             ->andReturn('application/test');
 

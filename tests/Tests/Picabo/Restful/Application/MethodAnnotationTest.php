@@ -4,8 +4,10 @@ namespace Tests\Picabo\Restful\Application;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Mockery;
+use Nette\Application\UI\MethodReflection;
+use Picabo\Restful\Application\IResourceRouter;
 use Picabo\Restful\Application\RouteAnnotation;
+use Nette\Routing\Route;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -21,43 +23,54 @@ class MethodAnnotationTest extends TestCase
 
     private $presenterReflection;
 
-    /** @var RouteAnnotation */
-    private $methodAnnotation;
+    private RouteAnnotation $methodAnnotation;
 
-    public function testCreateRoutesFromPresenterActionAnnotations(): void
+    public function testCreateRoutesFromRealPresenterClass1(): void
     {
-        $methodReflection = Mockery::mock(\Nette\Utils\ReflectionMethod::class);
-        $methodReflection->expects('hasAnnotation')
-            ->once()
-            ->with('GET')
-            ->andReturn(TRUE);
-        $methodReflection->expects('getName')
-            ->atLeastOnce()
-            ->andReturn('actionTest');
-        $methodReflection->expects('getAnnotation')
-            ->once()
-            ->with('GET')
-            ->andReturn('test/resource');
+        $result = $this->methodAnnotation->parse(new MethodReflection(XRoutes::class, 'test'));
+        Assert::equal([
+            IResourceRouter::GET => '/rest/test',
+            IResourceRouter::PUT => '/rest/out',
+        ], $result);
+    }
 
-        $this->presenterReflection->expects('getMethods')
-            ->once()
-            ->andReturn([$methodReflection]);
-
-        $this->presenterReflection->expects('getShortName')
-            ->once()
-            ->andReturn('TestPresenter');
-
-        $routes = $this->methodAnnotation->getRoutes();
-        Assert::true(isset($routes['Test:test']));
-        Assert::equal($routes['Test:test'], 'test/resource');
+    public function testCreateRoutesFromRealPresenterClass2(): void
+    {
+        $result = $this->methodAnnotation->parse(new MethodReflection(XRoutes::class, 'dummy'));
+        Assert::equal([], $result);
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->presenterReflection = Mockery::mock(\Nette\Utils\Type::class);
-        $this->methodAnnotation = new RouteAnnotation($this->presenterReflection, 'GET');
+        $this->methodAnnotation = new RouteAnnotation();
     }
 }
+
+class XRoutes
+{
+    /**
+     * @GET(/rest/test)
+     * @PUT(/rest/out)
+     * @return void
+     */
+    public function test(): void
+    {
+        // for annotation test
+    }
+
+    #[XRoute('Test:test')]
+    public function dummy(): void
+    {
+        // for annotation test
+    }
+}
+
+
+#[\Attribute]
+class XRoute extends Route
+{
+}
+
 
 (new MethodAnnotationTest())->run();

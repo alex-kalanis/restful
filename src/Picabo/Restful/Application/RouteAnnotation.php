@@ -13,8 +13,6 @@ use Reflector;
  * RouteAnnotation
  * @package Picabo\Restful\Application
  * @author Drahomír Hanák
- *
- * @property-read array<string, int> $methods
  */
 class RouteAnnotation implements IAnnotationParser
 {
@@ -50,11 +48,12 @@ class RouteAnnotation implements IAnnotationParser
         }
 
         $result = [];
-        foreach ($this->methods as $methodName => $methodFlag) {
+        foreach ($this->getMethods() as $methodName => $methodFlag) {
             if ($reflection->hasAnnotation($methodName)) {
                 $result[$methodFlag] = $reflection->getAnnotation($methodName);
             }
         }
+
         return $result;
     }
 }

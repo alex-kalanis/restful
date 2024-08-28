@@ -18,8 +18,7 @@ use Tests\TestCase;
  */
 class NullResponseTest extends TestCase
 {
-    /** @var NullResponse */
-    private $response;
+    private NullResponse $response;
 
     protected function setUp(): void
     {
@@ -33,12 +32,12 @@ class NullResponseTest extends TestCase
         $httpResponse = Mockery::mock(\Nette\Http\IResponse::class);
 
         ob_start();
-        $result = $this->response->send($httpRequest, $httpResponse);
+        $this->response->send($httpRequest, $httpResponse);
         $content = ob_get_contents();
         ob_end_clean();
 
         Assert::equal($content, '');
-        Assert::null($result);
+        Assert::true(empty($content));
     }
 }
 

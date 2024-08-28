@@ -125,7 +125,7 @@ class RouteListFactory implements IRouteListFactory
         $routeData = [];
         foreach ($methods as $method) {
             // Parse annotations only on action methods
-            if (!str_contains((string)$method->getName(), 'action'))
+            if (!str_contains($method->getName(), 'action'))
                 continue;
 
             $annotations = $this->routeAnnotation->parse($method);

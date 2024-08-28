@@ -23,8 +23,7 @@ class JsonpResponseTest extends TestCase
 
     private $httpResponse;
 
-    /** @var JsonpResponse */
-    private $response;
+    private JsonpResponse $response;
 
     private $mapper;
 

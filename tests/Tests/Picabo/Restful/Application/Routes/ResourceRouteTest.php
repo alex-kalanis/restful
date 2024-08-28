@@ -7,7 +7,6 @@ require_once __DIR__ . '/../../../../bootstrap.php';
 use Picabo\Restful\Application\Routes\ResourceRoute;
 use Picabo\Restful\Application\IResourceRouter;
 use Mockery;
-use Nette;
 use Nette\Http\IRequest;
 use Tester\Assert;
 use Tests\TestCase;
@@ -22,8 +21,7 @@ use Tests\TestCase;
 class ResourceRouteTest extends TestCase
 {
 
-    /** @var ResourceRoute */
-    private $route;
+    private ResourceRoute $route;
 
     private $httpRequest;
 
@@ -79,8 +77,9 @@ class ResourceRouteTest extends TestCase
     {
         $this->setupRequestMock();
         $this->httpRequest->expects('getMethod')
-            ->atLeastOnce()
-            ->andReturn(IRequest::HEAD);
+            ->atLeast()
+            ->once()
+            ->andReturn(IRequest::Head);
 
         $this->httpRequest->expects('getHeader')
             ->once()
@@ -95,15 +94,13 @@ class ResourceRouteTest extends TestCase
         $this->setupRequestMock();
         $this->httpRequest->expects('getMethod')
             ->once()
-            ->andReturn(IRequest::GET);
+            ->andReturn(IRequest::Get);
 
         $this->httpRequest->expects('getHeader')
             ->once()
             ->andReturn(NULL);
 
-        $appRequest = $this->route->match($this->httpRequest);
-        $params = $appRequest->getParameters();
-        Assert::true($appRequest instanceof Nette\Application\Request);
+        $params = $this->route->match($this->httpRequest);
         Assert::equal($params['action'], 'read');
     }
 
@@ -112,11 +109,9 @@ class ResourceRouteTest extends TestCase
         $this->setupRequestMock();
         $this->httpRequest->expects('getMethod')
             ->once()
-            ->andReturn(IRequest::GET);
+            ->andReturn(IRequest::Get);
 
-        $appRequest = $this->route->match($this->httpRequest);
-        $params = $appRequest->getParameters();
-        Assert::true($appRequest instanceof Nette\Application\Request);
+        $params = $this->route->match($this->httpRequest);
         Assert::equal($params['action'], 'read');
     }
 
@@ -129,15 +124,15 @@ class ResourceRouteTest extends TestCase
             ->once()
             ->andReturn($this->createRequestUrlMock());
 
-        $this->httpRequest->expects('getQuery')->once()->andReturn(array());
-        $this->httpRequest->expects('getPost')->once()->andReturn(array());
-        $this->httpRequest->expects('getFiles')->once()->andReturn(array());
+        $this->httpRequest->expects('getQuery')->once()->andReturn([]);
+        $this->httpRequest->expects('getPost')->once()->andReturn([]);
+        $this->httpRequest->expects('getFiles')->once()->andReturn([]);
         $this->httpRequest->expects('isSecured')->once()->andReturn(FALSE);
     }
 
     private function createRequestUrlMock($path = 'resources/test')
     {
-        $url = Mockery::mock(\Nette\Http\Url::class);
+        $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $url->expects('getHost')->once()->andReturn('host.test');
         $url->expects('getPath')->once()->andReturn($path);
         $url->expects('getBasePath')->once()->andReturn('');

@@ -16,7 +16,7 @@ class NullMapper implements IMapper
     /**
      * Convert array or Traversable input to string output response
      */
-    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
+    public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         return '';
     }
@@ -24,7 +24,7 @@ class NullMapper implements IMapper
     /**
      * Convert client request data to array or traversable
      */
-    public function parse(mixed $data): iterable|string
+    public function parse(mixed $data): iterable|string|object
     {
         return [];
     }

@@ -26,8 +26,7 @@ class SecuredAuthenticationTest extends TestCase
 
     private $timeAuth;
 
-    /** @var SecuredAuthentication */
-    private $process;
+    private SecuredAuthentication $process;
 
     public function testAuthenticateRequest(): void
     {

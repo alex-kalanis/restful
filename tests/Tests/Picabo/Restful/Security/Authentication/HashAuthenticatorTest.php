@@ -26,8 +26,7 @@ class HashAuthenticatorTest extends TestCase
 
     private $calculator;
 
-    /** @var HashAuthenticator */
-    private $authenticator;
+    private HashAuthenticator $authenticator;
 
     public function testSuccessfulAuthentication(): void
     {

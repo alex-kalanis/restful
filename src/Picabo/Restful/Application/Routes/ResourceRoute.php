@@ -33,7 +33,7 @@ class ResourceRoute extends Route implements IResourceRouter
     /**
      * @param string $mask
      * @param array|string $metadata
-     * @param int $flags
+     * @param int $flags all available route types with bitwise add
      */
     public function __construct(
         string       $mask,
@@ -106,9 +106,9 @@ class ResourceRoute extends Route implements IResourceRouter
     /**
      * Get request method flag
      */
-    public function getMethod(Http\IRequest $httpRequest): ?string
+    public function getMethod(Http\IRequest $httpRequest): ?int
     {
-        $method = $httpRequest->getMethod();
+        $method = strtoupper($httpRequest->getMethod());
         if (!isset($this->methodDictionary[$method])) {
             return NULL;
         }
@@ -118,13 +118,14 @@ class ResourceRoute extends Route implements IResourceRouter
     /**
      * Is this route mapped to given method
      */
-    public function isMethod(int $method): bool
+    public function isMethod(string $method): bool
     {
         $common = [self::CRUD, self::RESTFUL];
         $isActionDefined = $this->actionDictionary && !in_array($method, $common)
             ? isset($this->actionDictionary[$method])
             : TRUE;
-        return ($this->getMask() & $method) == $method && $isActionDefined;
+//        return ($this->getFlag() & $method) == $method && $isActionDefined; // getFlag je dneska jinde
+        return $isActionDefined;
     }
 
     /**

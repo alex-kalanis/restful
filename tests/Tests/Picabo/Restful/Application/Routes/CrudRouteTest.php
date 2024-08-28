@@ -19,8 +19,7 @@ use Tests\TestCase;
 class CrudRouteTest extends TestCase
 {
 
-    /** @var CrudRoute */
-    private $route;
+    private CrudRoute $route;
 
     protected function setUp(): void
     {

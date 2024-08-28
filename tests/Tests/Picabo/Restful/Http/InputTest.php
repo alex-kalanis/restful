@@ -19,15 +19,13 @@ use Tests\TestCase;
 class InputTest extends TestCase
 {
 
-    /** @var array */
-    private $data;
+    private array $data;
 
     private $validationScope;
 
     private $validationScopeFactory;
 
-    /** @var Input */
-    private $input;
+    private Input $input;
 
     public function setUp(): void
     {

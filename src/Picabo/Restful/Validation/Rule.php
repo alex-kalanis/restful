@@ -18,7 +18,7 @@ class Rule
         public string $message = '',
         public int    $code = 0,
         public string $expression = '',
-        public array|string|\Closure  $argument = [],
+        public array  $argument = [],
     )
     {
     }
@@ -98,16 +98,16 @@ class Rule
      * Get rule arguments
      * @return array|string|\Closure
      */
-    public function getArgument(): array|string|\Closure
+    public function getArgument(): array
     {
         return $this->argument;
     }
 
     /**
      * Set rule argument(s)
-     * @param array|string|\Closure $argument
+     * @param array $argument
      */
-    public function setArgument(array|string|\Closure $argument): static
+    public function setArgument(array $argument): static
     {
         $this->argument = $argument;
         return $this;

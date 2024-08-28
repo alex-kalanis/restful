@@ -19,8 +19,7 @@ use Tests\TestCase;
 class MediaTest extends TestCase
 {
 
-    /** @var Media */
-    private $media;
+    private Media $media;
 
     public function setUp(): void
     {

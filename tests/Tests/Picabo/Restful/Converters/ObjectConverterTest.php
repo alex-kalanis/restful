@@ -20,8 +20,7 @@ use Tests\TestCase;
 class ObjectConverterTest extends TestCase
 {
 
-    /** @var ObjectConverter */
-    private $converter;
+    private ObjectConverter $converter;
 
     public function setUp(): void
     {

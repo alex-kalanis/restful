@@ -21,8 +21,7 @@ class ResourceConverterTest extends TestCase
 
     private $converter;
 
-    /** @var ResourceConverter */
-    private $resourceConverter;
+    private ResourceConverter $resourceConverter;
 
     public function setUp(): void
     {

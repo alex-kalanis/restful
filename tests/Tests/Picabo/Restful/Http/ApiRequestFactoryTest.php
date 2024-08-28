@@ -20,10 +20,8 @@ use Tests\TestCase;
 class ApiRequestFactoryTest extends TestCase
 {
 
-    /** @var ApiRequestFactory */
-    private $apiRequestFactory;
+    private ApiRequestFactory $apiRequestFactory;
 
-    /** @var RequestFactory */
     private $requestFactory;
 
     private $request;
@@ -33,7 +31,7 @@ class ApiRequestFactoryTest extends TestCase
         parent::setUp();
         $this->request = $this->createRequestMock();
         $this->requestFactory = Mockery::mock(\Nette\Http\RequestFactory::class);
-        $this->requestFactory->expects('createHttpRequest')->andReturn($this->request);
+        $this->requestFactory->expects('fromGlobals')->andReturn($this->request);
         $this->apiRequestFactory = new ApiRequestFactory($this->requestFactory);
     }
 
@@ -42,14 +40,17 @@ class ApiRequestFactoryTest extends TestCase
         $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $url->expects('__get')->once()->with('query')->andReturn('');
         $url->expects('setQuery')->once();
+        $url->expects('withQuery')->andReturnSelf();
 
-        $request = Mockery::mock(\Nette\Http\IRequest::class);
+        $request = Mockery::mock(\Nette\Http\Request::class);
         $request->expects('getUrl')->once()->andReturn($url);
-        $request->expects('getQuery')->once()->andReturn(NULL);
-        $request->expects('getPost')->once()->andReturn(NULL);
-        $request->expects('getFiles')->once()->andReturn(NULL);
-        $request->expects('getCookies')->once()->andReturn(NULL);
-        $request->expects('getHeaders')->once()->andReturn(NULL);
+        $request->expects('getQuery')->once()->andReturn('');
+        $request->expects('getPost')->once()->andReturn([]);
+        $request->expects('getFile')->once()->andReturn(null);
+        $request->expects('getFiles')->once()->andReturn([]);
+        $request->expects('getCookie')->once()->andReturn(NULL);
+        $request->expects('getCookies')->once()->andReturn([]);
+        $request->expects('getHeaders')->once()->andReturn([]);
         $request->expects('getRemoteAddress')->once()->andReturn(NULL);
         $request->expects('getRemoteHost')->once()->andReturn(NULL);
         return $request;

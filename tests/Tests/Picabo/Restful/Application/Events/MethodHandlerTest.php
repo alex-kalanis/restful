@@ -44,7 +44,7 @@ class MethodHandlerTest extends TestCase
         parent::setUp();
         $this->methodOptions = Mockery::mock(MethodOptions::class);
         $this->request = Mockery::mock(IRequest::class);
-        $this->request->method = 'METHOD';
+        $this->request->expects('getMethod')->andReturn('METHOD');
         $this->response = Mockery::mock(IResponse::class);
         $this->application = Mockery::mock(Application::class);
         $this->router = Mockery::mock(Router::class);
@@ -55,7 +55,7 @@ class MethodHandlerTest extends TestCase
     public function testPassesIfRouterMatchesCurrentRequest(): void
     {
         $this->application->expects('getRouter')->once()->andReturn($this->router);
-        $this->router->expects('match')->once()->with($this->request)->andReturn(TRUE);
+        $this->router->expects('match')->once()->with($this->request)->andReturn(['ok']);
         $this->methodHandler->run($this->application);
         Assert::true(true);
     }
@@ -64,7 +64,7 @@ class MethodHandlerTest extends TestCase
     {
         $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $this->application->expects('getRouter')->once()->andReturn($this->router);
-        $this->router->expects('match')->once()->with($this->request)->andReturn(FALSE);
+        $this->router->expects('match')->once()->with($this->request)->andReturn(null);
         $this->request->expects('getUrl')->once()->andReturn($url);
         $this->methodOptions->expects('getOptions')->once()->with($url)->andReturn(array());
 
@@ -75,7 +75,7 @@ class MethodHandlerTest extends TestCase
     public function testThrowsExceptionIfRouteDoesntMatchAndThereAreAvailableMethods(): void
     {
         $this->application->expects('getRouter')->once()->andReturn($this->router);
-        $this->router->expects('match')->once()->with($this->request)->andReturn(FALSE);
+        $this->router->expects('match')->once()->with($this->request)->andReturn(null);
         $url = Mockery::mock(\Nette\Http\UrlScript::class);
         $this->request->expects('getUrl')->once()->andReturn($url);
         $this->methodOptions->expects('getOptions')->once()->with($url)->andReturn(array('GET', 'POST'));

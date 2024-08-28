@@ -20,8 +20,7 @@ use Tests\TestCase;
 class JsonMapperTest extends TestCase
 {
 
-    /** @var IMapper */
-    private $mapper;
+    private IMapper $mapper;
 
     public function testConvertArrayToJson(): void
     {

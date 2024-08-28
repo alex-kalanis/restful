@@ -22,8 +22,7 @@ class RequestFilterTest extends TestCase
 
     private $request;
 
-    /** @var RequestFilter */
-    private $filter;
+    private RequestFilter $filter;
 
     public function testGetFieldsListFromString(): void
     {
@@ -82,11 +81,11 @@ class RequestFilterTest extends TestCase
     {
         $this->request->expects('getQuery')
             ->once()
-            ->with('offset', NULL)
+            ->with('offset')
             ->andReturn(20);
         $this->request->expects('getQuery')
             ->once()
-            ->with('limit', NULL)
+            ->with('limit')
             ->andReturn(10);
 
         $paginator = $this->filter->getPaginator();
@@ -100,11 +99,12 @@ class RequestFilterTest extends TestCase
     {
         $this->request->expects('getQuery')
             ->once()
-            ->with('offset', NULL)
+            ->with('offset')
             ->andReturn(20);
+
         $this->request->expects('getQuery')
             ->once()
-            ->with('limit', NULL)
+            ->with('limit')
             ->andReturn(NULL);
 
         Assert::throws(function () {

@@ -19,14 +19,13 @@ use Tests\TestCase;
 class DataUrlMapperTest extends TestCase
 {
 
-    /** @var DataUrlMapper */
-    private $mapper;
+    private DataUrlMapper $mapper;
 
     private $media;
 
     public function testEncodeContentToBase64WithMimeTypeFromMediaObject(): void
     {
-        $this->media->expects('__toString')
+        $this->media->expects('getContent')
             ->once()
             ->andReturn('Hello world');
         $this->media->expects('getContentType')

@@ -15,9 +15,9 @@ class NullResponse implements IResponse
 {
     use Nette\SmartObject;
 
-    public function getContentType(): string
+    public function getContentType(): ?string
     {
-        return '';
+        return null;
     }
 
     public function getData(): iterable|stdClass|string

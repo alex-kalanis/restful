@@ -20,13 +20,11 @@ use Tests\TestCase;
 class ConvertedResourceTest extends TestCase
 {
 
-    /** @var array */
-    private $data;
+    private array $data;
 
     private $resourceConverter;
 
-    /** @var ConvertedResource */
-    private $resource;
+    private ConvertedResource $resource;
 
     public function setUp(): void
     {

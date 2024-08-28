@@ -58,7 +58,7 @@ class XmlMapper implements IMapper
      * @return string
      * @throws InvalidArgumentException
      */
-    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
+    public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         if (!is_string($data) && !is_array($data) && !($data instanceof Traversable)) {
             throw new InvalidArgumentException('Data must be of type string, array or Traversable');
@@ -108,18 +108,18 @@ class XmlMapper implements IMapper
      *
      * @throws  MappingException If XML data is not valid
      */
-    public function parse(mixed $data): iterable|string
+    public function parse(mixed $data): iterable|string|object
     {
         return $this->fromXml($data);
     }
 
     /**
      * @param string $data
-     * @return array
+     * @return iterable|string|object
      *
      * @throws  MappingException If XML data is not valid
      */
-    private function fromXml(mixed $data): array
+    private function fromXml(mixed $data): iterable|string|object
     {
         try {
             $useErrors = libxml_use_internal_errors(true);

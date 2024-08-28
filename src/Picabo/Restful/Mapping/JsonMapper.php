@@ -23,7 +23,7 @@ class JsonMapper implements IMapper
      * @return string
      * @throws MappingException
      */
-    public function stringify(iterable|string $data, bool $prettyPrint = TRUE): string
+    public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         try {
             return Json::encode($data, $prettyPrint);
@@ -39,7 +39,7 @@ class JsonMapper implements IMapper
      *
      * @throws MappingException
      */
-    public function parse(mixed $data): iterable|string
+    public function parse(mixed $data): iterable|string|object
     {
         try {
             return Json::decode($data, true);

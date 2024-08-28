@@ -23,8 +23,7 @@ class HashCalculatorTest extends TestCase
 
     private $input;
 
-    /** @var HashCalculator */
-    private $calculator;
+    private HashCalculator $calculator;
 
     public function testCalculateHash(): void
     {
