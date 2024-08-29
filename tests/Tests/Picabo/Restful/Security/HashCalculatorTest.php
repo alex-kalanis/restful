@@ -31,7 +31,7 @@ class HashCalculatorTest extends TestCase
         $data = array('message' => 'Testing hash', 'sender' => '@drahomir_hanak');
         $this->mapper->expects('stringify')
             ->once()
-            ->with($data)
+            ->with($data, false)
             ->andReturn($dataString);
 
         $this->input->expects('getData')
