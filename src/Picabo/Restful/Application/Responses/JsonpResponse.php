@@ -17,6 +17,11 @@ use Picabo\Restful\Mapping\IMapper;
 class JsonpResponse extends BaseResponse
 {
 
+    /**
+     * @param array<mixed> $data
+     * @param IMapper $mapper
+     * @param string|null $contentType
+     */
     public function __construct(
         array   $data,
         IMapper $mapper,
@@ -40,7 +45,7 @@ class JsonpResponse extends BaseResponse
         $data['status'] = $httpResponse->getCode();
         $data['headers'] = $httpResponse->getHeaders();
 
-        $callback = $httpRequest->getQuery('jsonp') ? Strings::webalize($httpRequest->getQuery('jsonp'), NULL, FALSE) : '';
+        $callback = $httpRequest->getQuery('jsonp') ? Strings::webalize(strval($httpRequest->getQuery('jsonp')), NULL, FALSE) : '';
         echo $callback . '(' . $this->mapper->stringify($data, $this->isPrettyPrint()) . ');';
     }
 }

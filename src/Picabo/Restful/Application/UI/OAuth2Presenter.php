@@ -26,17 +26,20 @@ use Traversable;
 class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
 {
 
-    /** @var AuthorizationCodeFacade */
-    protected $authorizationCode;
-    /** @var IClientStorage */
-    protected $clientStorage;
-    /** @var IClient */
-    protected $client;
-    /** @var GrantContext */
-    private $grantContext;
+    protected AuthorizationCodeFacade $authorizationCode;
+
+    protected IClientStorage $clientStorage;
+
+    protected IClient $client;
+
+    private GrantContext $grantContext;
 
     /**
      * Inject OAuth2 presenter dependencies
+     * @param GrantContext $grantContext
+     * @param AuthorizationCodeFacade $authorizationCode
+     * @param IClientStorage $clientStorage
+     * @return void
      */
     public final function injectOauth2(
         GrantContext            $grantContext,
@@ -68,7 +71,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
                 throw new UnauthorizedClientException;
             }
 
-            $scope = array_filter(explode(',', str_replace(' ', ',', $scope)));
+            $scope = array_filter(explode(',', str_replace(' ', ',', strval($scope))));
             $code = $this->authorizationCode->create($this->client, $this->user->getId(), $scope);
             $data = ['code' => $code->getAuthorizationCode()];
             $this->oauthResponse($data, $redirectUrl);
@@ -81,7 +84,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
 
     /**
      * Send OAuth response
-     * @param array|Traversable $data
+     * @param array<string, mixed>|Traversable<string, mixed> $data
      * @param string|null $redirectUrl
      * @param int $code
      */
@@ -117,7 +120,8 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     public function oauthError(OAuthException $exception): void
     {
         $error = ['error' => $exception->getKey(), 'error_description' => $exception->getMessage()];
-        $this->oauthResponse($error, $this->getParameter('redirect_uri'), $exception->getCode());
+        $redirect = $this->getParameter('redirect_uri');
+        $this->oauthResponse($error, is_null($redirect) ? null : strval($redirect), $exception->getCode());
     }
 
     /**
@@ -134,7 +138,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
                 $grantType = $this->getGrantType();
             }
 
-            $response = $grantType->getAccessToken($this->getHttpRequest());
+            $response = $grantType->getAccessToken();
             $this->oauthResponse($response, $redirectUrl);
         } catch (OAuthException $e) {
             $this->oauthError($e);
@@ -152,7 +156,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     public function getGrantType(): IGrant
     {
         $request = $this->getHttpRequest();
-        $grantType = $request->getPost(GrantType::GRANT_TYPE_KEY);
+        $grantType = strval($request->getPost(GrantType::GRANT_TYPE_KEY));
         try {
             return $this->grantContext->getGrantType($grantType);
         } catch (InvalidStateException $e) {
@@ -166,9 +170,15 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     protected function startup(): void
     {
         parent::startup();
-        $this->client = $this->clientStorage->getClient(
-            $this->getParameter(GrantType::CLIENT_ID_KEY),
-            $this->getParameter(GrantType::CLIENT_SECRET_KEY)
+        $clientId = $this->getParameter(GrantType::CLIENT_ID_KEY);
+        $clientSecret = $this->getParameter(GrantType::CLIENT_SECRET_KEY);
+        $client = $this->clientStorage->getClient(
+            is_numeric($clientId) ? intval($clientId) : strval($clientId),
+            is_null($clientSecret) ? null : strval($clientSecret)
         );
+        if (!$client) {
+            throw new \LogicException('Cannot load client info');
+        }
+        $this->client = $client;
     }
 }

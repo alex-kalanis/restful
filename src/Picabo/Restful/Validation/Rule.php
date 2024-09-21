@@ -13,6 +13,13 @@ class Rule
 {
     use Nette\SmartObject;
 
+    /**
+     * @param string $field
+     * @param string $message
+     * @param int $code
+     * @param string $expression
+     * @param array<bool|float|int|string|null> $argument
+     */
     public function __construct(
         public string $field = '',
         public string $message = '',
@@ -96,7 +103,7 @@ class Rule
 
     /**
      * Get rule arguments
-     * @return array|string|\Closure
+     * @return array<bool|float|int|string|null>
      */
     public function getArgument(): array
     {
@@ -105,7 +112,7 @@ class Rule
 
     /**
      * Set rule argument(s)
-     * @param array $argument
+     * @param array<bool|float|int|string|null> $argument
      */
     public function setArgument(array $argument): static
     {

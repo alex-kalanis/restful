@@ -10,6 +10,9 @@ use Traversable;
  * PascalCaseConverter
  * @package Picabo\Restful\Converters
  * @author Drahomír Hanák
+ * @template TK of string
+ * @template TVal of mixed
+ * @implements IConverter<TK, TVal>
  */
 class PascalCaseConverter implements IConverter
 {
@@ -17,6 +20,8 @@ class PascalCaseConverter implements IConverter
 
     /**
      * Converts resource data keys to PascalCase
+     * @param array<TK, TVal> $resource
+     * @return array<TK, TVal>
      */
     public function convert(array $resource): array
     {
@@ -26,9 +31,9 @@ class PascalCaseConverter implements IConverter
 
     /**
      * Convert array keys to camel case
-     * @param array|Traversable $array
+     * @param array<TK, TVal>|Traversable<TK, TVal> $array
      */
-    private function convertToPascal(&$array)
+    private function convertToPascal(iterable &$array): void
     {
         if ($array instanceof Traversable) {
             $array = iterator_to_array($array);

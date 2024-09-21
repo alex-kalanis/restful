@@ -11,6 +11,7 @@ use Traversable;
  * Validation error caret
  * @package Picabo\Restful\Validation
  * @author Drahomír Hanák
+ * @--implements IteratorAggregate<int, array<string, string|int>>
  */
 class Error implements IteratorAggregate
 {
@@ -62,6 +63,7 @@ class Error implements IteratorAggregate
 
     /**
      * Converts error caret to an array
+     * @return array<string, string|int>
      */
     public function toArray(): array
     {

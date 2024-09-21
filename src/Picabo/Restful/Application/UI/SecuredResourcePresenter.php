@@ -15,7 +15,7 @@ class SecuredResourcePresenter extends ResourcePresenter
     /** @var BasicAuthentication */
     private $basicAuthentication;
 
-    public final function injectBasicAuthentication(BasicAuthentication $basicAuthentication)
+    public final function injectBasicAuthentication(BasicAuthentication $basicAuthentication): void
     {
         $this->basicAuthentication = $basicAuthentication;
     }

@@ -14,5 +14,8 @@ interface IResponse extends Response
 {
     public function getContentType(): ?string;
 
+    /**
+     * @return iterable<string|int, mixed>|stdClass|string
+     */
     public function getData(): iterable|stdClass|string;
 }

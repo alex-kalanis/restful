@@ -32,7 +32,7 @@ class ResourceFactoryTest extends TestCase
         parent::setUp();
         $this->request = Mockery::mock(IRequest::class);
         $this->resourceConverter = Mockery::mock(ResourceConverter::class);
-        $this->factory = new ResourceFactory($this->request, $this->resourceConverter);
+        $this->factory = new ResourceFactory($this->resourceConverter);
     }
 
     public function testCreateResource(): void

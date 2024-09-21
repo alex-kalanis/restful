@@ -49,6 +49,11 @@ class Field implements IField
 
     /**
      * Add validation rule for this field
+     * @param string $expression
+     * @param string|null $message
+     * @param array<bool|float|int|string|null> $argument
+     * @param int $code
+     * @return IField
      */
     public function addRule(string $expression, ?string $message = null, array $argument = [], int $code = 0): IField
     {

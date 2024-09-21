@@ -44,7 +44,7 @@ class ValidationException extends LogicException
             $rule->getField(),
             (
             $value
-                ? "'" . Strings::truncate($value, 60) . "' is invalid value: "
+                ? "'" . Strings::truncate(strval($value), 60) . "' is invalid value: "
                 : ''
             ) . vsprintf($rule->getMessage(), $printable),
             $rule->getCode(),

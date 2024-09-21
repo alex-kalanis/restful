@@ -7,6 +7,7 @@ use Nette\Http\IRequest;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
 use Nette\Routing\Router;
+use Nette\Routing\RouteList;
 use Traversable;
 
 /**
@@ -30,7 +31,7 @@ class MethodOptions
     ];
 
     public function __construct(
-        private readonly Router $router,
+        private readonly Router|RouteList $router,
     )
     {
     }
@@ -41,17 +42,21 @@ class MethodOptions
      */
     public function getOptions(UrlScript $url): array
     {
-        return $this->checkAvailableMethods($this->router, $url);
+        $router = is_a($this->router, RouteList::class)
+            ? $this->router
+            : (new RouteList())->add($this->router);
+        ;
+        return $this->checkAvailableMethods($router, $url);
     }
 
     /**
      * Recursively checks available methods
      * @return string[]
      */
-    private function checkAvailableMethods(Router $router, UrlScript $url): array
+    private function checkAvailableMethods(Nette\Routing\RouteList $router, UrlScript $url): array
     {
         $methods = [];
-        foreach ($router as $route) {
+        foreach ($router->getRouters() as $route) {
             if ($route instanceof IResourceRouter && !$route instanceof Traversable) {
                 $methodFlag = $this->getMethodFlag($route);
                 if (!$methodFlag) continue;
@@ -69,7 +74,7 @@ class MethodOptions
                 }
             }
 
-            if ($route instanceof Traversable) {
+            if (is_a($route, Nette\Routing\RouteList::class)) {
                 $newMethods = $this->checkAvailableMethods($route, $url);
                 $methods = array_merge($methods, $newMethods);
             }
@@ -100,15 +105,5 @@ class MethodOptions
             [], [], [], [],
             $this->methods[$methodFlag]
         );
-    }
-
-    /**
-     * Remove override param from query URL parameters
-     * @return string[]
-     */
-    private function removeOverrideParam(array $query): array
-    {
-        unset($query['X-HTTP-Method-Override']);
-        return $query;
     }
 }

@@ -55,7 +55,7 @@ final class CachedRouteListFactory implements IRouteListFactory
     public function create(?string $module = NULL): ResourceRouteList
     {
         $routeList = $this->cache->load(self::CACHE_NAME);
-        if ($routeList !== NULL) {
+        if (is_object($routeList) && is_a($routeList, ResourceRouteList::class)) {
             return $routeList;
         }
         return $this->createCached($module);

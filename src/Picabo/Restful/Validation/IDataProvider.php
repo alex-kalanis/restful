@@ -19,7 +19,7 @@ interface IDataProvider
 
     /**
      * Validate data
-     * @return array
+     * @return array<Error>
      */
     public function validate(): array;
 

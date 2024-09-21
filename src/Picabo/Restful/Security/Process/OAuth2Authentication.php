@@ -63,6 +63,6 @@ class OAuth2Authentication extends AuthenticationProcess
     public function getAccessToken(): ?ITokens
     {
         $token = $this->oauthInput->getAuthorization();
-        return $this->storage->getEntity($token);
+        return $token ? $this->storage->getEntity($token) : null;
     }
 }

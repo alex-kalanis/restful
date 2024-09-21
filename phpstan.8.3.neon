@@ -1,10 +1,36 @@
 parameters:
-	level: 9
-	paths:
-		- 'src'
-	excludePaths:
-		- 'tests/Drahak/bootstrap.php'
-		- 'tests/Drahak/DatabaseTestCase.php'
-		- 'tests/Drahak/TestCase.php'
-	bootstrapFiles:
-		- 'tests/Drahak/bootstrap.php'
+    level: 9
+    paths:
+        - 'src'
+    excludePaths:
+        - 'tests/Tests/bootstrap.php'
+        - 'tests/Tests/TestCase.php'
+    bootstrapFiles:
+        - 'tests/Tests/bootstrap.php'
+    ignoreErrors:
+        # strval, intval, floatval, boolval
+        - '#Parameter \#1 \$va[rl]u?e? of function [sibf][tnol][rtoo][la]?t?val expects#'
+        # WTF - can get object
+        -
+            message: '#Call to function is_object\(\) with array#'
+            path: 'src/Picabo/Restful/Validation/Exceptions/ValidationException.php'
+        # WTF - problems with generics and LSP - it's ignored by phpstan
+        -
+            message: '#Class Picabo\\Restful\\Validation\\Error implements generic interface#'
+            path: 'src/Picabo/Restful/Validation/Error.php'
+        # WTF - recursive call
+        -
+            message: '#Parameter \#1 \$data of method Picabo\\Restful\\Mapping\\XmlMapper\:\:toXml\(\) expects#'
+            path: 'src/Picabo/Restful/Mapping/XmlMapper.php'
+        # WTF - deep structures - configs
+        -
+            message: '#Parameter \#2 \$config of method#'
+            path: 'src/Picabo/Restful/DI/RestfulExtension.php'
+        # WTF - cannot see strval calls
+        -
+            message: '#Method Picabo\\Restful\\Application\\RouteListFactory\:\:parseClassRoutes\(\) should return#'
+            path: 'src/Picabo/Restful/Application/RouteListFactory.php'
+        # WTF - future-proof?
+        -
+            message: '#Property Picabo\\Restful\\Application\\RouteListFactory\:\:\$cacheDirectory is never read#'
+            path: 'src/Picabo/Restful/Application/RouteListFactory.php'

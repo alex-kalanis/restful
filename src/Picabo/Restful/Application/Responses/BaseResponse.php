@@ -16,6 +16,9 @@ abstract class BaseResponse implements IResponse
 {
     use Nette\SmartObject;
 
+    /**
+     * @var iterable<string|int, mixed>|stdClass
+     */
     protected iterable|stdClass $data = [];
 
     private bool $prettyPrint = TRUE;
@@ -54,6 +57,7 @@ abstract class BaseResponse implements IResponse
 
     /**
      * Get response data
+     * @return iterable<string|int, mixed>|stdClass|string
      */
     public function getData(): iterable|stdClass|string
     {

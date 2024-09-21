@@ -5,6 +5,7 @@ namespace Tests\Picabo\Restful\Security;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 use Mockery;
+use Picabo\Restful\Mapping\QueryMapper;
 use Picabo\Restful\Security\HashCalculator;
 use Tester\Assert;
 use Tests\TestCase;
@@ -19,7 +20,7 @@ use Tests\TestCase;
 class HashCalculatorTest extends TestCase
 {
 
-    private $mapper;
+    private QueryMapper $mapper;
 
     private $input;
 
@@ -29,10 +30,6 @@ class HashCalculatorTest extends TestCase
     {
         $dataString = 'message=Testing+hash&sender=%40drahomir_hanak';
         $data = array('message' => 'Testing hash', 'sender' => '@drahomir_hanak');
-        $this->mapper->expects('stringify')
-            ->once()
-            ->with($data, false)
-            ->andReturn($dataString);
 
         $this->input->expects('getData')
             ->once()
@@ -47,7 +44,7 @@ class HashCalculatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mapper = Mockery::mock(\Picabo\Restful\Mapping\QueryMapper::class, \Picabo\Restful\Mapping\IMapper::class);
+        $this->mapper = new QueryMapper();
         $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
 
         $request = Mockery::mock(\Nette\Http\IRequest::class);

@@ -23,8 +23,9 @@ class ErrorResponse implements IResponse
 
     /**
      * Get response data
+     * @return iterable<string|int, mixed>|stdClass|string
      */
-    public function getData(): iterable|stdClass
+    public function getData(): iterable|stdClass|string
     {
         return $this->response->getData();
     }

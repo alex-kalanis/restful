@@ -7,9 +7,11 @@ use Nette\Application\UI;
 use Picabo\Restful\Application\Exceptions\BadRequestException;
 use Picabo\Restful\Application\IResourcePresenter;
 use Picabo\Restful\Application\IResponseFactory;
+use Picabo\Restful\Application\ResponseFactory;
 use Picabo\Restful\Application\Responses\ErrorResponse;
 use Picabo\Restful\Exceptions\InvalidStateException;
 use Picabo\Restful\Http\IInput;
+use Picabo\Restful\Http\Input;
 use Picabo\Restful\Http\InputFactory;
 use Picabo\Restful\IResource;
 use Picabo\Restful\IResourceFactory;
@@ -17,7 +19,6 @@ use Picabo\Restful\Resource\Link;
 use Picabo\Restful\Security\AuthenticationContext;
 use Picabo\Restful\Security\Exceptions\SecurityException;
 use Picabo\Restful\Utils\RequestFilter;
-use Picabo\Restful\Validation\IDataProvider;
 use ReflectionClass;
 use ReflectionMethod;
 use Throwable;
@@ -33,30 +34,28 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
     /** @internal */
     public const VALIDATE_ACTION_PREFIX = 'validate';
 
-    /** @var IResource */
-    protected $resource;
+    protected IResource $resource;
 
-    /** @var RequestFilter */
-    protected $requestFilter;
+    protected RequestFilter $requestFilter;
 
-    /** @var IResourceFactory */
-    protected $resourceFactory;
+    protected IResourceFactory $resourceFactory;
 
-    /** @var IResponseFactory */
-    protected $responseFactory;
+    protected IResponseFactory $responseFactory;
 
-    /** @var AuthenticationContext */
-    protected $authentication;
+    protected AuthenticationContext $authentication;
 
-    /** @var IInput|IDataProvider */
-    private $input;
+    private ?IInput $input = null;
 
-    /** InputFactory */
-    private $inputFactory;
+    private InputFactory $inputFactory;
 
     /**
      * Inject Picabo Restful
-     * @param IInput $input
+     * @param IResponseFactory $responseFactory
+     * @param IResourceFactory $resourceFactory
+     * @param AuthenticationContext $authentication
+     * @param InputFactory $inputFactory
+     * @param RequestFilter $requestFilter
+     * @return void
      */
     public final function injectPicaboRestful(
         IResponseFactory      $responseFactory,
@@ -75,6 +74,8 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Check security and other presenter requirements
+     * @param ReflectionClass<object>|ReflectionMethod $element
+     * @return void
      */
     public function checkRequirements(ReflectionClass|ReflectionMethod $element): void
     {
@@ -103,7 +104,9 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
         // if the $contentType is not forced and the user has requested an unacceptable content-type, default to JSON
         $accept = $request->getHeader('Accept');
-        if ($contentType === NULL && (!$accept || !$this->responseFactory->isAcceptable($accept))) {
+        $responseFactory = $this->responseFactory;
+        /** @var ResponseFactory $responseFactory */
+        if ($contentType === NULL && (!$accept || !$responseFactory->isAcceptable($accept))) {
             $contentType = IResource::JSON;
         }
 
@@ -141,21 +144,31 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
 
     /**
      * Get input
+     * @return IInput
      */
     public function getInput(): IInput
     {
-        if (!$this->input) {
-            try {
-                $this->input = $this->inputFactory->create();
-            } catch (BadRequestException $e) {
-                $this->sendErrorResource($e);
-            }
+        if ($this->input) {
+            return $this->input;
         }
-        return $this->input;
+        try {
+            $input = $this->inputFactory->create();
+            $this->input = $input;
+            return $input;
+        } catch (BadRequestException $e) {
+            $this->sendErrorResource($e);
+            // wont happend
+            throw $e;
+        }
     }
 
     /**
      * Create resource link representation object
+     * @param string $destination
+     * @param array<string, string>|string $args
+     * @param string $rel
+     * @return string
+     * @throws UI\InvalidLinkException
      */
     public function link(string $destination, $args = [], $rel = Link::SELF): string
     {
@@ -180,9 +193,11 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             $validationProcessed = $this->tryCall(static::formatValidateMethod($this->getAction()), $this->params);
 
             // Check if input is validate
-            if (!$this->getInput()->isValid() && $validationProcessed === TRUE) {
-                $errors = $this->getInput()->validate();
-                throw BadRequestException::unprocessableEntity($errors, 'Validation Failed: ' . $errors[0]->message);
+            $input = $this->getInput();
+            /** @var Input<string, mixed> $input */
+            if (!$input->isValid() && $validationProcessed === TRUE) {
+                $errors = $input->validate();
+                throw BadRequestException::unprocessableEntity($errors, 'Validation Failed: ' . $errors[0]->getMessage());
             }
         } catch (BadRequestException $e) {
             if ($e->getCode() === 422) {

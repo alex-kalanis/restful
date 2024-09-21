@@ -35,7 +35,7 @@ class MapperContext
      */
     public function getMapper(?string $contentType): IMapper
     {
-        $contentType = explode(';', $contentType);
+        $contentType = explode(';', strval($contentType));
         $contentType = $this->safeContentType($contentType[0] ?: null);
         if (!isset($this->services[$contentType])) {
             throw new InvalidStateException('There is no mapper for Content-Type: ' . $contentType);

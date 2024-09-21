@@ -11,6 +11,9 @@ use Traversable;
  * DateTimeConverter
  * @package Picabo\Restful\Converters
  * @author Drahomír Hanák
+ * @template TK of string
+ * @template TVal of mixed
+ * @implements IConverter<TK, TVal>
  */
 class DateTimeConverter implements IConverter
 {
@@ -27,27 +30,30 @@ class DateTimeConverter implements IConverter
 
     /**
      * Converts DateTime objects in resource to string
+     * @param array<TK, TVal> $resource
+     * @return array<int|string, mixed>
      */
     public function convert(array $resource): array
     {
-        return (array)$this->parseDateTimeToString($resource);
+        return (array) $this->parseDateTimeToString($resource);
     }
 
     /**
-     * @param mixed $array
-     * @return mixed
+     * @param array<TK, TVal>|Traversable<TK, TVal>|string|int|object $array
+     * @return array<string, mixed>|string
      */
-    private function parseDateTimeToString(mixed $array): mixed
+    private function parseDateTimeToString(mixed $array): array|string
     {
         if (!is_array($array)) {
             if ($array instanceof DateTime || interface_exists('DateTimeInterface') && $array instanceof DateTimeInterface) {
                 return $array->format($this->format);
             }
-            return $array;
+            return strval($array);
         }
 
         foreach ($array as $key => $value) {
-            if ($value instanceof Traversable || is_array($array)) {
+            if (is_iterable($array)) {
+                /** @var string|int|object $value */
                 $array[$key] = $this->parseDateTimeToString($value);
             }
         }

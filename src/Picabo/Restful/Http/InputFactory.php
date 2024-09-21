@@ -29,7 +29,7 @@ class InputFactory
 
     /**
      * Create input
-     * @return Input
+     * @return Input<string, mixed>
      */
     public function create(): Input
     {
@@ -42,11 +42,12 @@ class InputFactory
      * Parse data for input
      *
      * @throws BadRequestException
+     * @return array<string, mixed>
      */
     protected function parseData(): array
     {
-        $postQuery = (array)$this->httpRequest->getPost();
-        $urlQuery = (array)$this->httpRequest->getQuery();
+        $postQuery = (array) $this->httpRequest->getPost();
+        $urlQuery = (array) $this->httpRequest->getQuery();
         $requestBody = $this->parseRequestBody();
 
         return array_merge($urlQuery, $postQuery, $requestBody);    // $requestBody must be the last one!!!
@@ -54,8 +55,8 @@ class InputFactory
 
     /**
      * Parse request body if any
-     * @return array
      * @throws BadRequestException
+     * @return array<string, mixed>
      */
     protected function parseRequestBody(): array
     {

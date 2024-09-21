@@ -16,10 +16,10 @@ use Picabo\Restful\Application\IResourceRouter;
 class ResourceRoute extends Route implements IResourceRouter
 {
 
-    /** @var array<int|string, string> */
+    /** @var array<int, string> */
     protected array $actionDictionary = [];
 
-    /** @var array */
+    /** @var array<string, int> */
     private array $methodDictionary = [
         Http\IRequest::Get => self::GET,
         Http\IRequest::Post => self::POST,
@@ -32,7 +32,7 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * @param string $mask
-     * @param array|string $metadata
+     * @param array<string, string|array<string>>|string $metadata
      * @param int $flags all available route types with bitwise add
      */
     public function __construct(
@@ -45,7 +45,7 @@ class ResourceRoute extends Route implements IResourceRouter
             $this->actionDictionary = $metadata['action'];
             $metadata['action'] = 'default';
         } else {
-            $action = $metadata['action'] ?? 'default';
+            $action = is_array($metadata) && !empty($metadata['action']) ? strval($metadata['action']) : 'default';
             if (is_string($metadata)) {
                 $metadataParts = explode(':', $metadata);
                 $action = end($metadataParts);
@@ -62,6 +62,7 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * Get action dictionary
+     * @return array<int, string>
      */
     public function getActionDictionary(): array
     {
@@ -70,6 +71,7 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * Set action dictionary
+     * @param array<int, string> $actionDictionary
      * @return $this
      */
     public function setActionDictionary(array $actionDictionary): static
@@ -79,7 +81,8 @@ class ResourceRoute extends Route implements IResourceRouter
     }
 
     /**
-     * @return Application\Request|NULL
+     * @param Http\IRequest $httpRequest
+     * @return array<string, mixed>|null
      */
     public function match(Http\IRequest $httpRequest): ?array
     {
@@ -90,7 +93,7 @@ class ResourceRoute extends Route implements IResourceRouter
 
         // Check requested method
         $methodFlag = $this->getMethod($httpRequest);
-        if (!$this->isMethod($methodFlag)) {
+        if (is_null($methodFlag) || !$this->isMethod($methodFlag)) {
             return NULL;
         }
 
@@ -118,7 +121,7 @@ class ResourceRoute extends Route implements IResourceRouter
     /**
      * Is this route mapped to given method
      */
-    public function isMethod(string $method): bool
+    public function isMethod(int $method): bool
     {
         $common = [self::CRUD, self::RESTFUL];
         $isActionDefined = $this->actionDictionary && !in_array($method, $common)
@@ -130,6 +133,9 @@ class ResourceRoute extends Route implements IResourceRouter
 
     /**
      * Format action name
+     * @param string $action
+     * @param array<string|int, mixed> $parameters
+     * @return string
      */
     protected static function formatActionName(string $action, array $parameters): string
     {

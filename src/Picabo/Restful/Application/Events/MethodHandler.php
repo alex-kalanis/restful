@@ -51,7 +51,7 @@ class MethodHandler
     protected function checkAllowedMethods(): void
     {
         $availableMethods = $this->methods->getOptions($this->request->getUrl());
-        if (!$availableMethods || in_array($this->request->method, $availableMethods)) {
+        if (!$availableMethods || in_array($this->request->getMethod(), $availableMethods)) {
             return;
         }
 

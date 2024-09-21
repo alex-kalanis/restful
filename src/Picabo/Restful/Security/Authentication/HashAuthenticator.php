@@ -21,7 +21,6 @@ class HashAuthenticator implements IRequestAuthenticator
     public const AUTH_HEADER = 'X-HTTP-AUTH-TOKEN';
 
     public function __construct(
-        #[\SensitiveParameter] private readonly string $privateKey,
         protected IRequest                             $request,
         protected IAuthTokenCalculator                 $calculator,
     )
@@ -42,7 +41,7 @@ class HashAuthenticator implements IRequestAuthenticator
         if ($requested !== $expected) {
             throw new AuthenticationException('Authentication tokens do not match.');
         }
-        return TRUE;
+        return true;
     }
 
 

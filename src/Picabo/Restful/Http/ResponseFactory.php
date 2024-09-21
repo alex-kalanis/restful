@@ -60,7 +60,7 @@ class ResponseFactory
 
         try {
             $response->setHeader('Link', $this->getPaginatorLink());
-            $response->setHeader('X-Total-Count', $this->getPaginatorTotalCount());
+            $response->setHeader('X-Total-Count', strval(intval($this->getPaginatorTotalCount())));
         } catch (InvalidStateException) {
             // Don't use paginator
         }

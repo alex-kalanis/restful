@@ -7,6 +7,7 @@ use Exception;
 use IteratorAggregate;
 use Nette;
 use Nette\MemberAccessException;
+use Picabo\Restful\Validation\Error;
 use Picabo\Restful\Validation\IDataProvider;
 use Picabo\Restful\Validation\IField;
 use Picabo\Restful\Validation\IValidationScope;
@@ -16,8 +17,9 @@ use Picabo\Restful\Validation\IValidationScopeFactory;
  * Request Input parser
  * @package Picabo\Restful\Http
  * @author Drahomír Hanák
- *
- * @property array $data
+ * @template TK of string
+ * @template TVal of mixed
+ * @implements IteratorAggregate<TK, TVal>
  */
 class Input implements IteratorAggregate, IInput, IDataProvider
 {
@@ -25,6 +27,10 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 
     private ?IValidationScope $validationScope = null;
 
+    /**
+     * @param IValidationScopeFactory $validationScopeFactory
+     * @param array<TK, TVal> $data
+     */
     public function __construct(
         private readonly IValidationScopeFactory $validationScopeFactory,
         private array                            $data = [],
@@ -51,6 +57,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 
     /**
      * Get parsed input data
+     * @return array<TK, TVal>
      */
     public function getData(): array
     {
@@ -60,6 +67,8 @@ class Input implements IteratorAggregate, IInput, IDataProvider
     /******************** Magic methods ********************/
     /**
      * Set input data
+     * @param array<TK, TVal> $data
+     * @return $this
      */
     public function setData(array $data): static
     {
@@ -81,7 +90,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 
     /**
      * Get input data iterator
-     * @return ArrayIterator
+     * @return ArrayIterator<TK, TVal>
      */
     public function getIterator(): ArrayIterator
     {
@@ -123,7 +132,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 
     /**
      * Validate input data
-     * @return array
+     * @return array<Error>
      */
     public function validate(): array
     {

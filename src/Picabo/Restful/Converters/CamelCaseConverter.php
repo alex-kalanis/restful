@@ -10,6 +10,9 @@ use Traversable;
  * CamelCaseConverter
  * @package Picabo\Restful\Converters
  * @author Drahomír Hanák
+ * @template TK of string
+ * @template TVal of mixed
+ * @implements IConverter<TK, TVal>
  */
 class CamelCaseConverter implements IConverter
 {
@@ -17,6 +20,8 @@ class CamelCaseConverter implements IConverter
 
     /**
      * Converts resource data keys to camelCase
+     * @param array<TK, TVal> $resource
+     * @return array<TK, TVal>
      */
     public function convert(array $resource): array
     {
@@ -26,9 +31,9 @@ class CamelCaseConverter implements IConverter
 
     /**
      * Convert array keys to camel case
-     * @param array|Traversable $array
+     * @param array<TK, TVal>|Traversable<TK, TVal> $array
      */
-    private function convertToCamel(&$array): void
+    private function convertToCamel(iterable &$array): void
     {
         if ($array instanceof Traversable) {
             $array = iterator_to_array($array);

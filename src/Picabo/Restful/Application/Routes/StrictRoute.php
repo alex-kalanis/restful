@@ -24,7 +24,10 @@ class StrictRoute implements Router
 
     use Nette\SmartObject;
 
-    /** method dictionary */
+    /**
+     * method dictionary
+     * @var array<string, string>
+     */
     protected array $methods = [
         Http\IRequest::Get => 'read',
         Http\IRequest::Post => 'create',
@@ -44,10 +47,12 @@ class StrictRoute implements Router
 
     /**
      * Match request
+     * @param Http\IRequest $httpRequest
+     * @return array<string, string>|null
      */
     public function match(Http\IRequest $httpRequest): ?array
     {
-        $path = $httpRequest->url->getPathInfo();
+        $path = $httpRequest->getUrl()->getPathInfo();
         if (!str_contains($path, $this->prefix)) {
             return NULL;
         }
@@ -64,14 +69,20 @@ class StrictRoute implements Router
 
         $presenter = ($this->module ? $this->module . ':' : '') . $params[self::PresenterKey];
 
-        $appRequest = new Application\Request($presenter, $httpRequest->getMethod(), $params, $httpRequest->getPost(), $httpRequest->getFiles());
+        $appRequest = new Application\Request(
+            $presenter,
+            $httpRequest->getMethod(),
+            $params,
+            (array) $httpRequest->getPost(),
+            $httpRequest->getFiles()
+        );
         return $appRequest->toArray();
     }
 
     /**
      * Get action name
      * @param string $method
-     * @param array $arguments
+     * @param array<int, string> $arguments
      * @return string
      */
     private function getActionName(string $method, array $arguments): string
@@ -91,8 +102,8 @@ class StrictRoute implements Router
 
     /**
      * Get path parameters
-     * @param array $arguments
-     * @return array
+     * @param array<int, string> $arguments
+     * @return array<string, array<string>>
      */
     private function getPathParameters(array $arguments): array
     {
@@ -103,6 +114,11 @@ class StrictRoute implements Router
         return ['params' => $parameters];
     }
 
+    /**
+     * @param array<string, mixed> $params
+     * @param Http\UrlScript $refUrl
+     * @return string|null
+     */
     public function constructUrl(array $params, Nette\Http\UrlScript $refUrl): ?string
     {
         return NULL;

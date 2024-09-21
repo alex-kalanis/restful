@@ -28,9 +28,9 @@ class RequestFilter
     /** Ascending sort */
     public const SORT_ASC = 'ASC';
 
-    /** @var array */
+    /** @var array<string> */
     private array $fieldList = [];
-    /** @var array */
+    /** @var array<string, string> */
     private array $sortList = [];
     private ?Paginator $paginator = null;
 
@@ -42,7 +42,7 @@ class RequestFilter
 
     /**
      * Get fields list
-     * @return array
+     * @return array<string>
      */
     public function getFieldList(): array
     {
@@ -54,17 +54,20 @@ class RequestFilter
 
     /**
      * Create field list
-     * @return array
+     * @return array<string>
      */
     protected function createFieldList(): array
     {
         $fields = $this->request->getQuery(self::FIELDS_KEY);
-        return is_string($fields) ? array_filter(explode(',', $fields)) : $fields;
+        return is_string($fields)
+            ? array_filter(explode(',', $fields))
+            : array_filter(array_map(fn($val) => strval($val), (array) $fields))
+        ;
     }
 
     /**
      * Create sort list
-     * @return array
+     * @return array<string, string>
      */
     public function getSortList(): array
     {
@@ -76,11 +79,12 @@ class RequestFilter
 
     /**
      * Create sort list
+     * @return array<string, string>
      */
     protected function createSortList(): array
     {
         $sortList = [];
-        $fields = array_filter(explode(',', (string)$this->request->getQuery(self::SORT_KEY)));
+        $fields = array_filter(explode(',', strval($this->request->getQuery(self::SORT_KEY))));
         foreach ($fields as $field) {
             $isInverted = Strings::substring($field, 0, 1) === '-';
             $sort = $isInverted ? self::SORT_DESC : self::SORT_ASC;
@@ -92,7 +96,7 @@ class RequestFilter
 
     /**
      * Get search query
-     * @return string|NULL
+     * @return mixed
      */
     public function getSearchQuery(): mixed
     {
@@ -137,6 +141,8 @@ class RequestFilter
                 'To create paginator add offset and limit query parameter to request URL'
             );
         }
+        $lim = intval($lim);
+        $off = intval($off);
 
         if ($lim == 0) {
             throw new InvalidStateException(
@@ -146,7 +152,7 @@ class RequestFilter
 
         $paginator = new Paginator();
         $paginator->setItemsPerPage($lim);
-        $paginator->setPage(floor($off / $lim) + 1);
+        $paginator->setPage(intval(floor($off / $lim)) + 1);
         return $paginator;
     }
 

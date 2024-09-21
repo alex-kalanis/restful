@@ -37,7 +37,7 @@ class FileResponse extends BaseResponse
      */
     public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse): void
     {
-        $httpResponse->setContentType($this->media->getContentType());
+        $httpResponse->setContentType(strval($this->media->getContentType()));
         echo $this->media;
     }
 }

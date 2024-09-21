@@ -18,6 +18,10 @@ use Serializable;
  *
  * @property string $contentType Allowed result content type
  * @property-read array $data
+ * @template TK of string
+ * @template TVal of mixed
+ * @implements ArrayAccess<TK, TVal>
+ * @implements IteratorAggregate<ArrayIterator<TK, TVal>>
  */
 class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResource
 {
@@ -28,6 +32,9 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
         Nette\SmartObject::__unset as SO__unset;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(
         private array $data = []
     )
@@ -49,6 +56,10 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
         return $this->data;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return void
+     */
     public function __unserialize(array $data): void
     {
         $this->data = $data;
@@ -79,7 +90,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->data[$offset];
+        return $this->data[strval($offset)];
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
@@ -87,17 +98,17 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
         if ($offset === NULL) {
             $offset = count($this->data);
         }
-        $this->data[$offset] = $value;
+        $this->data[strval($offset)] = $value;
     }
 
     public function offsetUnset(mixed $offset): void
     {
-        unset($this->data[$offset]);
+        unset($this->data[strval($offset)]);
     }
 
     /**
      * Get resource data iterator
-     * @return ArrayIterator
+     * @return ArrayIterator<string, mixed>
      */
     public function getIterator(): ArrayIterator
     {
@@ -108,9 +119,9 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     /**
      * Get result set data
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getData(): iterable
+    public function getData(): array
     {
         return $this->data;
     }

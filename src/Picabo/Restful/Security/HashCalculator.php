@@ -45,7 +45,7 @@ class HashCalculator implements IAuthTokenCalculator
     /**
      * Set hash calculator security private key
      * @param string $key
-     * @return IAuthTokenCalculator
+     * @return $this
      */
     public function setPrivateKey(#[\SensitiveParameter] string $key): static
     {

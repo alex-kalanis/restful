@@ -15,6 +15,11 @@ use stdClass;
 class TextResponse extends BaseResponse
 {
 
+    /**
+     * @param Media|stdClass|string|iterable<string|int, mixed> $media
+     * @param IMapper $mapper
+     * @param string|null $contentType
+     */
     public function __construct(
         protected readonly Media|iterable|stdClass|string $media,
         IMapper                  $mapper,
@@ -26,6 +31,7 @@ class TextResponse extends BaseResponse
 
     /**
      * Get response data
+     * @inheritDoc
      */
     public function getData(): iterable|stdClass|string
     {

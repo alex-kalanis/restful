@@ -44,7 +44,7 @@ class TimeoutAuthenticator implements IRequestAuthenticator
             throw new RequestTimeoutException('Request timeout');
         }
 
-        return TRUE;
+        return true;
 
     }
 

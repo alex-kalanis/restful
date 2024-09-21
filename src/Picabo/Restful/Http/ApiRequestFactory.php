@@ -29,10 +29,10 @@ class ApiRequestFactory
     public function createHttpRequest(): IRequest
     {
         $request = $this->factory->fromGlobals();
-        $url = $request->getUrl()->withQuery($request->getQuery());
+        $url = $request->getUrl()->withQuery(strval($request->getQuery()));
 
         return new Request(
-            $url, $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
+            $url, (array) $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
             $this->getPreferredMethod($request), $request->getRemoteAddress(), null,
             fn(): ?string => $request->getRawBody()
         );
@@ -51,7 +51,7 @@ class ApiRequestFactory
             return $header;
         }
         if ($param && $isPost) {
-            return $param;
+            return strval($param);
         }
         return $request->getMethod();
     }

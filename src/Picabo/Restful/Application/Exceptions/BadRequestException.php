@@ -14,7 +14,7 @@ use Throwable;
 class BadRequestException extends Nette\Application\BadRequestException
 {
 
-    /** @var array Some other errors appear in request */
+    /** @var Error[] Some other errors appear in request */
     public array $errors = [];
 
     /****************** Simple factories ******************/
@@ -72,7 +72,7 @@ class BadRequestException extends Nette\Application\BadRequestException
      * @param Error[] $errors during validation
      * @param string $message
      * @param Throwable|null $previous
-     * @return $this
+     * @return self
      */
     public static function unprocessableEntity(array $errors, string $message = '', ?Throwable $previous = NULL): self
     {

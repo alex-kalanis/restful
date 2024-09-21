@@ -83,7 +83,7 @@ class HashAuthenticatorTest extends TestCase
         $this->input = Mockery::mock(\Picabo\Restful\Http\IInput::class);
         $this->calculator = Mockery::mock(\Picabo\Restful\Security\IAuthTokenCalculator::class);
         $this->request = Mockery::mock(\Nette\Http\IRequest::class);
-        $this->authenticator = new HashAuthenticator('topSecretKey', $this->request, $this->calculator);
+        $this->authenticator = new HashAuthenticator($this->request, $this->calculator);
     }
 
 }

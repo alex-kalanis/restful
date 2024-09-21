@@ -59,6 +59,7 @@ class ValidationScope implements IValidationScope
 
     /**
      * Validate all field in collection
+     * @param array<string|int, mixed> $data
      * @return Error[]
      */
     public function validate(array $data): array
@@ -74,6 +75,10 @@ class ValidationScope implements IValidationScope
     /****************** Getters & setters ******************/
     /**
      * Recursively validate data using dot notation
+     * @param IField $field
+     * @param array<string|int, mixed> $data
+     * @param string $path
+     * @return array<Error>
      */
     protected function validateDeeply(IField $field, array $data, string $path): array
     {
@@ -111,7 +116,7 @@ class ValidationScope implements IValidationScope
      * Get schema fields
      * @return IField[]
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->fields;
     }

@@ -28,7 +28,7 @@ class ResponseFactory implements IResponseFactory
 
     private bool $prettyPrint = TRUE;
 
-    /** @var array */
+    /** @var array<string, class-string> */
     private array $responses = [
         IResource::JSON => Responses\TextResponse::class,
         IResource::JSONP => Responses\JsonpResponse::class,
@@ -48,7 +48,7 @@ class ResponseFactory implements IResponseFactory
 
     /**
      * Get JSONP key
-     * @return [type] [description]
+     * @return string|null [type] [description]
      */
     public function getJsonp(): ?string
     {
@@ -76,7 +76,7 @@ class ResponseFactory implements IResponseFactory
     /**
      * Register new response type to factory
      * @param string $mimeType
-     * @param string $responseClass
+     * @param class-string $responseClass
      * @return $this
      *
      * @throws InvalidArgumentException
@@ -119,7 +119,7 @@ class ResponseFactory implements IResponseFactory
     {
         if (is_null($contentType)) {
             $contentType = is_null($this->jsonp) || empty($this->request->getQuery($this->jsonp))
-                ? $this->getPreferredContentType($this->request->getHeader('Accept'))
+                ? $this->getPreferredContentType(strval($this->request->getHeader('Accept')))
                 : IResource::JSONP;
         }
 
@@ -134,10 +134,12 @@ class ResponseFactory implements IResponseFactory
         if (empty($resource->getData())) {
             $this->response->setCode(204); // No content
             $reflection = new \ReflectionClass($this->responses[$contentType]);
-            return $reflection->newInstance(
+            $response = $reflection->newInstance(
                 $resource->getData(),
                 $this->mapperContext->getMapper($contentType),
             );
+            /** @var Responses\IResponse $response */
+            return $response;
         }
 
         $responseClass = $this->responses[$contentType];
@@ -147,6 +149,7 @@ class ResponseFactory implements IResponseFactory
             $this->mapperContext->getMapper($contentType),
             $contentType,
         );
+        /** @var Responses\IResponse $response */
         if ($response instanceof Responses\BaseResponse) {
             $response->setPrettyPrint($this->isPrettyPrint());
         }

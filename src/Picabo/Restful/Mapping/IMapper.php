@@ -15,7 +15,7 @@ interface IMapper
 
     /**
      * Convert array or Traversable input to string output response
-     * @param iterable|string|object $data
+     * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
      * @return string
      */
@@ -23,7 +23,7 @@ interface IMapper
 
     /**
      * Convert client request data to array or traversable
-     * @return array|Traversable|object
+     * @return object|string|array<string|int, mixed>|Traversable<string|int, mixed>
      * @throws MappingException
      */
     public function parse(mixed $data): iterable|string|object;

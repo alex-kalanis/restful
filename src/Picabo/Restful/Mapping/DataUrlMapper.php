@@ -19,7 +19,7 @@ class DataUrlMapper implements IMapper
 
     /**
      * Create DATA URL from file
-     * @param Media $data
+     * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
      * @return string
      *
@@ -37,11 +37,11 @@ class DataUrlMapper implements IMapper
 
     /**
      * Convert client request data to array or traversable
-     * @param string $data
-     * @return iterable|string
+     * @param mixed $data
+     * @return object
      * @throws MappingException
      */
-    public function parse(mixed $data): iterable|string|object
+    public function parse(mixed $data): object
     {
         $matches = Strings::match(strval($data), "@^data:([\w/]+?);(\w+?),(.*)$@si");
         if (!$matches) {

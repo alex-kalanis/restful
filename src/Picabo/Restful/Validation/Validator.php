@@ -73,7 +73,7 @@ class Validator implements IValidator
             throw new InvalidArgumentException('No regular expression found in pattern validation rule');
         }
 
-        if (!Strings::match(strval($value), $rule->getArgument()[0])) {
+        if (!Strings::match(strval($value), strval($rule->getArgument()[0]))) {
             throw ValidationException::createFromRule($rule, $value);
         }
     }

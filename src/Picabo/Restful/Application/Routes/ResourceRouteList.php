@@ -17,7 +17,7 @@ class ResourceRouteList extends RouteList
     /**
      * Set offset
      * @param mixed $index
-     * @param IResourceRouter $router
+     * @param object $router
      *
      * @throws InvalidStateException
      */

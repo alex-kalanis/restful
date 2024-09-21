@@ -18,10 +18,10 @@ class JsonMapper implements IMapper
 
     /**
      * Convert array or Traversable input to string output response
-     * @param iterable|string $data
+     * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
-     * @return string
      * @throws MappingException
+     * @return string
      */
     public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
@@ -34,15 +34,14 @@ class JsonMapper implements IMapper
 
     /**
      * Convert client request data to array or traversable
-     * @param string $data
-     * @return iterable|string
-     *
+     * @param mixed $data
      * @throws MappingException
+     * @return iterable<string|int, mixed>
      */
-    public function parse(mixed $data): iterable|string|object
+    public function parse(mixed $data): iterable
     {
         try {
-            return Json::decode($data, true);
+            return (array) Json::decode(strval($data), true);
         } catch (JsonException $e) {
             throw new MappingException('Error in parsing request: ' . $e->getMessage());
         }

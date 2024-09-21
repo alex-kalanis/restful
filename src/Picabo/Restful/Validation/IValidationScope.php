@@ -19,6 +19,7 @@ interface IValidationScope
 
     /**
      * Validate all field in collection
+     * @param array<string|int, mixed> $data
      * @return Error[]
      */
     public function validate(array $data): array;

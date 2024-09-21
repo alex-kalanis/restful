@@ -12,7 +12,7 @@ interface IInput
 
     /**
      * Get parsed input data
-     * @return array
+     * @return array<string, mixed>
      */
     public function getData(): array;
 }

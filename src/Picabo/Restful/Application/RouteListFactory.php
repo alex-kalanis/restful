@@ -81,9 +81,10 @@ class RouteListFactory implements IRouteListFactory
     {
         $routeList = new Routes\ResourceRouteList($module ?: $this->module);
         foreach ($this->loader->getIndexedClasses() as $class => $file) {
+            /** @var class-string<object> $class */
             try {
                 self::getClassReflection($class);
-            } catch (InvalidStateException) {
+            } catch (\ReflectionException) {
                 continue;
             }
 
@@ -98,6 +99,9 @@ class RouteListFactory implements IRouteListFactory
 
     /**
      * Get class reflection
+     * @param class-string<object> $className
+     * @return UI\ComponentReflection
+     * @throws \ReflectionException
      */
     private static function getClassReflection(string $className): UI\ComponentReflection
     {
@@ -106,7 +110,7 @@ class RouteListFactory implements IRouteListFactory
 
     /**
      * Get class methods
-     * @param string $className
+     * @param class-string<object> $className
      * @return ReflectionMethod[]
      * @throws InvalidStateException
      */
@@ -118,7 +122,7 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Parse route annotations on given object methods
      * @param ReflectionMethod[] $methods
-     * @return array $data[URL mask][request method] = action name e.g. $data['api/v1/articles']['GET'] = 'read'
+     * @return array<string, array<string, string>> $data[URL mask][request method] = action name e.g. $data['api/v1/articles']['GET'] = 'read'
      */
     protected function parseClassRoutes(array $methods): array
     {
@@ -137,7 +141,7 @@ class RouteListFactory implements IRouteListFactory
                     $this->prefix . '/' . $mask :
                     $mask;
 
-                $routeData[$pattern][$requestMethod] = $action;
+                $routeData[strval($pattern)][strval($requestMethod)] = $action;
             }
         }
         return $routeData;
@@ -146,8 +150,8 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Add class routes to route list
      * @param Routes\ResourceRouteList $routeList
-     * @param array<string, string> $routeData
-     * @param string $className
+     * @param array<string, array<string, string>> $routeData
+     * @param class-string<object> $className
      * @return Routes\ResourceRouteList
      */
     protected function addRoutes(Routes\ResourceRouteList $routeList, array $routeData, string $className): Routes\ResourceRouteList

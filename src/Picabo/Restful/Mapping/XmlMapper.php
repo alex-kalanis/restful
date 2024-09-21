@@ -16,8 +16,6 @@ use Traversable;
  * XmlMapper
  * @package Picabo\Restful\Mapping
  * @author Drahomír Hanák
- *
- * @property string|NULL $rootElement
  */
 class XmlMapper implements IMapper
 {
@@ -53,10 +51,10 @@ class XmlMapper implements IMapper
 
     /**
      * Parse traversable or array resource data to XML
-     * @param iterable|string $data
+     * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
-     * @return string
      * @throws InvalidArgumentException
+     * @return string
      */
     public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
@@ -74,11 +72,15 @@ class XmlMapper implements IMapper
         $root = $this->xml->createElement($this->rootElement);
         $this->xml->appendChild($root);
         $this->toXml($data, $root, self::ITEM_ELEMENT);
-        return $this->xml->saveXML();
+        $stored = $this->xml->saveXML();
+        if (false === $stored) {
+            throw new \RuntimeException('Storing XML failed');
+        }
+        return $stored;
     }
 
     /**
-     * @param array|string $data
+     * @param array<string|int, mixed>|string $data
      * @param DOMNode $xml
      * @param string $previousKey
      */
@@ -104,35 +106,39 @@ class XmlMapper implements IMapper
     /**
      * Parse XML to array
      * @param string $data
-     * @return iterable|string
+     * @return string|object|iterable<string|int, string|int|float|bool|null>
      *
      * @throws  MappingException If XML data is not valid
      */
     public function parse(mixed $data): iterable|string|object
     {
-        return $this->fromXml($data);
+        return $this->fromXml(strval($data));
     }
 
     /**
      * @param string $data
-     * @return iterable|string|object
+     * @return iterable<string|int, string|int|float|bool|null>
      *
      * @throws  MappingException If XML data is not valid
      */
-    private function fromXml(mixed $data): iterable|string|object
+    private function fromXml(string $data): iterable
     {
         try {
             $useErrors = libxml_use_internal_errors(true);
             $xml = simplexml_load_string($data, NULL, LIBXML_NOCDATA);
             if ($xml === FALSE) {
                 $error = libxml_get_last_error();
-                throw new MappingException('Input is not valid XML document: ' . $error->message . ' on line ' . $error->line);
+                if ($error) {
+                    throw new MappingException('Input is not valid XML document: ' . $error->message . ' on line ' . $error->line);
+                } else {
+                    throw new MappingException('Total parser failure. Document not valid and cannot get last error.');
+                }
             }
             libxml_clear_errors();
             libxml_use_internal_errors($useErrors);
 
-            $data = Json::decode(Json::encode((array)$xml), true);
-            return $data ? $this->normalize($data) : [];
+            $data = Json::decode(Json::encode((array) $xml), true);
+            return $data ? $this->normalize((array) $data) : [];
         } catch (JsonException $e) {
             throw new MappingException('Error in parsing response: ' . $e->getMessage());
         }
@@ -140,8 +146,8 @@ class XmlMapper implements IMapper
 
     /**
      * Normalize data structure to accepted form
-     * @param array|* $value
-     * @return array
+     * @param array<string|int, mixed> $value
+     * @return array<string|int, string|int|float|bool|null>
      */
     private function normalize(array $value): array
     {
@@ -153,7 +159,9 @@ class XmlMapper implements IMapper
         }
 
         foreach ($value as $key => $node) {
-            if (!is_array($node)) continue;
+            if (!is_array($node)) {
+                continue;
+            }
             $value[$key] = $this->normalize($node);
         }
         return $value;

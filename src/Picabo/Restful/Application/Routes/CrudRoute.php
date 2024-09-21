@@ -21,7 +21,7 @@ class CrudRoute extends ResourceRoute
 
     /**
      * @param string $mask
-     * @param array|string $metadata
+     * @param array<string, string|array<string>>|string $metadata
      * @param int $flags
      */
     public function __construct(

@@ -16,15 +16,15 @@ class ResourceFactory implements IResourceFactory
 {
     use Nette\SmartObject;
 
-    public function __construct(private IRequest $request, private ResourceConverter $resourceConverter)
+    public function __construct(private ResourceConverter $resourceConverter)
     {
     }
 
     /**
      * Create new API resource
-     * @param array $data
-     * @return IResource
+     * @param array<string, mixed> $data
      * @throws InvalidStateException If Accept header is unknown
+     * @return IResource
      */
     public function create(array $data = []): IResource
     {

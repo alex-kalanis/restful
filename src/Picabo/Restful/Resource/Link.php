@@ -79,6 +79,7 @@ class Link implements IResource, Stringable
 
     /**
      * Get element value or array data
+     * @return array<string, string>
      */
     public function getData(): array
     {

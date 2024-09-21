@@ -17,25 +17,25 @@ class QueryMapper implements IMapper
 
     /**
      * Convert array or Traversable input to string output response
-     * @param iterable|string $data
+     * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
      */
     public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
         if ($data instanceof Traversable) {
-            $data = iterator_to_array($data, TRUE);
+            $data = iterator_to_array($data);
         }
-        return http_build_query((array)$data, '', '&');
+        return http_build_query((array) $data, '', '&');
     }
 
     /**
      * Convert client request data to array or traversable
      * @param mixed $data
-     * @return iterable|string
+     * @return iterable<string|int, mixed>
      *
      * @throws MappingException
      */
-    public function parse(mixed $data): iterable|string|object
+    public function parse(mixed $data): iterable
     {
         $result = [];
         parse_str(strval($data), $result);

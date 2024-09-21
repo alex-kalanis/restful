@@ -30,6 +30,7 @@ class RouteAnnotation implements IAnnotationParser
 
     /**
      * Get parsed
+     * @return array<string, int>
      */
     public function getMethods(): array
     {
@@ -38,8 +39,8 @@ class RouteAnnotation implements IAnnotationParser
 
     /**
      * @param ReflectionMethod $reflection
-     *
      * @throws InvalidArgumentException
+     * @return array<int, mixed>
      */
     public function parse(Reflector $reflection): array
     {

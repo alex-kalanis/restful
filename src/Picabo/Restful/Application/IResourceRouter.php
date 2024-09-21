@@ -28,10 +28,10 @@ interface IResourceRouter extends Router
 
     /**
      * Is this route mapped to given method
-     * @param string $method
+     * @param int $method
      * @return bool
      */
-    public function isMethod(string $method): bool;
+    public function isMethod(int $method): bool;
 
     /**
      * Get request method flag
@@ -41,7 +41,7 @@ interface IResourceRouter extends Router
 
     /**
      * Get action dictionary
-     * @return array<string, string> methodFlag => presenterActionName
+     * @return array<int, string> methodFlag => presenterActionName
      */
     public function getActionDictionary(): array;
 }

@@ -25,18 +25,24 @@ class Media implements Stringable
         ?string                 $contentType = NULL
     )
     {
-        $this->contentType = $contentType ?: mime_content_type('data://,' . urlencode($this->content));
+        $this->contentType = $contentType ?: $this->initContentType();
+    }
+
+    private function initContentType(): ?string
+    {
+        $type = mime_content_type('data://,' . urlencode($this->content));
+        return $type ?: null;
     }
 
     /**
      * Create media from file
      */
-    public static function fromFile(string $filePath, ?string $mimeType = NULL): self
+    public static function fromFile(string $filePath, ?string $mimeType = null): self
     {
         if (empty($mimeType)) {
             $mimeType = mime_content_type($filePath);
         }
-        return new Media(file_get_contents($filePath), $mimeType);
+        return new Media(strval(file_get_contents($filePath)), strval($mimeType));
     }
 
     /**

@@ -5,9 +5,10 @@ namespace Tests\Picabo\Restful\Security\Process;
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 use Mockery;
-use Picabo\OAuth2\Storage\AccessTokens\AccessToken;
-use Picabo\OAuth2\Storage\Exceptions\InvalidAccessTokenException;
-use Picabo\Restful\Security\Process\OAuth2Authentication;
+use Picabo\OAuth2\IKeyGenerator;
+use Picabo\OAuth2\Storage\AccessTokens;
+use Picabo\OAuth2\Storage\AccessTokens\IAccessToken;
+use Picabo\Restful\Security;
 use Tester\Assert;
 use Tests\TestCase;
 
@@ -21,30 +22,26 @@ use Tests\TestCase;
 class OAuth2AuthenticationTest extends TestCase
 {
 
-    private $token;
-
     private $input;
 
     private $inputFake;
-
-    private OAuth2Authentication $process;
 
     public function testSuccessfullyAuthenticateAccessToken(): void
     {
         $token = '54a6f2ewq86f25rgr6n8r58hr28tj6vd';
 
-        $resultToken = new AccessToken($token, new \DateTime(), 1, null, []);
-
         $this->input->expects('getAuthorization')
             ->once()
             ->andReturn($token);
 
-        $this->token->expects('getEntity')
-            ->once()
-            ->with($token)
-            ->andReturn($resultToken);
+        $process = new Security\Process\OAuth2Authentication(
+            new AccessTokens\AccessTokenFacade(
+                100,
+                new XKeyGenerator(),
+                new XAccessTokenStorageEntityBase()
+            ), $this->input);
 
-        Assert::true($this->process->authenticate($this->inputFake));
+        Assert::true($process->authenticate($this->inputFake));
     }
 
     public function testThrowsExceptionWhenTokenIsNotFoundOnInput(): void
@@ -54,39 +51,78 @@ class OAuth2AuthenticationTest extends TestCase
             ->andReturn(NULL);
 
         Assert::throws(function () {
-            $this->process->authenticate($this->inputFake);
-        }, \Picabo\Restful\Security\Exceptions\AuthenticationException::class);
+            $process = new Security\Process\OAuth2Authentication(
+                new AccessTokens\AccessTokenFacade(
+                    100,
+                    new XKeyGenerator(),
+                    new XAccessTokenStorageEntityBase()
+                ), $this->input);
+            $process->authenticate($this->inputFake);
+        }, Security\Exceptions\AuthenticationException::class);
     }
 
     public function testThrowsExceptionWhenTokenIsExpiredOrInvalid(): void
     {
         $token = '54a6f2ewq86f25rgr6n8r58hr28tj6vd';
-        $invalidTokenException = new InvalidAccessTokenException;
 
         $this->input->expects('getAuthorization')
             ->once()
             ->andReturn($token);
 
-        $this->token->expects('getEntity')
-            ->once()
-            ->with($token)
-            ->andReturn(NULL)
-            ->andThrow($invalidTokenException);
-
         Assert::throws(function () {
-            $this->process->authenticate($this->inputFake);
-        }, \Picabo\Restful\Security\Exceptions\AuthenticationException::class);
+            $process = new Security\Process\OAuth2Authentication(
+                new AccessTokens\AccessTokenFacade(
+                    100,
+                    new XKeyGenerator(),
+                    new XAccessTokenStorageEntityFail()
+                ), $this->input);
+            $process->authenticate($this->inputFake);
+        }, Security\Exceptions\AuthenticationException::class);
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->token = Mockery::mock(\Picabo\OAuth2\Storage\AccessTokens\AccessTokenFacade::class, \Picabo\OAuth2\Storage\ITokenFacade::class);
         $this->input = Mockery::mock(\Picabo\OAuth2\Http\IInput::class);
         $this->inputFake = Mockery::mock(\Picabo\Restful\Http\IInput::class);
-        $this->process = new OAuth2Authentication($this->token, $this->input);
     }
 
+}
+
+
+class XKeyGenerator implements IKeyGenerator
+{
+    public function generate(int $length = 40): string
+    {
+        return 'mock key';
+    }
+}
+
+
+class XAccessTokenStorageEntityBase implements AccessTokens\IAccessTokenStorage
+{
+    public function store(IAccessToken $accessToken): void
+    {
+    }
+
+    public function getValidAccessToken(string $accessToken): ?IAccessToken
+    {
+        return new AccessTokens\AccessToken($accessToken, new \DateTime(), 1, null, []);
+    }
+
+    public function remove(string $token): void
+    {
+    }
+}
+
+
+class XAccessTokenStorageEntityFail extends XAccessTokenStorageEntityBase
+{
+    public function getValidAccessToken(string $accessToken): ?IAccessToken
+    {
+        // not found
+        return null;
+    }
 }
 
 (new OAuth2AuthenticationTest())->run();

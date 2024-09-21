@@ -12,12 +12,12 @@ class ResourceConverter
 {
     use Nette\SmartObject;
 
-    /** @var IConverter[] */
+    /** @var array<IConverter<string, mixed>> */
     private array $converters = [];
 
     /**
      * Get converters
-     * @return IConverter[]
+     * @return array<IConverter<string, mixed>>
      */
     public function getConverters(): array
     {
@@ -26,6 +26,8 @@ class ResourceConverter
 
     /**
      * Add resource data converter to list
+     * @param IConverter<string, mixed> $converter
+     * @return $this
      */
     public function addConverter(IConverter $converter): self
     {
@@ -35,6 +37,8 @@ class ResourceConverter
 
     /**
      * Converts data from resource using converters
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function convert(array $data): array
     {

@@ -35,7 +35,7 @@ class ResourceRouterPanel implements IBarPanel
     {
         $icon = Html::el('img')
             ->src('data:image/png;base64,' . base64_encode(FileSystem::read(__DIR__ . '/icon.png')))
-            ->height('16px');
+            ->height(16);
         return '<span class="REST API resource routes">' . $icon . 'API resources</span>';
     }
 
@@ -47,7 +47,10 @@ class ResourceRouterPanel implements IBarPanel
     {
         ob_start();
         $esc = ['Nette\Templating\Helpers', 'escapeHtml'];
-        $routes = $this->getResourceRoutes($this->router);
+        $router = ($this->router instanceof Nette\Routing\RouteList)
+            ? $this->router
+            : (new Nette\Routing\RouteList())->add($this->router);
+        $routes = $this->getResourceRoutes($router);
         $methods = [
             IResourceRouter::GET => 'GET',
             IResourceRouter::POST => 'POST',
@@ -61,18 +64,27 @@ class ResourceRouterPanel implements IBarPanel
         $requestTimeKey = $this->requestTimeKey;
 
         require_once __DIR__ . '/panel.phtml';
-        return ob_get_clean();
-
+        return strval(ob_get_clean());
     }
 
-    private function getResourceRoutes(iterable|Router $routeList): array
+    /**
+     * @param Nette\Routing\RouteList|iterable<object> $routeList
+     * @return array<IResourceRouter>
+     */
+    private function getResourceRoutes(iterable|Nette\Routing\RouteList $routeList): array
     {
         static $resourceRoutes = [];
-        foreach ($routeList as $route) {
-            if ($route instanceof Traversable)
+        $iter = is_object($routeList) && is_a($routeList, Nette\Routing\RouteList::class)
+            ? $routeList->getRouters()
+            : $routeList
+        ;
+        foreach ($iter as $route) {
+            if ($route instanceof Traversable) {
                 $this->getResourceRoutes($route);
-            if ($route instanceof IResourceRouter)
+            }
+            if ($route instanceof IResourceRouter) {
                 $resourceRoutes[] = $route;
+            }
         }
         return $resourceRoutes;
     }

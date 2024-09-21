@@ -15,5 +15,5 @@ interface IResponseFactory
     /**
      * Create new API response
      */
-    public function create(IResource $resource): Responses\IResponse;
+    public function create(IResource $resource, ?string $contentType = NULL): Responses\IResponse;
 }
