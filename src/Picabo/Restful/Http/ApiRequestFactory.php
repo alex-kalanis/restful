@@ -29,7 +29,7 @@ class ApiRequestFactory
     public function createHttpRequest(): IRequest
     {
         $request = $this->factory->fromGlobals();
-        $url = $request->getUrl()->withQuery(strval($request->getQuery()));
+        $url = $request->getUrl()->withQuery($request->getQuery());
 
         return new Request(
             $url, (array) $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),

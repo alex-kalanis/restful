@@ -8,6 +8,7 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
+use Nette\DI\MissingServiceException;
 use Nette\Utils\Validators;
 use Picabo\OAuth2\KeyGenerator;
 use Picabo\Restful\Application;
@@ -45,6 +46,13 @@ use Picabo\Restful\Validation;
  *         privateKey: string|null,
  *         requestTimeKey?: string|null,
  *         requestTimeout?: int|null
+ *     },
+ *     resourceRoute?: array{
+ *         mask?: string,
+ *         metadata?: string|array{
+ *             action?: string|string[],
+ *         },
+ *         flags?: int,
  *     },
  *     mappers?: array<string, array{
  *         contentType: string,
@@ -86,6 +94,11 @@ class RestfulExtension extends CompilerExtension
             'module' => '',
             'prefix' => '',
             'panel' => TRUE
+        ],
+        'resourceRoute' => [
+            'mask' => '',
+            'metadata' => [],
+            'flags' => Application\IResourceRouter::CRUD,
         ],
         'security' => [
             'privateKey' => NULL,
@@ -135,6 +148,7 @@ class RestfulExtension extends CompilerExtension
     private function loadRestful(ContainerBuilder $container, array $config): void
     {
         Validators::assert($config['prettyPrintKey'], 'string');
+        $this->startLocalRouter($container, $config);
 
         $container->addDefinition($this->prefix('responseFactory'))
             ->setType(Application\ResponseFactory::class)
@@ -148,7 +162,9 @@ class RestfulExtension extends CompilerExtension
             ->setFactory($this->prefix('@resourceFactory') . '::create');
 
         $container->addDefinition($this->prefix('methodOptions'))
-            ->setType(Application\MethodOptions::class);
+            ->setType(Application\MethodOptions::class)
+            ->setArguments([$container->getDefinition('router')])
+        ;
 
         // Mappers
         $container->addDefinition($this->prefix('xmlMapper'))
@@ -287,7 +303,7 @@ class RestfulExtension extends CompilerExtension
 
         $container->addDefinition($this->prefix('security.hashAuthenticator'))
             ->setType(Security\Authentication\HashAuthenticator::class)
-            ->setArguments([$config['security']['privateKey']]);
+        ;
         $container->addDefinition($this->prefix('security.timeoutAuthenticator'))
             ->setType(Security\Authentication\TimeoutAuthenticator::class)
             ->setArguments([
@@ -351,7 +367,9 @@ class RestfulExtension extends CompilerExtension
                 new Statement($this->prefix('@cachedRouteListFactory') . '::create')
             ]
         );
-        // todo: jak to sakra funguje?!
+        // jak to sakra funguje?
+        // -> init routeru v hlavnim nette, pripadne tady a pak vyuziti s doplnenim parametru, co jsou v config neonu
+        $this->startLocalRouter($container, $config);
         if ($config['routes']['generateAtStart']) {
             /** @var ServiceDefinition $def */
             $def = $container->getDefinition('router');
@@ -364,6 +382,27 @@ class RestfulExtension extends CompilerExtension
             /** @var ServiceDefinition $def */
             $def = $container->getDefinition('router');
             $def->addSetup($statement);
+        }
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param Conf $config
+     * @return void
+     */
+    private function startLocalRouter(ContainerBuilder $container, array $config): void
+    {
+        try {
+            $container->getDefinition('router');
+        } catch (MissingServiceException) {
+            $container->addDefinition('router')
+                ->setType(Application\Routes\ResourceRoute::class)
+                ->setArguments([
+                    $config['resourceRoute']['mask'] ?? '',
+                    $config['resourceRoute']['metadata'] ?? [],
+                    $config['resourceRoute']['flags'] ?? Application\IResourceRouter::CRUD
+                ])
+            ;
         }
     }
 

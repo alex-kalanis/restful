@@ -34,3 +34,7 @@ parameters:
         -
             message: '#Property Picabo\\Restful\\Application\\RouteListFactory\:\:\$cacheDirectory is never read#'
             path: 'src/Picabo/Restful/Application/RouteListFactory.php'
+        # WTF - expects array, got array
+        -
+            message: '#Parameter \#1 \$query of method#'
+            path: 'src/Picabo/Restful/Http/ApiRequestFactory.php'
