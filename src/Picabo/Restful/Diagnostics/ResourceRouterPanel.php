@@ -46,7 +46,7 @@ class ResourceRouterPanel implements IBarPanel
     public function getPanel(): string
     {
         ob_start();
-        $esc = ['Nette\Templating\Helpers', 'escapeHtml'];
+        $esc = ['Tracy\Helpers', 'escapeHtml'];
         $router = ($this->router instanceof Nette\Routing\RouteList)
             ? $this->router
             : (new Nette\Routing\RouteList())->add($this->router);

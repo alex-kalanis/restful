@@ -17,7 +17,7 @@ class ResourceRoute extends Route implements IResourceRouter
 {
 
     /** @var array<int, string> */
-    protected array $actionDictionary = [];
+    public array $actionDictionary = [];
 
     /** @var array<string, int> */
     private array $methodDictionary = [
