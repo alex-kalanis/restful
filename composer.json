@@ -1,5 +1,5 @@
 {
-	"name": "picabo/restful",
+	"name": "alex-kalanis/restful",
 	"type": "library",
 	"description": "Nette REST API bundle",
 	"keywords": ["nette", "rest", "api", "drahak"],
@@ -16,12 +16,6 @@
 		{
 			"name": "Petr Kalanis Plšek",
 			"homepage": "http://www.kalanys.com"
-		}
-	],
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://gitlab.picabo.cz/plsek/oauth2"
 		}
 	],
 	"config": {
@@ -42,15 +36,16 @@
 		"nette/routing": "~3.1",
 		"nette/security": "~3.2",
 		"nette/utils": "~4.0",
-		"picabo/oauth2": "dev-master",
+		"alex-kalanis/oauth2": "^1.0",
 		"tracy/tracy": "^2.10"
 	},
 	"require-dev": {
-		"nette/tester": "~2.5",
+		"nette/tester": "^2.5",
 		"php-parallel-lint/php-parallel-lint": "~1.4",
 		"rector/rector": "^1.2",
 		"mockery/mockery": "^1.6",
-		"shipmonk/composer-dependency-analyser": "^1.7"
+		"shipmonk/composer-dependency-analyser": "^1.7",
+		"friendsofphp/php-cs-fixer": "^3.65"
 	},
 	"autoload": {
 		"psr-4": {

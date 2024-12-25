@@ -27,8 +27,8 @@ class OAuth2Authentication extends AuthenticationProcess
     /**
      * Authenticate request data
      * @param IInput $input
-     * @return bool
      * @throws AuthenticationException
+     * @return bool
      */
     protected function authRequestData(IInput $input): bool
     {
@@ -42,8 +42,8 @@ class OAuth2Authentication extends AuthenticationProcess
     /**
      * Authenticate request timeout
      * @param IInput $input
-     * @return bool
      * @throws AuthenticationException
+     * @return bool
      */
     protected function authRequestTimeout(IInput $input): bool
     {
@@ -57,8 +57,8 @@ class OAuth2Authentication extends AuthenticationProcess
 
     /**
      * Get access token
-     * @return ITokens|NULL
      * @throws InvalidAccessTokenException
+     * @return ITokens|NULL
      */
     public function getAccessToken(): ?ITokens
     {

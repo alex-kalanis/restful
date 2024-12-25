@@ -36,8 +36,8 @@ class XmlMapperTest extends TestCase
         $dom = Tester\DomQuery::fromXml($xml);
         $items = $dom->find('item');
         Assert::equal(count($items), 2);
-        Assert::equal((string)$items[0], 'hello');
-        Assert::equal((string)$items[1], 'world');
+        Assert::equal((string) $items[0], 'hello');
+        Assert::equal((string) $items[1], 'world');
     }
 
     public function testConvertArrayListWithNumericIndexesUsingParentKeyToXml(): void
@@ -53,8 +53,8 @@ class XmlMapperTest extends TestCase
         $dom = Tester\DomQuery::fromXml($xml);
         $items = $dom->find('user');
         Assert::equal(count($items), 2);
-        Assert::equal((string)$items[0]->name, 'Tester');
-        Assert::equal((string)$items[1]->name, 'Test');
+        Assert::equal((string) $items[0]->name, 'Tester');
+        Assert::equal((string) $items[1]->name, 'Test');
     }
 
     public function testConvertArrayListWithNumericIndexesInAnotherArrayListUsingLastStringParentKeyToXml(): void
@@ -72,8 +72,8 @@ class XmlMapperTest extends TestCase
         $dom = Tester\DomQuery::fromXml($xml);
         $items = $dom->find('user user');
         Assert::equal(count($items), 2);
-        Assert::equal((string)$items[0]->name, 'Tester');
-        Assert::equal((string)$items[1]->name, 'Test');
+        Assert::equal((string) $items[0]->name, 'Tester');
+        Assert::equal((string) $items[1]->name, 'Test');
     }
 
     public function testSetCustomItemElementName(): void
@@ -85,8 +85,8 @@ class XmlMapperTest extends TestCase
 
         $items = $dom->find('item');
         Assert::equal(count($items), 2);
-        Assert::equal((string)$items[0], 'hello');
-        Assert::equal((string)$items[1], 'world');
+        Assert::equal((string) $items[0], 'hello');
+        Assert::equal((string) $items[1], 'world');
     }
 
     public function testConvertXmlToDataArray(): void

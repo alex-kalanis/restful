@@ -106,7 +106,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
         $accept = $request->getHeader('Accept');
         $responseFactory = $this->responseFactory;
         /** @var ResponseFactory $responseFactory */
-        if ($contentType === NULL && (!$accept || !$responseFactory->isAcceptable($accept))) {
+        if (NULL === $contentType && (!$accept || !$responseFactory->isAcceptable($accept))) {
             $contentType = IResource::JSON;
         }
 
@@ -114,7 +114,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             $this->sendResponse(
                 new ErrorResponse(
                     $this->responseFactory->create($this->resource),
-                    ($e->getCode() > 99 && $e->getCode() < 600 ? $e->getCode() : 400)
+                    (99 < $e->getCode() && 600 > $e->getCode() ? $e->getCode() : 400)
                 )
             );
         } catch (InvalidStateException $e) {
@@ -167,8 +167,8 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
      * @param string $destination
      * @param array<string, string>|string $args
      * @param string $rel
-     * @return string
      * @throws UI\InvalidLinkException
+     * @return string
      */
     public function link(string $destination, $args = [], $rel = Link::SELF): string
     {
@@ -195,12 +195,12 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             // Check if input is validate
             $input = $this->getInput();
             /** @var Input<string, mixed> $input */
-            if (!$input->isValid() && $validationProcessed === TRUE) {
+            if (!$input->isValid() && TRUE === $validationProcessed) {
                 $errors = $input->validate();
                 throw BadRequestException::unprocessableEntity($errors, 'Validation Failed: ' . $errors[0]->getMessage());
             }
         } catch (BadRequestException $e) {
-            if ($e->getCode() === 422) {
+            if (422 === $e->getCode()) {
                 $this->sendErrorResource($e);
                 return;
             }
@@ -238,7 +238,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
     public function sendResource(?string $contentType = NULL): void
     {
         if (!($this->resource instanceof IResource)) {
-            $this->resource = $this->resourceFactory->create((array)$this->resource);
+            $this->resource = $this->resourceFactory->create((array) $this->resource);
         }
 
         try {

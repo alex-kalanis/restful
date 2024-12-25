@@ -23,8 +23,8 @@ interface IMapper
 
     /**
      * Convert client request data to array or traversable
-     * @return object|string|array<string|int, mixed>|Traversable<string|int, mixed>
      * @throws MappingException
+     * @return object|string|array<string|int, mixed>|Traversable<string|int, mixed>
      */
     public function parse(mixed $data): iterable|string|object;
 }

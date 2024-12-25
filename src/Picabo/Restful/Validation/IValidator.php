@@ -40,8 +40,8 @@ interface IValidator
      * Validate value with rule
      * @param mixed $value
      * @param Rule $rule
-     * @return void
      * @throws ValidationException
+     * @return void
      */
     public function validate(mixed $value, Rule $rule): void;
 

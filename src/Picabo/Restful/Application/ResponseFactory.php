@@ -77,9 +77,9 @@ class ResponseFactory implements IResponseFactory
      * Register new response type to factory
      * @param string $mimeType
      * @param class-string $responseClass
+     * @throws InvalidArgumentException
      * @return $this
      *
-     * @throws InvalidArgumentException
      */
     public function registerResponse(string $mimeType, string $responseClass): static
     {
@@ -112,8 +112,8 @@ class ResponseFactory implements IResponseFactory
      * Create new api response
      * @param IResource $resource
      * @param string|null $contentType
-     * @return Responses\IResponse
      * @throws InvalidStateException
+     * @return Responses\IResponse
      */
     public function create(IResource $resource, ?string $contentType = NULL): Responses\IResponse
     {
@@ -159,8 +159,8 @@ class ResponseFactory implements IResponseFactory
     /**
      * Get preferred request content type
      * @param string $contentType may be separated with comma
-     * @return string
      * @throws  InvalidStateException If Accept header is unknown
+     * @return string
      */
     protected function getPreferredContentType(string $contentType): string
     {
@@ -170,7 +170,7 @@ class ResponseFactory implements IResponseFactory
             return $acceptableTypes[0];
         }
         foreach ($accept as $mimeType) {
-            if ($mimeType === '*/*') return $acceptableTypes[0];
+            if ('*/*' === $mimeType) return $acceptableTypes[0];
             foreach ($acceptableTypes as $formatMime) {
                 if (empty($formatMime)) {
                     continue;
@@ -190,10 +190,10 @@ class ResponseFactory implements IResponseFactory
     protected function isPrettyPrint(): bool
     {
         $prettyPrintKey = $this->request->getQuery($this->prettyPrintKey);
-        if ($prettyPrintKey === 'false') {
+        if ('false' === $prettyPrintKey) {
             return FALSE;
         }
-        if ($prettyPrintKey === 'true') {
+        if ('true' === $prettyPrintKey) {
             return TRUE;
         }
         return $this->prettyPrint;

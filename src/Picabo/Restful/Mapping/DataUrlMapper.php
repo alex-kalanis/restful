@@ -21,9 +21,9 @@ class DataUrlMapper implements IMapper
      * Create DATA URL from file
      * @param string|object|iterable<string|int, mixed> $data
      * @param bool $prettyPrint
+     * @throws InvalidArgumentException
      * @return string
      *
-     * @throws InvalidArgumentException
      */
     public function stringify(iterable|string|object $data, bool $prettyPrint = TRUE): string
     {
@@ -38,8 +38,8 @@ class DataUrlMapper implements IMapper
     /**
      * Convert client request data to array or traversable
      * @param mixed $data
-     * @return object
      * @throws MappingException
+     * @return object
      */
     public function parse(mixed $data): object
     {
@@ -48,7 +48,7 @@ class DataUrlMapper implements IMapper
             throw new MappingException('Given data URL is invalid.');
         }
 
-        return new Media(base64_decode((string)$matches[3]), $matches[1]);
+        return new Media(base64_decode((string) $matches[3]), $matches[1]);
     }
 
 }

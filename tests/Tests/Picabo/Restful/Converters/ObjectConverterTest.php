@@ -36,7 +36,7 @@ class ObjectConverterTest extends TestCase
             )
         );
         $data = array(
-            'stdClass' => (object)array('hello' => 'world')
+            'stdClass' => (object) array('hello' => 'world')
         );
 
         $result = $this->converter->convert($data);

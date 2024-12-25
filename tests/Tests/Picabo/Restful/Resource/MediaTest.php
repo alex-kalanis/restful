@@ -36,7 +36,7 @@ class MediaTest extends TestCase
     public function testGetMediaContent(): void
     {
         $content = $this->media->getContent();
-        $magic = (string)$this->media;
+        $magic = (string) $this->media;
 
         Assert::equal($content, 'Test file');
         Assert::same($content, $magic);

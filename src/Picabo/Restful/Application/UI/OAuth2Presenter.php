@@ -56,15 +56,15 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
      * @param string $responseType
      * @param string $redirectUrl
      * @param string|null $scope
-     * @return void
-     *
      * @throws UnauthorizedClientException
      * @throws UnsupportedResponseTypeException
+     * @return void
+     *
      */
     public function issueAuthorizationCode(string $responseType, string $redirectUrl, ?string $scope = NULL): void
     {
         try {
-            if ($responseType !== 'code') {
+            if ('code' !== $responseType) {
                 throw new UnsupportedResponseTypeException;
             }
             if (!$this->client->getId()) {
@@ -93,12 +93,12 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
         if ($data instanceof Traversable) {
             $data = iterator_to_array($data);
         }
-        $data = (array)$data;
+        $data = (array) $data;
 
         // Redirect, if there is URL
-        if ($redirectUrl !== NULL) {
+        if (NULL !== $redirectUrl) {
             $url = new Url($redirectUrl);
-            if ($this->getParameter('response_type') == 'token') {
+            if ('token' == $this->getParameter('response_type')) {
                 $url->setFragment(http_build_query($data));
             } else {
                 $url->appendQuery($data);
@@ -132,7 +132,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     public function issueAccessToken(?string $grantType = NULL, ?string $redirectUrl = NULL): void
     {
         try {
-            if ($grantType !== NULL) {
+            if (NULL !== $grantType) {
                 $grantType = $this->grantContext->getGrantType($grantType);
             } else {
                 $grantType = $this->getGrantType();

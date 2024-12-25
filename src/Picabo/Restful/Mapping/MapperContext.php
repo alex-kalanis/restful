@@ -29,9 +29,9 @@ class MapperContext
     /**
      * Get mapper
      * @param string $contentType in format mimeType[; charset=utf8]
+     * @throws InvalidStateException
      * @return IMapper
      *
-     * @throws InvalidStateException
      */
     public function getMapper(?string $contentType): IMapper
     {

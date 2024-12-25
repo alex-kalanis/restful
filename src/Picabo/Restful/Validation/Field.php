@@ -65,7 +65,7 @@ class Field implements IField
             $argument,
         );
 
-        if ($message === NULL && isset(self::$defaultMessages[$expression])) {
+        if (NULL === $message && isset(self::$defaultMessages[$expression])) {
             $rule->setMessage(self::$defaultMessages[$expression]);
         }
 
@@ -80,7 +80,7 @@ class Field implements IField
      */
     public function validate(mixed $value): array
     {
-        if (!$this->isRequired() && $value === NULL) {
+        if (!$this->isRequired() && NULL === $value) {
             return [];
         }
 
@@ -105,7 +105,7 @@ class Field implements IField
     public function isRequired(): bool
     {
         foreach ($this->rules as $rule) {
-            if ($rule->getExpression() === IValidator::REQUIRED) {
+            if (IValidator::REQUIRED === $rule->getExpression()) {
                 return TRUE;
             }
         }

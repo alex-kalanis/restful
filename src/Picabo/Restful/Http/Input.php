@@ -42,9 +42,9 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 
     /**
      * @param string $name
+     * @throws Exception|MemberAccessException
      * @return mixed
      *
-     * @throws Exception|MemberAccessException
      */
     public function &__get(string $name)
     {

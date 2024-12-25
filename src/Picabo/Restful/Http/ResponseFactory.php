@@ -74,10 +74,10 @@ class ResponseFactory
      */
     protected function getCode(?int $code = NULL): int
     {
-        if ($code === NULL) {
+        if (NULL === $code) {
             $code = $this->defaultCodes[$this->request->getMethod()] ?? 200;
         }
-        return (int)$code;
+        return (int) $code;
     }
 
     /**

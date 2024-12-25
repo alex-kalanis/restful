@@ -29,9 +29,9 @@ class AuthenticationContext
     /**
      * Authenticate request with authentication process strategy
      * @param IInput $input
-     * @return bool
      * @throws Exceptions\RequestTimeoutException
      * @throws Exceptions\AuthenticationException
+     * @return bool
      */
     public function authenticate(IInput $input): bool
     {

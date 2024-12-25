@@ -86,7 +86,7 @@ class RequestFilter
         $sortList = [];
         $fields = array_filter(explode(',', strval($this->request->getQuery(self::SORT_KEY))));
         foreach ($fields as $field) {
-            $isInverted = Strings::substring($field, 0, 1) === '-';
+            $isInverted = '-' === Strings::substring($field, 0, 1);
             $sort = $isInverted ? self::SORT_DESC : self::SORT_ASC;
             $field = $isInverted ? Strings::substring($field, 1) : $field;
             $sortList[$field] = $sort;
@@ -107,8 +107,8 @@ class RequestFilter
      * Get paginator
      * @param int|NULL $offset default value
      * @param int|NULL $limit default value
-     * @return Paginator
      * @throws InvalidStateException
+     * @return Paginator
      */
     public function getPaginator(?int $offset = NULL, ?int $limit = NULL): Paginator
     {
@@ -122,8 +122,8 @@ class RequestFilter
      * Create paginator
      * @param int|null $offset
      * @param int|null $limit
-     * @return Paginator
      * @throws InvalidStateException
+     * @return Paginator
      */
     protected function createPaginator(?int $offset = NULL, ?int $limit = NULL): Paginator
     {
@@ -144,7 +144,7 @@ class RequestFilter
         $lim = intval($lim);
         $off = intval($off);
 
-        if ($lim == 0) {
+        if (0 == $lim) {
             throw new InvalidStateException(
                 'Pagination limit cannot be zero'
             );

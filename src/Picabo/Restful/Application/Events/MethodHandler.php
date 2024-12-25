@@ -66,7 +66,7 @@ class MethodHandler
      */
     public function error(Application $application, $e): void
     {
-        if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
+        if ($e instanceof NetteBadRequestException && 404 === $e->getCode()) {
             $this->checkAllowedMethods();
         }
     }

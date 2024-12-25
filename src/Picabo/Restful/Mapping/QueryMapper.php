@@ -31,9 +31,9 @@ class QueryMapper implements IMapper
     /**
      * Convert client request data to array or traversable
      * @param mixed $data
+     * @throws MappingException
      * @return iterable<string|int, mixed>
      *
-     * @throws MappingException
      */
     public function parse(mixed $data): iterable
     {

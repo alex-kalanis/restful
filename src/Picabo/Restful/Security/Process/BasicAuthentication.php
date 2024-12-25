@@ -38,7 +38,7 @@ class BasicAuthentication extends AuthenticationProcess
      */
     protected function authRequestTimeout(IInput $input): bool
     {
-        if ($this->user->getLogoutReason() === User::LogoutInactivity) {
+        if (User::LogoutInactivity === $this->user->getLogoutReason()) {
             throw new RequestTimeoutException('User session expired');
         }
         return true;

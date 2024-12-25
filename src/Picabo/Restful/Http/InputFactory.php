@@ -66,7 +66,7 @@ class InputFactory
         if ($input) {
             try {
                 $mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
-                $requestBody = (array)$mapper->parse($input);
+                $requestBody = (array) $mapper->parse($input);
             } catch (InvalidStateException $e) {
                 throw BadRequestException::unsupportedMediaType(
                     'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),

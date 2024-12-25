@@ -140,7 +140,7 @@ class ResourceRoute extends Route implements IResourceRouter
     protected static function formatActionName(string $action, array $parameters): string
     {
         return Strings::replace($action, "@<([0-9a-zA-Z_-]+)>@i", function ($m) use ($parameters) {
-            $key = strtolower((string)$m[1]);
+            $key = strtolower((string) $m[1]);
             return $parameters[$key] ?? '';
         });
     }

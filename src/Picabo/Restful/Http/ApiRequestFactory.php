@@ -44,7 +44,7 @@ class ApiRequestFactory
     protected function getPreferredMethod(IRequest $request): string
     {
         $method = $request->getMethod();
-        $isPost = $method === IRequest::Post;
+        $isPost = IRequest::Post === $method;
         $header = $request->getHeader(self::OVERRIDE_HEADER);
         $param = $request->getQuery(self::OVERRIDE_PARAM);
         if ($header && $isPost) {

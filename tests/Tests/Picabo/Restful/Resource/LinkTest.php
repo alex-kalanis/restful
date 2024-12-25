@@ -35,7 +35,7 @@ class LinkTest extends TestCase
 
     public function testStringRepresentation(): void
     {
-        $link = (string)$this->link;
+        $link = (string) $this->link;
         Assert::equal($link, '<http://resource>;rel="last"');
     }
 

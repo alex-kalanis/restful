@@ -95,7 +95,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if ($offset === NULL) {
+        if (NULL === $offset) {
             $offset = count($this->data);
         }
         $this->data[strval($offset)] = $value;
@@ -132,8 +132,8 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      * Magic getter from $this->data
      * @param string $name
      *
-     * @return mixed
      * @throws Exception|MemberAccessException
+     * @return mixed
      */
     public function &__get(string $name)
     {

@@ -12,14 +12,16 @@ dist/
 phpunit
 phpunit-*
 .phpunit.cache*
+.php-cs-fixer.cache
 *.actual
 *.expected
 
 # external libs
-temp/
-tests/temp/
-tests/external/
-tests/data/clover.xml
+temp/*
+!temp/.gitkeep
+php-tests/temp/*
+!php-tests/temp/.gitkeep
+php-tests/external/
 discard/
 
 # environment

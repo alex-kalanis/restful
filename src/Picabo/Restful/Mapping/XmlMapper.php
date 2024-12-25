@@ -106,9 +106,9 @@ class XmlMapper implements IMapper
     /**
      * Parse XML to array
      * @param string $data
+     * @throws  MappingException If XML data is not valid
      * @return string|object|iterable<string|int, string|int|float|bool|null>
      *
-     * @throws  MappingException If XML data is not valid
      */
     public function parse(mixed $data): iterable|string|object
     {
@@ -117,16 +117,16 @@ class XmlMapper implements IMapper
 
     /**
      * @param string $data
+     * @throws  MappingException If XML data is not valid
      * @return iterable<string|int, string|int|float|bool|null>
      *
-     * @throws  MappingException If XML data is not valid
      */
     private function fromXml(string $data): iterable
     {
         try {
             $useErrors = libxml_use_internal_errors(true);
             $xml = simplexml_load_string($data, NULL, LIBXML_NOCDATA);
-            if ($xml === FALSE) {
+            if (FALSE === $xml) {
                 $error = libxml_get_last_error();
                 if ($error) {
                     throw new MappingException('Input is not valid XML document: ' . $error->message . ' on line ' . $error->line);
@@ -154,7 +154,7 @@ class XmlMapper implements IMapper
         if (isset($value['@attributes'])) {
             unset($value['@attributes']);
         }
-        if (count($value) === 0) {
+        if (0 === count($value)) {
             return [];
         }
 

@@ -30,7 +30,7 @@ class CrudRoute extends ResourceRoute
         int          $flags = IResourceRouter::CRUD
     )
     {
-        if (is_string($metadata) && count(explode(':', $metadata)) === 1) {
+        if (is_string($metadata) && 1 === count(explode(':', $metadata))) {
             $metadata .= ':default';
         }
         parent::__construct($mask, $metadata, $flags);

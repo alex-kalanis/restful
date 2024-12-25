@@ -16,9 +16,9 @@ interface IAnnotationParser
     /**
      * Parse annotation for given class, method or any reflection
      * @param Reflector $reflection
+     * @throws InvalidArgumentException
      * @return mixed|void
      *
-     * @throws InvalidArgumentException
      */
     public function parse(Reflector $reflection);
 }

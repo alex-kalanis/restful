@@ -55,7 +55,7 @@ class Validator implements IValidator
      */
     public static function validateRequired(mixed $value, Rule $rule): void
     {
-        if ($value === NULL) {
+        if (NULL === $value) {
             throw ValidationException::createFromRule($rule, $value);
         }
     }
@@ -121,7 +121,7 @@ class Validator implements IValidator
      */
     public static function validateUuid(mixed $value, Rule $rule): void
     {
-        $isUuid = (bool)preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i", strval($value));
+        $isUuid = (bool) preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i", strval($value));
         if (!$isUuid) {
             throw ValidationException::createFromRule($rule, $value);
         }
@@ -131,9 +131,9 @@ class Validator implements IValidator
      * Validate value for this rule
      * @param mixed $value
      * @param Rule $rule
-     * @return void
      * @throws InvalidStateException
      * @throws ValidationException
+     * @return void
      */
     public function validate(mixed $value, Rule $rule): void
     {

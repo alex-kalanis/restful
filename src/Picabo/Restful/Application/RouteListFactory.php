@@ -100,8 +100,8 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Get class reflection
      * @param class-string<object> $className
-     * @return UI\ComponentReflection
      * @throws \ReflectionException
+     * @return UI\ComponentReflection
      */
     private static function getClassReflection(string $className): UI\ComponentReflection
     {
@@ -111,8 +111,8 @@ class RouteListFactory implements IRouteListFactory
     /**
      * Get class methods
      * @param class-string<object> $className
-     * @return ReflectionMethod[]
      * @throws InvalidStateException
+     * @return ReflectionMethod[]
      */
     protected function getClassMethods(string $className): array
     {
