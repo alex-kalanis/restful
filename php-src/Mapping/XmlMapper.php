@@ -95,7 +95,7 @@ class XmlMapper implements IMapper
                     $node = $this->xml->createElement($key);
                     $xml->appendChild($node);
                 }
-                $this->toXml($value, $node, is_string($key) ? $key : $previousKey);
+                $this->toXml($value, $node ?: $xml, is_string($key) ? $key : $previousKey);
             }
         } else {
             $xml->appendChild($this->xml->createTextNode($data));
