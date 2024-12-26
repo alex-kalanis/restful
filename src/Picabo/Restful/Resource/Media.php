@@ -61,8 +61,6 @@ class Media implements Stringable
         return $this->getContent();
     }
 
-    /******************** Media simple factory ********************/
-
     /**
      * Get file
      */
