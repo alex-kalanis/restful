@@ -37,7 +37,7 @@ class ObjectConverter implements IConverter
     {
         if ($data instanceof Traversable) {
             $data = iterator_to_array($data);
-        } else if ($data instanceof stdClass) {
+        } elseif ($data instanceof stdClass) {
             $data = (array) $data;
         }
 

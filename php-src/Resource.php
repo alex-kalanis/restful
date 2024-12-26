@@ -18,8 +18,8 @@ use Serializable;
  * @package kalanis\Restful
  *
  * @property string $contentType Allowed result content type
- * @property-read array $data
- * @template TK of string
+ * @property array<string|int, mixed> $data
+ * @template TK of string|int
  * @template TVal of mixed
  * @implements ArrayAccess<TK, TVal>
  * @implements IteratorAggregate<ArrayIterator<TK, TVal>>
@@ -34,7 +34,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string|int, mixed> $data
      */
     public function __construct(
         private array $data = [],
@@ -58,7 +58,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string|int, mixed> $data
      * @return void
      */
     public function __unserialize(array $data): void
@@ -79,7 +79,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
      */
     public function unserialize(string $data): void
     {
-        $this->data = Json::decode($data);
+        $this->data = (array) Json::decode($data, true);
     }
 
     public function offsetExists(mixed $offset): bool
@@ -96,7 +96,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if (null === $offset) {
+        if (is_null($offset)) {
             $offset = count($this->data);
         }
         $this->data[strval($offset)] = $value;
@@ -109,7 +109,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     /**
      * Get resource data iterator
-     * @return ArrayIterator<string, mixed>
+     * @return ArrayIterator<string|int, mixed>
      */
     public function getIterator(): ArrayIterator
     {
@@ -120,7 +120,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 
     /**
      * Get result set data
-     * @return array<string, mixed>
+     * @return array<string|int, mixed>
      */
     public function getData(): array
     {

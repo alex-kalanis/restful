@@ -6,7 +6,7 @@ namespace kalanis\Restful\Application\Responses;
 use kalanis\Restful\Exceptions\InvalidArgumentException;
 use kalanis\Restful\Mapping\IMapper;
 use Nette\Http\IRequest;
-use Nette\Http\IResponse;
+use Nette\Http\IResponse as nette_iresponse;
 use Nette\Utils\Strings;
 
 
@@ -36,7 +36,7 @@ class JsonpResponse extends BaseResponse
      * Send JSONP response to output
      * @throws InvalidArgumentException
      */
-    public function send(IRequest $httpRequest, IResponse $httpResponse): void
+    public function send(IRequest $httpRequest, nette_iresponse $httpResponse): void
     {
         $httpResponse->setContentType($this->getContentType() ?: 'application/javascript', 'UTF-8');
 

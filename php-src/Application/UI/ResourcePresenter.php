@@ -34,7 +34,8 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
     /** @internal */
     public const VALIDATE_ACTION_PREFIX = 'validate';
 
-    protected IResource $resource;
+    /** @var IResource|array<string, mixed>|null */
+    protected mixed $resource = null;
 
     #[\Nette\DI\Attributes\Inject]
     public IResourceFactory $resourceFactory;
@@ -76,27 +77,27 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
      */
     protected function sendErrorResource(Throwable $e, ?string $contentType = null): void
     {
-        $request = $this->getHttpRequest();
-
-        $this->resource = $this->createErrorResource($e);
-
-        // if the $contentType is not forced and the user has requested an unacceptable content-type, default to JSON
-        $accept = $request->getHeader('Accept');
-        $responseFactory = $this->responseFactory;
-        /** @var ResponseFactory $responseFactory */
-        if (null === $contentType && (!$accept || !$responseFactory->isAcceptable($accept))) {
-            $contentType = IResource::JSON;
-        }
-
         try {
             $this->sendResponse(
                 new ErrorResponse(
-                    $this->responseFactory->create($this->resource),
+                    $this->responseFactory->create($this->createErrorResource($e)),
                     (99 < $e->getCode() && 600 > $e->getCode() ? $e->getCode() : 400)
                 )
             );
+
         } catch (InvalidStateException $e) {
-            $this->sendErrorResource(BadRequestException::unsupportedMediaType($e->getMessage(), $e), $contentType);
+            // if the $contentType is not forced and the user has requested an unacceptable content-type, default to JSON
+            $accept = $this->getHttpRequest()->getHeader('Accept');
+
+            /** @var ResponseFactory $responseFactory */
+            $responseFactory = $this->responseFactory;
+            if (is_null($contentType) && (!$accept || !$responseFactory->isAcceptable($accept))) {
+                $contentType = IResource::JSON;
+            }
+            $this->sendErrorResource(
+                BadRequestException::unsupportedMediaType($e->getMessage(), $e),
+                $contentType
+            );
         }
     }
 
@@ -113,7 +114,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             'message' => $e->getMessage(),
         ];
 
-        if (isset($e->errors) && $e->errors) {
+        if (($e instanceof BadRequestException) && !empty($e->errors)) {
             $params['errors'] = $e->errors;
         }
 
@@ -135,7 +136,7 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
             return $input;
         } catch (BadRequestException $e) {
             $this->sendErrorResource($e);
-            // wont happend
+            // wont happen
             throw $e;
         }
     }
@@ -212,15 +213,21 @@ abstract class ResourcePresenter extends UI\Presenter implements IResourcePresen
      */
     public function sendResource(?string $contentType = null): void
     {
-        if (!($this->resource instanceof IResource)) {
-            $this->resource = $this->resourceFactory->create((array) $this->resource);
-        }
-
         try {
-            $response = $this->responseFactory->create($this->resource, $contentType);
-            $this->sendResponse($response);
+            $this->sendResponse(
+                $this->responseFactory->create(
+                    ($this->resource instanceof IResource)
+                        ? $this->resource
+                        : $this->resourceFactory->create((array) $this->resource)
+                    ,
+                    $contentType,
+                )
+            );
         } catch (InvalidStateException $e) {
-            $this->sendErrorResource(BadRequestException::unsupportedMediaType($e->getMessage(), $e), $contentType);
+            $this->sendErrorResource(
+                BadRequestException::unsupportedMediaType($e->getMessage(), $e),
+                $contentType,
+            );
         }
     }
 }

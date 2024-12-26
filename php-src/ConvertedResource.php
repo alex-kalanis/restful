@@ -17,7 +17,7 @@ class ConvertedResource extends Resource
 {
     /**
      * @param ResourceConverter $resourceConverter
-     * @param array<string, mixed> $data
+     * @param array<string|int, mixed> $data
      */
     public function __construct(
         private readonly ResourceConverter $resourceConverter,
@@ -29,7 +29,7 @@ class ConvertedResource extends Resource
 
     /**
      * Get parsed resource
-     * @return array<string, mixed>
+     * @return array<string|int, mixed>
      */
     public function getData(): array
     {

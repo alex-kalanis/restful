@@ -30,7 +30,7 @@ class Validator implements IValidator
 
     /**
      * Validate callback rule
-     * @param string|numeric|null $value
+     * @param string|int|float|null $value
      *
      * @throws  ValidationException If callback returns false
      */
@@ -48,13 +48,13 @@ class Validator implements IValidator
 
     /**
      * Validate required rule
-     * @param string|numeric|null $value
+     * @param string|int|float|null $value
      *
      * @throws  ValidationException If field value is missing (is null)
      */
     public static function validateRequired(mixed $value, Rule $rule): void
     {
-        if (null === $value) {
+        if (is_null($value)) {
             throw ValidationException::createFromRule($rule, $value);
         }
     }

@@ -10,12 +10,12 @@ namespace kalanis\Restful\Converters;
 class ResourceConverter
 {
 
-    /** @var array<IConverter<string, mixed>> */
+    /** @var array<IConverter<string|int, mixed>> */
     private array $converters = [];
 
     /**
      * Get converters
-     * @return array<IConverter<string, mixed>>
+     * @return array<IConverter<string|int, mixed>>
      */
     public function getConverters(): array
     {
@@ -24,7 +24,7 @@ class ResourceConverter
 
     /**
      * Add resource data converter to list
-     * @param IConverter<string, mixed> $converter
+     * @param IConverter<string|int, mixed> $converter
      * @return $this
      */
     public function addConverter(IConverter $converter): self
@@ -35,8 +35,8 @@ class ResourceConverter
 
     /**
      * Converts data from resource using converters
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @param array<string|int, mixed> $data
+     * @return array<string|int, mixed>
      */
     public function convert(array $data): array
     {

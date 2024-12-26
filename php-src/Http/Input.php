@@ -11,7 +11,6 @@ use kalanis\Restful\Validation\IDataProvider;
 use kalanis\Restful\Validation\IField;
 use kalanis\Restful\Validation\IValidationScope;
 use kalanis\Restful\Validation\IValidationScopeFactory;
-use Nette;
 use Nette\MemberAccessException;
 
 
@@ -24,7 +23,6 @@ use Nette\MemberAccessException;
  */
 class Input implements IteratorAggregate, IInput, IDataProvider
 {
-    use Nette\SmartObject;
 
     private ?IValidationScope $validationScope = null;
 

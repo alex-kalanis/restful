@@ -278,10 +278,10 @@ class RestfulExtension extends CompilerExtension
         if (self::CONVENTION_SNAKE_CASE === $config['convention']) {
             $container->getDefinition($this->prefix('snakeCaseConverter'))
                 ->addTag(self::CONVERTER_TAG);
-        } else if (self::CONVENTION_CAMEL_CASE === $config['convention']) {
+        } elseif (self::CONVENTION_CAMEL_CASE === $config['convention']) {
             $container->getDefinition($this->prefix('camelCaseConverter'))
                 ->addTag(self::CONVERTER_TAG);
-        } else if (self::CONVENTION_PASCAL_CASE === $config['convention']) {
+        } elseif (self::CONVENTION_PASCAL_CASE === $config['convention']) {
             $container->getDefinition($this->prefix('pascalCaseConverter'))
                 ->addTag(self::CONVERTER_TAG);
         }

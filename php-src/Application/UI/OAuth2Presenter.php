@@ -83,7 +83,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
         $data = (array) $data;
 
         // Redirect, if there is URL
-        if (null !== $redirectUrl) {
+        if (!is_null($redirectUrl)) {
             $url = new Url($redirectUrl);
             if ('token' == $this->getParameter('response_type')) {
                 $url->setFragment(http_build_query($data));
@@ -119,7 +119,7 @@ class OAuth2Presenter extends ResourcePresenter implements IOAuthPresenter
     public function issueAccessToken(?string $grantType = null, ?string $redirectUrl = null): void
     {
         try {
-            if (null !== $grantType) {
+            if (!is_null($grantType)) {
                 $grantType = $this->grantContext->getGrantType($grantType);
             } else {
                 $grantType = $this->getGrantType();

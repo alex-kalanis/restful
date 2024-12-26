@@ -9,7 +9,9 @@ Nette REST API
 [![License](https://poser.pugx.org/alex-kalanis/restful/license.svg?v=1)](https://packagist.org/packages/alex-kalanis/restful)
 [![Code Coverage](https://scrutinizer-ci.com/g/alex-kalanis/restful/badges/coverage.png?b=master&v=1)](https://scrutinizer-ci.com/g/alex-kalanis/restful/?branch=master)
 
-This repository is being developed.
+This is repository for adding RestAPI into Nette. Fork of older Drahak repository with refactor to run on php 8.1+.
+
+The main difference is in directory structure, namespaces, tests, static analysis and dependency check.
 
 ### Content
 - [Requirements](#requirements)
@@ -27,9 +29,10 @@ This repository is being developed.
 
 Requirements
 ------------
-alex-kalanis/Restful requires PHP version 8.1.0 or higher. The production dependencies
-are [Nette framework 3.2.x](http://www.nette.org) and my alex-kalanis\OAuth2 provider
-(see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2))
+This repository requires PHP version 8.1.0 or higher. The production dependencies
+are [Nette framework 3.2.x](http://www.nette.org) and my OAuth2 provider
+(see [Secure your resources with OAuth2](#secure-your-resources-with-oauth2)) - everything
+has been solved by Composer.
 
 Installation & setup
 --------------------

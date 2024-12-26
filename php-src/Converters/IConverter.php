@@ -6,7 +6,7 @@ namespace kalanis\Restful\Converters;
 /**
  * Converts resource or input data to some format or stringify objects
  * @package kalanis\Restful\Converters
- * @template TK of string
+ * @template TK of string|int
  * @template TVal of mixed
  */
 interface IConverter

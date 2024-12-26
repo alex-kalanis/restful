@@ -21,7 +21,7 @@ interface IResource
 
     /**
      * Get element value or array data
-     * @return iterable<string, mixed>
+     * @return iterable<string|int, mixed>
      */
     public function getData(): iterable;
 }

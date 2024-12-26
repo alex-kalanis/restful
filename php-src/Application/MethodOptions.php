@@ -59,7 +59,9 @@ class MethodOptions
         foreach ($router->getRouters() as $route) {
             if ($route instanceof IResourceRouter && !$route instanceof Traversable) {
                 $methodFlag = $this->getMethodFlag($route);
-                if (!$methodFlag) continue;
+                if (empty($methodFlag)) {
+                    continue;
+                }
 
                 $request = $this->createAcceptableRequest($url, $methodFlag);
 

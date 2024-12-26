@@ -42,7 +42,7 @@ final class CachedRouteListFactory implements IRouteListFactory
         }
 
         $routeList = $this->routeListFactory->create($module);
-        $this->cache->save(self::CACHE_NAME, $routeList, [Cache::FILES => $files]);
+        $this->cache->save(self::CACHE_NAME, $routeList, [Cache::Files => $files]);
         return $routeList;
     }
 

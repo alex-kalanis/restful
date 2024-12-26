@@ -64,7 +64,7 @@ class Field implements IField
             $argument,
         );
 
-        if (null === $message && isset(self::$defaultMessages[$expression])) {
+        if (is_null($message) && isset(self::$defaultMessages[$expression])) {
             $rule->setMessage(self::$defaultMessages[$expression]);
         }
 
@@ -79,7 +79,7 @@ class Field implements IField
      */
     public function validate(mixed $value): array
     {
-        if (!$this->isRequired() && null === $value) {
+        if (!$this->isRequired() && is_null($value)) {
             return [];
         }
 

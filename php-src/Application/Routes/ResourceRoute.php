@@ -98,7 +98,7 @@ class ResourceRoute extends Route implements IResourceRouter
         }
 
         // If there is action dictionary, set method
-        if ($this->actionDictionary) {
+        if (!empty($this->actionDictionary)) {
             $appRequest['action'] = $this->actionDictionary[$methodFlag];
             $appRequest['action'] = self::formatActionName($this->actionDictionary[$methodFlag], $appRequest);
         }
@@ -124,7 +124,7 @@ class ResourceRoute extends Route implements IResourceRouter
     public function isMethod(int $method): bool
     {
         $common = [self::CRUD, self::RESTFUL];
-        $isActionDefined = $this->actionDictionary && !in_array($method, $common)
+        $isActionDefined = !empty($this->actionDictionary) && !in_array($method, $common)
             ? isset($this->actionDictionary[$method])
             : true;
 //        return ($this->getFlag() & $method) == $method && $isActionDefined; // getFlag is somewhere else now

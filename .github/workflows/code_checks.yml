@@ -22,7 +22,7 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
       - run: composer install --no-progress
-      - run: WITH_TEST_ENV=1 vendor/bin/tester -C -j 1 php-tests --coverage-src php-src/ --coverage php-tests/temp/clover.xml
+      - run: WITH_TEST_ENV=1 vendor/bin/tester -C -j 30 php-tests --coverage-src php-src/ --coverage php-tests/temp/clover.xml
 
   code_style:
     runs-on: ubuntu-latest

@@ -6,7 +6,6 @@ namespace kalanis\Restful\Http;
 use kalanis\Restful\Exceptions\InvalidStateException;
 use kalanis\Restful\Resource\Link;
 use kalanis\Restful\Utils\RequestFilter;
-use Nette;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Http\Response;
@@ -19,7 +18,6 @@ use Nette\Utils\Paginator;
  */
 class ResponseFactory
 {
-    use Nette\SmartObject;
 
     /** @var array<string, int> Default response code for each request method */
     protected array $defaultCodes = [
@@ -75,10 +73,10 @@ class ResponseFactory
      */
     protected function getCode(?int $code = null): int
     {
-        if (null === $code) {
+        if (is_null($code)) {
             $code = $this->defaultCodes[$this->request->getMethod()] ?? 200;
         }
-        return (int) $code;
+        return intval($code);
     }
 
     /**

@@ -8,7 +8,6 @@ use kalanis\Restful\Exceptions\InvalidStateException;
 use kalanis\Restful\Mapping\Exceptions\MappingException;
 use kalanis\Restful\Mapping\MapperContext;
 use kalanis\Restful\Validation\IValidationScopeFactory;
-use Nette;
 use Nette\Http\IRequest;
 
 
@@ -18,7 +17,6 @@ use Nette\Http\IRequest;
  */
 class InputFactory
 {
-    use Nette\SmartObject;
 
     public function __construct(
         protected readonly IRequest              $httpRequest,

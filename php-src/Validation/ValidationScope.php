@@ -97,7 +97,7 @@ class ValidationScope implements IValidationScope
                     $newErrors = $this->validateDeeply($field, $value, $newPath);
                     $errors = array_merge($errors, $newErrors);
                     break; // because recursion already handled this path validation
-                } else if ($isLast || null === $value) {
+                } elseif ($isLast || is_null($value)) {
                     $newErrors = $field->validate($value);
                     $errors = array_merge($errors, $newErrors);
                     break;

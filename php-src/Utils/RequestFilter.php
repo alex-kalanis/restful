@@ -70,7 +70,7 @@ class RequestFilter
      */
     public function getSortList(): array
     {
-        if (!$this->sortList) {
+        if (empty($this->sortList)) {
             $this->sortList = $this->createSortList();
         }
         return $this->sortList;
