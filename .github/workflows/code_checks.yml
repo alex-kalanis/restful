@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '8.1' ]
+        php: [ '8.3' ]
     name: PHP ${{ matrix.php }} code style
     steps:
       - uses: actions/checkout@v2
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '8.1' ]
+        php: [ '8.3' ]
     name: PHP ${{ matrix.php }} phpstan
     steps:
       - uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '8.1' ]
+        php: [ '8.3' ]
     name: PHP ${{ matrix.php }} problematic dependencies
     steps:
       - uses: actions/checkout@v2

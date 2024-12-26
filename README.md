@@ -1,6 +1,14 @@
 Nette REST API
 ==============
 
+![Build Status](https://github.com/alex-kalanis/restful/actions/workflows/code_checks.yml/badge.svg)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alex-kalanis/restful/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alex-kalanis/restful/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/alex-kalanis/restful/v/stable.svg?v=1)](https://packagist.org/packages/alex-kalanis/restful)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://php.net/)
+[![Downloads](https://img.shields.io/packagist/dt/alex-kalanis/restful.svg?v1)](https://packagist.org/packages/alex-kalanis/restful)
+[![License](https://poser.pugx.org/alex-kalanis/restful/license.svg?v=1)](https://packagist.org/packages/alex-kalanis/restful)
+[![Code Coverage](https://scrutinizer-ci.com/g/alex-kalanis/restful/badges/coverage.png?b=master&v=1)](https://scrutinizer-ci.com/g/alex-kalanis/restful/?branch=master)
+
 This repository is being developed.
 
 ### Content
@@ -101,7 +109,7 @@ It is enabled by default but you can disable it by setting `restful.routes.panel
 This panel show you all REST API resources routes (exactly all routes in default route list
 which implements `IResourceRouter` interface). This is useful e.g. for developers who develop
 client application, so they have all API resource routes in one place.
-![REST API resource routes panel](https://github.com/alex-kalanis/restful/php-src/Diagnostics/icon.png "REST API resource routes panel")
+![REST API resource routes panel](https://raw.githubusercontent.com/alex-kalanis/restful/refs/heads/master/php-src/Diagnostics/icon.png "REST API resource routes panel")
 
 Sample usage
 ------------
@@ -506,7 +514,7 @@ class CrudPresenter extends BasePresenter
 Secure your resources with OAuth2
 ---------------------------------
 If you want to secure your API resource with OAuth2, you will need OAuth2 provider.
-There is [already one](https://github.com/alex-kalanis/OAuth2) bundled via Composer.
+There is [already one](https://github.com/alex-kalanis/oauth2) bundled via Composer.
 Just use `OAuth2Authentication` which is `AuthenticationProcess`. If you wish to use
 any other OAuth2 provider, you can write your own `AuthenticationProcess`.
 
@@ -545,7 +553,7 @@ class CrudPresenter extends BasePresenter
 
 Note: this is only Resource server so it handles access token authorization. To generate
 access token you'll need to create OAuth2 presenter (Resource owner and authorization server
-- see [OAuth2 documentation](https://github.com/alex-kalanis/OAuth2)).
+- see [OAuth2 documentation](https://github.com/alex-kalanis/oauth2)).
 
 JSONP support
 -------------
