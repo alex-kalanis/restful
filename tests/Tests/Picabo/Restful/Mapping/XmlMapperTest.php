@@ -174,6 +174,23 @@ class XmlMapperTest extends TestCase
         Assert::equal("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><node>ěščřžýáíé</node></root>", trim($xml));
     }
 
+    public function testConvertDataArrayToXmlAndBack(): void
+    {
+        $data = array(
+            'user' => array(
+                array(
+                    array('id' => 1, 'name' => 'Tester'),
+                    array('id' => 2, 'name' => 'Test')
+                )
+            )
+        );
+
+        $xml = $this->mapper->stringify($data);
+        $array = $this->mapper->parse($xml);
+
+        Assert::equal($array, $data);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
