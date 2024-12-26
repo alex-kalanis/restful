@@ -1,40 +1,36 @@
 parameters:
     level: 9
     paths:
-        - 'src'
+        - 'php-src'
     excludePaths:
-        - 'tests/Tests/bootstrap.php'
-        - 'tests/Tests/TestCase.php'
+        - 'php-tests/bootstrap.php'
+        - 'php-tests/TestCase.php'
     bootstrapFiles:
-        - 'tests/Tests/bootstrap.php'
+        - 'php-tests/bootstrap.php'
     ignoreErrors:
         # strval, intval, floatval, boolval
         - '#Parameter \#1 \$va[rl]u?e? of function [sibf][tnol][rtoo][la]?t?val expects#'
         # WTF - can get object
         -
             message: '#Call to function is_object\(\) with array#'
-            path: 'src/Picabo/Restful/Validation/Exceptions/ValidationException.php'
+            path: 'php-src/Validation/Exceptions/ValidationException.php'
         # WTF - problems with generics and LSP - it's ignored by phpstan
         -
-            message: '#Class Picabo\\Restful\\Validation\\Error implements generic interface#'
-            path: 'src/Picabo/Restful/Validation/Error.php'
+            message: '#Class kalanis\\Restful\\Validation\\Error implements generic interface#'
+            path: 'php-src/Validation/Error.php'
         # WTF - recursive call
         -
-            message: '#Parameter \#1 \$data of method Picabo\\Restful\\Mapping\\XmlMapper\:\:toXml\(\) expects#'
-            path: 'src/Picabo/Restful/Mapping/XmlMapper.php'
+            message: '#Parameter \#1 \$data of method kalanis\\Restful\\Mapping\\XmlMapper\:\:toXml\(\) expects#'
+            path: 'php-src/Mapping/XmlMapper.php'
         # WTF - deep structures - configs
         -
             message: '#Parameter \#2 \$config of method#'
-            path: 'src/Picabo/Restful/DI/RestfulExtension.php'
+            path: 'php-src/DI/RestfulExtension.php'
         # WTF - cannot see strval calls
         -
-            message: '#Method Picabo\\Restful\\Application\\RouteListFactory\:\:parseClassRoutes\(\) should return#'
-            path: 'src/Picabo/Restful/Application/RouteListFactory.php'
-        # WTF - future-proof?
-        -
-            message: '#Property Picabo\\Restful\\Application\\RouteListFactory\:\:\$cacheDirectory is never read#'
-            path: 'src/Picabo/Restful/Application/RouteListFactory.php'
+            message: '#Method kalanis\\Restful\\Application\\RouteListFactory\:\:parseClassRoutes\(\) should return#'
+            path: 'php-src/Application/RouteListFactory.php'
         # WTF - expects array, got array
         -
             message: '#Parameter \#1 \$query of method#'
-            path: 'src/Picabo/Restful/Http/ApiRequestFactory.php'
+            path: 'php-src/Http/ApiRequestFactory.php'

@@ -1,58 +1,56 @@
 {
-	"name": "alex-kalanis/restful",
-	"type": "library",
-	"description": "Nette REST API bundle",
-	"keywords": ["nette", "rest", "api", "drahak"],
-	"homepage": "http://www.drahak.eu",
-	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
-	"authors": [
-		{
-			"name": "Drahomír Hanák",
-			"homepage": "http://www.drahak.eu"
-		},
-		{
-			"name": "Tomáš Vlczech Volf"
-		},
-		{
-			"name": "Petr Kalanis Plšek",
-			"homepage": "http://www.kalanys.com"
-		}
-	],
-	"config": {
-		"vendor-dir": "vendor"
-	},
-	"require": {
-		"php": ">= 8.1.0",
-		"ext-dom": "*",
-		"ext-libxml": "*",
-		"ext-fileinfo": "*",
-		"ext-simplexml": "*",
-		"nette/application": "~3.2",
-		"nette/bootstrap": "~3.2",
-		"nette/caching": "~3.3",
-		"nette/di": "~3.2",
-		"nette/http": "~3.3",
-		"nette/reflection": "~2.0",
-		"nette/robot-loader": "~4.0",
-		"nette/routing": "~3.1",
-		"nette/security": "~3.2",
-		"nette/utils": "~4.0",
-		"alex-kalanis/oauth2": "^1.0",
-		"tracy/tracy": "^2.10"
-	},
-	"require-dev": {
-		"nette/tester": "^2.5",
-		"php-parallel-lint/php-parallel-lint": "~1.4",
-		"rector/rector": "^1.2",
-		"mockery/mockery": "^1.6",
-		"shipmonk/composer-dependency-analyser": "^1.7",
-		"friendsofphp/php-cs-fixer": "^3.65"
-	},
-	"autoload": {
-		"psr-4": {
-			"Picabo\\Restful\\": "src/Picabo/Restful/"
-		},
-		"classmap": [
-		]
-	}
+    "name": "alex-kalanis/restful",
+    "type": "library",
+    "description": "Nette REST API bundle",
+    "keywords": ["nette", "rest", "api", "drahak"],
+    "license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+    "authors": [
+        {
+            "name": "Drahomír Hanák",
+            "homepage": "http://www.drahak.eu"
+        },
+        {
+            "name": "Tomáš Vlczech Volf"
+        },
+        {
+            "name": "Petr Kalanis Plšek",
+            "homepage": "http://www.kalanys.com"
+        }
+    ],
+    "require": {
+        "php": ">= 8.1.0",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-fileinfo": "*",
+        "ext-simplexml": "*",
+        "nette/application": "~3.2",
+        "nette/bootstrap": "~3.2",
+        "nette/caching": "~3.3",
+        "nette/di": "~3.2",
+        "nette/http": "~3.3",
+        "nette/robot-loader": "~4.0",
+        "nette/routing": "~3.1",
+        "nette/security": "~3.2",
+        "nette/utils": "~4.0",
+        "alex-kalanis/oauth2": "^1.0",
+        "tracy/tracy": "^2.10"
+    },
+    "require-dev": {
+        "nette/tester": "^2.5",
+        "php-parallel-lint/php-parallel-lint": "~1.4",
+        "rector/rector": "^1.2",
+        "mockery/mockery": "^1.6",
+        "shipmonk/composer-dependency-analyser": "^1.7",
+        "friendsofphp/php-cs-fixer": "^3.65"
+    },
+    "autoload": {
+        "psr-4": {
+            "kalanis\\Restful\\": "php-src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "php-tests/"
+        }
+    }
 }

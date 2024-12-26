@@ -1,0 +1,42 @@
+<div id="Kalanis-panel">
+    <h1>Kalanis Restful panel</h1>
+
+    <!-- Data string representation -->
+    <div id="Kalanis-panel-resources" class="tracy-inner">
+        <table>
+            <thead>
+            <tr>
+                <th>Method</th>
+                <th>URL Mask</th>
+                <th>Presenter</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($routes as $route) : ?>
+                <?php foreach ($methods as $method => $name) : ?>
+                    <?php if (!$route->isMethod($method)) continue; ?>
+                    <?php if ($route->actionDictionary && !isset($route->actionDictionary[$method])) continue; ?>
+                    <tr>
+                        <th><?php echo $esc($name); ?></th>
+                        <td>
+                            <pre><?php echo $esc($route->getMask()); ?></pre>
+                        </td>
+                        <td>
+                            <?php echo isset($route->getDefaults()['presenter']) ?
+                                $route->getDefaults()['presenter'] :
+                                ''; ?></td>
+                        <td>
+                            <?php
+                            echo isset($route->actionDictionary[$method]) ?
+                                $route->actionDictionary[$method] :
+                                (isset($route->getDefaults()['action']) ? $route->getDefaults()['action'] : '');
+                            ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
