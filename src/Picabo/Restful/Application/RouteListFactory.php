@@ -95,8 +95,6 @@ class RouteListFactory implements IRouteListFactory
         return $routeList;
     }
 
-    /******************** Template methods ********************/
-
     /**
      * Get class reflection
      * @param class-string<object> $className
